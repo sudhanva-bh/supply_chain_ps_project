@@ -35,8 +35,8 @@ docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Y
 ### 4. Verify the Gilhari Service
 Once the database is initialized, Gilhari will be able to perform object-relational mapping seamlessly. Run a simple health check or fetch to confirm:
 ```cmd
-curl -X GET "http://localhost/gilhari/v1/health/check"
-curl -X GET "http://localhost/gilhari/v1/InventoryItem"
+curl.exe -X GET "http://localhost/gilhari/v1/health/check"
+curl.exe -X GET "http://localhost/gilhari/v1/InventoryItem"
 ```
 
 ## Populating with Random Data
@@ -101,9 +101,9 @@ A FastAPI backend sits in the `backend/` directory, serving as an agentic AI bri
    ```cmd
    cd backend
    ```
-2. Create and activate a Python virtual environment:
+2. Create and activate a Python virtual environment (ensuring it inherits the global ORMCP package):
    ```cmd
-   python -m venv .venv
+   python -m venv .venv --system-site-packages
    .\.venv\Scripts\activate
    ```
    *(For bash/Linux users: `source .venv/bin/activate`)*
@@ -115,9 +115,56 @@ A FastAPI backend sits in the `backend/` directory, serving as an agentic AI bri
    ```
 5. Start the FastAPI development server:
    ```cmd
-   uvicorn main:app --reload
+   uvicorn main:app --port 8001 --reload
    ```
 
 *(Note: The FastAPI server automatically spawns and manages the `ormcp-server` MCP connection in the background).*
 
-Once the server is running on port 8000, you can interact with the AI agent via the `POST /api/agentic-chat` endpoint.
+Once the server is running on port 8001, you can interact with the AI agent via the `POST /api/agentic-chat` endpoint.
+
+## Component Verification (Testing)
+
+Use the following commands to verify that each component of the architecture is properly running:
+
+### 1. SQL Server Database
+Verify the SQL Server container is running and accepting queries:
+```cmd
+docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -Q "SELECT @@VERSION"
+```
+
+### 2. Gilhari REST Microservice
+Verify the Gilhari engine is successfully exposing the data model:
+```cmd
+curl.exe -X GET "http://localhost/gilhari/v1/health/check"
+```
+
+### 3. ORMCP Semantic Gateway (MCP Server)
+*(Ensure `start_ormcp.bat` is already running in a separate terminal)*
+Verify the MCP Server connects to Gilhari and exposes the database tools:
+```cmd
+python test_mcp_client.py
+```
+
+### 4. FastAPI Agentic Backend
+*(Ensure you are in the `backend/` directory and `uvicorn main:app --port 8001 --reload` is running)*
+You can test the agent interactively by visiting the auto-generated Swagger UI in your browser:
+**http://localhost:8001/docs**
+
+Alternatively, trigger it via PowerShell:
+```cmd
+Invoke-RestMethod -Method Post -Uri "http://localhost:8001/api/agentic-chat" -Headers @{"Content-Type"="application/json"} -Body '{"message": "Hello"}'
+```
+
+### 5. Flutter Admin Dashboard (Generative UI)
+*(Ensure `flutter run -d chrome --web-browser-flag "--disable-web-security"` is running)*
+Simply open the provided Chrome instance and click on the **AI Analytics** sidebar tab to visually verify the frontend integration!
+
+## Example Queries to Try
+
+Once you have the UI running, try asking the AI Agent some of these complex prompts to see the Generative UI in action:
+
+- **Tables**: *"Can you fetch a table of all purchase orders that have a status of 'Pending'?"*
+- **KPI Metrics**: *"What are our key metrics? I want to see the total number of inventory items, total suppliers, and total stock transactions as KPI cards."*
+- **Charts**: *"Please analyze our inventory. Draw a bar chart showing the total quantity in stock for each item category."*
+- **Timelines**: *"Can you give me a chronological timeline of the 5 most recent stock transactions?"*
+- **Multi-hop reasoning**: *"Which supplier provides the most expensive inventory item? Show me a table of their recent purchase orders."*

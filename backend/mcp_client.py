@@ -8,9 +8,15 @@ from mcp.types import CallToolResult
 
 class MCPClient:
     def __init__(self):
-        # We run the global python module for ormcp_server
+        # Resolve the python executable from the ROOT .venv where ormcp-server is installed
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        python_exe = os.path.join(root_dir, '.venv', 'Scripts', 'python.exe')
+        
+        if not os.path.exists(python_exe):
+            python_exe = "python" # fallback
+            
         self.server_params = StdioServerParameters(
-            command="python",
+            command=python_exe,
             args=["-m", "ormcp_server"],
             env=os.environ.copy()
         )

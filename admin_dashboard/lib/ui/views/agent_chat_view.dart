@@ -22,6 +22,7 @@ class ChatMessage {
 
 class ChatStateNotifier extends Notifier<List<ChatMessage>> {
   bool isLoading = false;
+  String loadingMessage = "Agent is reasoning...";
 
   @override
   List<ChatMessage> build() {
@@ -44,18 +45,28 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
     
     state = [...state, ChatMessage(text: message, isUser: true)];
     isLoading = true;
+    loadingMessage = "Connecting to agent...";
     state = [...state]; // trigger rebuild for loading state
 
     try {
-      final response = await apiService.sendMessage(message);
-      state = [
-        ...state, 
-        ChatMessage(
-          text: response.conversationalText, 
-          isUser: false, 
-          agentResponse: response
-        )
-      ];
+      final stream = apiService.sendMessageStream(message);
+      
+      await for (final event in stream) {
+        if (event['type'] == 'status') {
+          loadingMessage = event['message'] as String;
+          state = [...state]; // trigger rebuild to update loading text
+        } else if (event['type'] == 'final') {
+          final response = AgentResponse.fromJson(event['data']);
+          state = [
+            ...state, 
+            ChatMessage(
+              text: response.conversationalText, 
+              isUser: false, 
+              agentResponse: response
+            )
+          ];
+        }
+      }
     } catch (e) {
       state = [
         ...state, 
@@ -67,6 +78,7 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
       ];
     } finally {
       isLoading = false;
+      loadingMessage = "Agent is reasoning...";
       state = [...state];
     }
   }
@@ -170,6 +182,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
   }
 
   Widget _buildLoadingIndicator() {
+    final loadingMessage = ref.watch(chatProvider.notifier).loadingMessage;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -179,14 +192,14 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                SizedBox(
+              children: [
+                const SizedBox(
                   width: 16, 
                   height: 16, 
                   child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryText)
                 ),
-                SizedBox(width: 12),
-                Text("Agent is reasoning...", style: TextStyle(color: AppTheme.secondaryText, fontStyle: FontStyle.italic)),
+                const SizedBox(width: 12),
+                Text(loadingMessage, style: const TextStyle(color: AppTheme.secondaryText, fontStyle: FontStyle.italic)),
               ],
             ),
           ),
