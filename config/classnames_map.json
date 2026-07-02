@@ -1,0 +1,8 @@
+{
+  "Supplier": "com.supplychain.model.Supplier",
+  "ItemCategory": "com.supplychain.model.ItemCategory",
+  "InventoryItem": "com.supplychain.model.InventoryItem",
+  "PurchaseOrder": "com.supplychain.model.PurchaseOrder",
+  "PurchaseOrderItem": "com.supplychain.model.PurchaseOrderItem",
+  "StockTransaction": "com.supplychain.model.StockTransaction"
+}

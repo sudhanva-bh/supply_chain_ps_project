@@ -1,0 +1,6 @@
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\InventoryItem.java
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\ItemCategory.java
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\PurchaseOrder.java
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\PurchaseOrderItem.java
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\StockTransaction.java
+S:\Code\supply_chain_ps_project\src\com\supplychain\model\Supplier.java
