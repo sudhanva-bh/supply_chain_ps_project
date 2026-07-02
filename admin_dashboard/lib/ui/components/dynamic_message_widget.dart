@@ -122,67 +122,260 @@ class DynamicMessageWidget extends StatelessWidget {
           ),
         );
 
+      
       case 'chart_view':
         final chart = response.payload as ChartViewPayload;
+        Widget chartWidget;
+        if (chart.chartType == 'pie') {
+          chartWidget = PieChart(
+            PieChartData(
+              sectionsSpace: 2,
+              centerSpaceRadius: 40,
+              sections: List.generate(chart.values.length, (i) {
+                return PieChartSectionData(
+                  value: chart.values[i],
+                  title: chart.labels[i],
+                  color: Colors.primaries[i % Colors.primaries.length],
+                  radius: 50,
+                  titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+                );
+              }),
+            ),
+          );
+        } else if (chart.chartType == 'line') {
+          chartWidget = LineChart(
+            LineChartData(
+              lineBarsData: [
+                LineChartBarData(
+                  spots: List.generate(chart.values.length, (i) => FlSpot(i.toDouble(), chart.values[i])),
+                  isCurved: true,
+                  color: AppTheme.primaryText,
+                  barWidth: 4,
+                  isStrokeCapRound: true,
+                  belowBarData: BarAreaData(show: true, color: AppTheme.primaryText.withOpacity(0.2)),
+                )
+              ],
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (double value, TitleMeta meta) {
+                      if (value.toInt() >= 0 && value.toInt() < chart.labels.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(chart.labels[value.toInt()], style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10)),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (double value, TitleMeta meta) {
+                      return Text(value.toStringAsFixed(0), style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10));
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(show: false),
+              gridData: const FlGridData(show: true, drawVerticalLine: false),
+            ),
+          );
+        } else {
+          chartWidget = BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              barGroups: List.generate(chart.values.length, (i) {
+                return BarChartGroupData(
+                  x: i,
+                  barRods: [
+                    BarChartRodData(
+                      toY: chart.values[i],
+                      color: AppTheme.primaryText,
+                      width: 16,
+                      borderRadius: BorderRadius.circular(4),
+                    )
+                  ],
+                );
+              }),
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (double value, TitleMeta meta) {
+                      if (value.toInt() >= 0 && value.toInt() < chart.labels.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(chart.labels[value.toInt()], style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10)),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (double value, TitleMeta meta) {
+                      return Text(value.toStringAsFixed(0), style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10));
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(show: false),
+              gridData: const FlGridData(show: true, drawVerticalLine: false),
+            ),
+          );
+        }
+        
         return GlassContainer(
           child: SizedBox(
             height: 300,
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  barGroups: List.generate(chart.values.length, (i) {
-                    return BarChartGroupData(
-                      x: i,
-                      barRods: [
-                        BarChartRodData(
-                          toY: chart.values[i],
-                          color: AppTheme.primaryText,
-                          width: 16,
-                          borderRadius: BorderRadius.circular(4),
-                        )
-                      ],
-                    );
-                  }),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (double value, TitleMeta meta) {
-                          if (value.toInt() >= 0 && value.toInt() < chart.labels.length) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(chart.labels[value.toInt()], style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10)),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (double value, TitleMeta meta) {
-                          return Text(value.toStringAsFixed(0), style: const TextStyle(color: AppTheme.secondaryText, fontSize: 10));
-                        },
-                      ),
-                    ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  gridData: const FlGridData(show: true, drawVerticalLine: false),
-                ),
-              ),
+              child: chartWidget,
             ),
           ),
         );
 
-      default:
+      case 'regional_view':
+        final regional = response.payload as RegionalViewPayload;
+        return GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(regional.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryText)),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: regional.regions.map((r) => Container(
+                  width: 200,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(r.region, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryText)),
+                      const SizedBox(height: 8),
+                      Text(r.value.toString(), style: const TextStyle(fontSize: 20, color: AppTheme.primaryText)),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(value: r.percentage / 100, backgroundColor: Colors.white24, valueColor: const AlwaysStoppedAnimation(Colors.blueAccent)),
+                      const SizedBox(height: 4),
+                      Text('${r.percentage.toStringAsFixed(1)}%', style: const TextStyle(fontSize: 10, color: AppTheme.secondaryText)),
+                    ]
+                  )
+                )).toList()
+              )
+            ]
+          )
+        );
+
+      case 'kanban_view':
+        final kanban = response.payload as KanbanViewPayload;
+        return GlassContainer(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: kanban.columns.map((colName) {
+                final colCards = kanban.cards.where((c) => c.column == colName).toList();
+                return Container(
+                  width: 250,
+                  margin: const EdgeInsets.only(right: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(colName, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryText, fontSize: 16)),
+                      ),
+                      ...colCards.map((c) => Card(
+                        color: _parseColor(c.color).withOpacity(0.2),
+                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: ListTile(
+                          title: Text(c.title, style: const TextStyle(color: AppTheme.primaryText)),
+                          subtitle: Text(c.subtitle, style: const TextStyle(color: AppTheme.secondaryText)),
+                        ),
+                      ))
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+
+      case 'actionable_form_view':
+        final formPayload = response.payload as ActionableFormViewPayload;
+        return GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(formPayload.formTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryText)),
+              const SizedBox(height: 16),
+              ...formPayload.fields.map((f) => Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: TextFormField(
+                  initialValue: f.defaultValue,
+                  style: const TextStyle(color: AppTheme.primaryText),
+                  decoration: InputDecoration(
+                    labelText: f.label,
+                    labelStyle: const TextStyle(color: AppTheme.secondaryText),
+                    enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                    focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  ),
+                ),
+              )),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+                onPressed: () {}, 
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(formPayload.actionIntent, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                )
+              )
+            ]
+          )
+        );
+
+      case 'alert_anomaly_view':
+        final alertsPayload = response.payload as AlertAnomalyViewPayload;
+        return Column(
+          children: alertsPayload.alerts.map((alert) {
+            final color = alert.severity == 'critical' ? Colors.redAccent : (alert.severity == 'warning' ? Colors.orangeAccent : Colors.blueAccent);
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                border: Border.all(color: color.withOpacity(0.5)),
+                borderRadius: BorderRadius.circular(8)
+              ),
+              child: ListTile(
+                leading: Icon(Icons.warning, color: color),
+                title: Text(alert.title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+                subtitle: Text('${alert.description}\nSuggested Action: ${alert.suggestedAction}', style: const TextStyle(color: AppTheme.secondaryText)),
+                isThreeLine: true,
+              )
+            );
+          }).toList(),
+        );
+default:
         return const SizedBox.shrink();
     }
   }

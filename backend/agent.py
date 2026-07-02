@@ -7,7 +7,13 @@ from models import AgentResponse
 
 import os
 
-if os.environ.get("GEMINI_API_KEY"):
+if os.environ.get("OLLAMA_MODEL"):
+    client = AsyncOpenAI(
+        api_key="ollama", # required but ignored by ollama
+        base_url="http://localhost:11434/v1"
+    )
+    MODEL_NAME = os.environ.get("OLLAMA_MODEL")
+elif os.environ.get("GEMINI_API_KEY"):
     client = AsyncOpenAI(
         api_key=os.environ.get("GEMINI_API_KEY"),
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -24,10 +30,19 @@ You have access to a set of database tools provided by the ORMCP Semantic Gatewa
 Important:
 1. ALWAYS use the `getObjectModelSummary` tool first if you are unsure of the schema or exact class names.
 2. NEVER use `query` to fetch large datasets (e.g., all items) just to count or sum them. ALWAYS use `getAggregate` for math and aggregations, which computes directly in the database.
-3. DIRECT DATA HYDRATION: If the user asks to see a data table (e.g. "List all pending orders"), DO NOT use the `query` tool to fetch the data into your context. Instead, immediately output the final response with `response_type: 'direct_fetch_table'`, providing the `class_name` and `filter_clause`. The backend will fetch the data and hydrate the UI for you.
-4. If a tool response indicates it was truncated due to massive size, you MUST refine your query by adding strict filters or using `getAggregate` instead.
+3. DIRECT DATA HYDRATION: If the user asks to see a data table (e.g. "List all pending orders"), DO NOT use the `query` tool to fetch the data into your context. Instead, immediately call `direct_fetch_table`. The backend will natively run the query and build a `table_view`, saving tokens.
+4. Generative UI Models available:
+   - `text_only`: Simple markdown responses.
+   - `table_view`: (Use `direct_fetch_table` tool instead for fetching tables directly).
+   - `metric_kpi_view`: High-level metrics with trend and colors.
+   - `timeline_view`: History of events.
+   - `chart_view`: Bar, Pie, or Line charts (`chart_type` must be 'bar', 'pie', or 'line').
+   - `regional_view`: Visualizing geographical/regional distributions.
+   - `kanban_view`: Kanban board for order statuses or workflows.
+   - `actionable_form_view`: Output a form when the user wants to execute an action (e.g. Create Order).
+   - `alert_anomaly_view`: Output high-priority red/yellow warnings and anomalies.
 5. If a tool call fails with an error, adjust your arguments and try again.
-6. You are providing data for a Generative UI. Formulate your final response to best fit the user's intent.
+6. Formulate your final response to perfectly utilize the Generative UI models.
 """
 
 async def process_chat_message(user_message: str, mcp_client: MCPClient) -> AsyncGenerator[str, None]:
@@ -47,7 +62,7 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "class_name": {"type": "string", "description": "The Gilhari class name to query"},
+                    "class_name": {"type": "string", "description": "The fully qualified Gilhari class name (e.g., com.supplychain.model.Supplier). ALWAYS include the com.supplychain.model. prefix!"},
                     "filter_clause": {"type": "string", "description": "Optional SQL WHERE clause boolean expression ONLY (e.g. deliveryStatus = 'Pending'). NEVER put 'ORDER BY' or 'LIMIT' here! Use the sort_column and limit parameters instead."},
                     "columns": {"type": "array", "items": {"type": "string"}, "description": "List of column names to display in the table"},
                     "sort_column": {"type": "string", "description": "Optional column name to sort the results by"},
@@ -96,7 +111,11 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                 print(f"Agent Action -> Intercepting Direct Data Hydration request!")
                 yield json.dumps({"type": "status", "message": "Direct Data Hydration: Fetching data natively from Gilhari..."}) + "\n"
                 
-                query_args = {"className": args.get("class_name")}
+                cls_name = args.get("class_name", "")
+                if cls_name and not cls_name.startswith("com.supplychain.model."):
+                    cls_name = f"com.supplychain.model.{cls_name}"
+                    
+                query_args = {"className": cls_name}
                 filter_c = args.get("filter_clause", "")
                 
                 # Strip out hallucinated ORDER BY/LIMIT if they still put it in the filter_clause
@@ -186,12 +205,20 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
     if parsed.response_type == "table_view":
         payload = parsed.table_payload.model_dump() if parsed.table_payload else None
     elif parsed.response_type == "metric_kpi_view":
-        payload = [item.model_dump() for item in parsed.metric_kpi_payload] if parsed.metric_kpi_payload else None
+        payload = [m.model_dump() for m in parsed.metric_kpi_payload] if parsed.metric_kpi_payload else None
     elif parsed.response_type == "timeline_view":
-        payload = [item.model_dump() for item in parsed.timeline_payload] if parsed.timeline_payload else None
+        payload = [t.model_dump() for t in parsed.timeline_payload] if parsed.timeline_payload else None
     elif parsed.response_type == "chart_view":
         payload = parsed.chart_payload.model_dump() if parsed.chart_payload else None
-        
+    elif parsed.response_type == "regional_view":
+        payload = parsed.regional_payload.model_dump() if parsed.regional_payload else None
+    elif parsed.response_type == "kanban_view":
+        payload = parsed.kanban_payload.model_dump() if parsed.kanban_payload else None
+    elif parsed.response_type == "actionable_form_view":
+        payload = parsed.actionable_form_payload.model_dump() if parsed.actionable_form_payload else None
+    elif parsed.response_type == "alert_anomaly_view":
+        payload = parsed.alert_anomaly_payload.model_dump() if parsed.alert_anomaly_payload else None
+
     final_data = {
         "response_type": parsed.response_type,
         "conversational_text": parsed.conversational_text,

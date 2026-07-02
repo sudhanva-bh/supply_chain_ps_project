@@ -78,6 +78,136 @@ class ChartViewPayload {
   }
 }
 
+class RegionalData {
+  final String region;
+  final double value;
+  final double percentage;
+
+  RegionalData({required this.region, required this.value, required this.percentage});
+
+  factory RegionalData.fromJson(Map<String, dynamic> json) {
+    return RegionalData(
+      region: json['region'] ?? '',
+      value: (json['value'] as num?)?.toDouble() ?? 0.0,
+      percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
+}
+
+class RegionalViewPayload {
+  final String title;
+  final List<RegionalData> regions;
+
+  RegionalViewPayload({required this.title, required this.regions});
+
+  factory RegionalViewPayload.fromJson(Map<String, dynamic> json) {
+    return RegionalViewPayload(
+      title: json['title'] ?? '',
+      regions: (json['regions'] as List?)?.map((e) => RegionalData.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class KanbanCard {
+  final String id;
+  final String title;
+  final String subtitle;
+  final String column;
+  final String color;
+
+  KanbanCard({required this.id, required this.title, required this.subtitle, required this.column, required this.color});
+
+  factory KanbanCard.fromJson(Map<String, dynamic> json) {
+    return KanbanCard(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
+      column: json['column'] ?? '',
+      color: json['color'] ?? '',
+    );
+  }
+}
+
+class KanbanViewPayload {
+  final List<String> columns;
+  final List<KanbanCard> cards;
+
+  KanbanViewPayload({required this.columns, required this.cards});
+
+  factory KanbanViewPayload.fromJson(Map<String, dynamic> json) {
+    return KanbanViewPayload(
+      columns: List<String>.from(json['columns'] ?? []),
+      cards: (json['cards'] as List?)?.map((e) => KanbanCard.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class FormFieldSchema {
+  final String name;
+  final String label;
+  final String fieldType;
+  final String defaultValue;
+  final List<String>? options;
+
+  FormFieldSchema({required this.name, required this.label, required this.fieldType, required this.defaultValue, this.options});
+
+  factory FormFieldSchema.fromJson(Map<String, dynamic> json) {
+    return FormFieldSchema(
+      name: json['name'] ?? '',
+      label: json['label'] ?? '',
+      fieldType: json['field_type'] ?? 'text',
+      defaultValue: json['default_value'] ?? '',
+      options: json['options'] != null ? List<String>.from(json['options']) : null,
+    );
+  }
+}
+
+class ActionableFormViewPayload {
+  final String formTitle;
+  final String actionIntent;
+  final List<FormFieldSchema> fields;
+
+  ActionableFormViewPayload({required this.formTitle, required this.actionIntent, required this.fields});
+
+  factory ActionableFormViewPayload.fromJson(Map<String, dynamic> json) {
+    return ActionableFormViewPayload(
+      formTitle: json['form_title'] ?? '',
+      actionIntent: json['action_intent'] ?? '',
+      fields: (json['fields'] as List?)?.map((e) => FormFieldSchema.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class AlertAnomaly {
+  final String severity;
+  final String title;
+  final String description;
+  final String suggestedAction;
+
+  AlertAnomaly({required this.severity, required this.title, required this.description, required this.suggestedAction});
+
+  factory AlertAnomaly.fromJson(Map<String, dynamic> json) {
+    return AlertAnomaly(
+      severity: json['severity'] ?? 'info',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      suggestedAction: json['suggested_action'] ?? '',
+    );
+  }
+}
+
+class AlertAnomalyViewPayload {
+  final List<AlertAnomaly> alerts;
+
+  AlertAnomalyViewPayload({required this.alerts});
+
+  factory AlertAnomalyViewPayload.fromJson(Map<String, dynamic> json) {
+    return AlertAnomalyViewPayload(
+      alerts: (json['alerts'] as List?)?.map((e) => AlertAnomaly.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
 class AgentResponse {
   final String responseType;
   final String conversationalText;
@@ -103,6 +233,14 @@ class AgentResponse {
         parsedPayload = (payloadJson as List).map((e) => TimelineViewPayload.fromJson(e)).toList();
       } else if (type == 'chart_view') {
         parsedPayload = ChartViewPayload.fromJson(payloadJson);
+      } else if (type == 'regional_view') {
+        parsedPayload = RegionalViewPayload.fromJson(payloadJson);
+      } else if (type == 'kanban_view') {
+        parsedPayload = KanbanViewPayload.fromJson(payloadJson);
+      } else if (type == 'actionable_form_view') {
+        parsedPayload = ActionableFormViewPayload.fromJson(payloadJson);
+      } else if (type == 'alert_anomaly_view') {
+        parsedPayload = AlertAnomalyViewPayload.fromJson(payloadJson);
       }
     }
 
