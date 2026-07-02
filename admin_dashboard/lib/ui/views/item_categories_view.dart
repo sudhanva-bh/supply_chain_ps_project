@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../components/async_data_grid.dart';
+import '../components/base_modal.dart';
+import '../components/item_category_form.dart';
 
 class ItemCategoriesView extends ConsumerWidget {
   const ItemCategoriesView({super.key});
@@ -15,7 +17,17 @@ class ItemCategoriesView extends ConsumerWidget {
       asyncValue: state,
       onRefresh: () => ref.read(itemCategoriesProvider.notifier).fetchData(),
       onAdd: () {
-        // Show Add Modal
+        showGlassModal(
+          context,
+          title: 'Create Item Category',
+          content: const ItemCategoryForm(),
+        );
+      },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.categoryID.toString().contains(lowerQuery) ||
+            item.categoryName.toLowerCase().contains(lowerQuery) ||
+            item.description.toLowerCase().contains(lowerQuery);
       },
       columns: const [
         DataColumn(label: Text('ID')),

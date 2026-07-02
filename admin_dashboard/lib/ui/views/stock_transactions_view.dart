@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../components/async_data_grid.dart';
+import '../components/base_modal.dart';
+import '../components/stock_transaction_form.dart';
 
 class StockTransactionsView extends ConsumerWidget {
   const StockTransactionsView({super.key});
@@ -15,7 +17,18 @@ class StockTransactionsView extends ConsumerWidget {
       asyncValue: state,
       onRefresh: () => ref.read(stockTransactionsProvider.notifier).fetchData(),
       onAdd: () {
-        // Show Add Modal
+        showGlassModal(
+          context,
+          title: 'Create Transaction',
+          content: const StockTransactionForm(),
+        );
+      },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.transactionID.toString().contains(lowerQuery) ||
+            item.itemID.toString().contains(lowerQuery) ||
+            item.transactionType.toLowerCase().contains(lowerQuery) ||
+            item.timestamp.toLowerCase().contains(lowerQuery);
       },
       columns: const [
         DataColumn(label: Text('TX ID')),

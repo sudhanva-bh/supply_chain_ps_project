@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../components/async_data_grid.dart';
+import '../components/base_modal.dart';
+import '../components/purchase_order_item_form.dart';
 
 class PurchaseOrderItemsView extends ConsumerWidget {
   const PurchaseOrderItemsView({super.key});
@@ -15,7 +17,17 @@ class PurchaseOrderItemsView extends ConsumerWidget {
       asyncValue: state,
       onRefresh: () => ref.read(purchaseOrderItemsProvider.notifier).fetchData(),
       onAdd: () {
-        // Show Add Modal
+        showGlassModal(
+          context,
+          title: 'Create Order Item',
+          content: const PurchaseOrderItemForm(),
+        );
+      },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.orderItemID.toString().contains(lowerQuery) ||
+            item.orderID.toString().contains(lowerQuery) ||
+            item.itemID.toString().contains(lowerQuery);
       },
       columns: const [
         DataColumn(label: Text('Item ID (PK)')),

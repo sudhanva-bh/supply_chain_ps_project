@@ -23,6 +23,12 @@ class PurchaseOrdersView extends ConsumerWidget {
           content: const PurchaseOrderForm(),
         );
       },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.orderID.toString().contains(lowerQuery) ||
+            item.orderDate.toLowerCase().contains(lowerQuery) ||
+            item.deliveryStatus.toLowerCase().contains(lowerQuery);
+      },
       columns: const [
         DataColumn(label: Text('Order ID')),
         DataColumn(label: Text('Date')),

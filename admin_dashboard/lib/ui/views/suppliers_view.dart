@@ -23,6 +23,13 @@ class SuppliersView extends ConsumerWidget {
           content: const SupplierForm(),
         );
       },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.supplierID.toString().contains(lowerQuery) ||
+            item.companyName.toLowerCase().contains(lowerQuery) ||
+            item.contactEmail.toLowerCase().contains(lowerQuery) ||
+            item.region.toLowerCase().contains(lowerQuery);
+      },
       columns: const [
         DataColumn(label: Text('ID')),
         DataColumn(label: Text('Company Name')),

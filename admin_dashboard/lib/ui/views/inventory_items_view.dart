@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../components/async_data_grid.dart';
+import '../components/base_modal.dart';
+import '../components/inventory_item_form.dart';
 
 class InventoryItemsView extends ConsumerWidget {
   const InventoryItemsView({super.key});
@@ -15,7 +17,18 @@ class InventoryItemsView extends ConsumerWidget {
       asyncValue: state,
       onRefresh: () => ref.read(inventoryItemsProvider.notifier).fetchData(),
       onAdd: () {
-        // Show Add Modal
+        showGlassModal(
+          context,
+          title: 'Create Inventory Item',
+          content: const InventoryItemForm(),
+        );
+      },
+      searchFilter: (item, query) {
+        final lowerQuery = query.toLowerCase();
+        return item.itemID.toString().contains(lowerQuery) ||
+            item.name.toLowerCase().contains(lowerQuery) ||
+            item.categoryID.toString().contains(lowerQuery) ||
+            item.supplierID.toString().contains(lowerQuery);
       },
       columns: const [
         DataColumn(label: Text('ID')),

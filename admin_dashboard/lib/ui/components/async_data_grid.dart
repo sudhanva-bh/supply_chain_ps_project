@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 
-class AsyncDataGrid<T> extends StatelessWidget {
+class AsyncDataGrid<T> extends StatefulWidget {
   final AsyncValue<List<T>> asyncValue;
   final List<DataColumn> columns;
   final List<DataRow> Function(List<T> data) buildRows;
   final VoidCallback onRefresh;
   final VoidCallback onAdd;
+  final bool Function(T item, String query)? searchFilter;
 
   const AsyncDataGrid({
     super.key,
@@ -16,7 +17,22 @@ class AsyncDataGrid<T> extends StatelessWidget {
     required this.buildRows,
     required this.onRefresh,
     required this.onAdd,
+    this.searchFilter,
   });
+
+  @override
+  State<AsyncDataGrid<T>> createState() => _AsyncDataGridState<T>();
+}
+
+class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
+  String _activeSearchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +42,60 @@ class AsyncDataGrid<T> extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              if (widget.searchFilter != null)
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search...',
+                            prefixIcon: const Icon(Icons.search, color: AppTheme.secondaryText),
+                            filled: true,
+                            fillColor: AppTheme.surface.withOpacity(0.5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                          style: const TextStyle(color: AppTheme.primaryText),
+                          onSubmitted: (value) {
+                            setState(() {
+                              _activeSearchQuery = value;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _activeSearchQuery = _searchController.text;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryText,
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                        ),
+                        child: const Text('Search', style: TextStyle(color: AppTheme.background)),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                const Spacer(),
+              const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.refresh),
-                onPressed: onRefresh,
+                onPressed: widget.onRefresh,
                 tooltip: 'Refresh',
               ),
               const SizedBox(width: 8),
               ElevatedButton.icon(
-                onPressed: onAdd,
+                onPressed: widget.onAdd,
                 icon: const Icon(Icons.add, color: AppTheme.background),
                 label: const Text('Add New', style: TextStyle(color: AppTheme.background)),
                 style: ElevatedButton.styleFrom(
@@ -46,17 +106,28 @@ class AsyncDataGrid<T> extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: asyncValue.when(
+            child: widget.asyncValue.when(
               data: (data) {
                 if (data.isEmpty) {
                   return const Center(child: Text('No data found.', style: TextStyle(color: AppTheme.secondaryText)));
                 }
-                final source = _GridDataSource(buildRows(data));
+
+                // Apply search filter
+                List<T> filteredData = data;
+                if (widget.searchFilter != null && _activeSearchQuery.isNotEmpty) {
+                  filteredData = data.where((item) => widget.searchFilter!(item, _activeSearchQuery)).toList();
+                }
+
+                if (filteredData.isEmpty) {
+                  return const Center(child: Text('No matching records found.', style: TextStyle(color: AppTheme.secondaryText)));
+                }
+
+                final source = _GridDataSource(widget.buildRows(filteredData));
                 return ListView(
                   children: [
                     PaginatedDataTable(
                       showCheckboxColumn: false,
-                      columns: columns,
+                      columns: widget.columns,
                       source: source,
                       rowsPerPage: 10,
                     ),
