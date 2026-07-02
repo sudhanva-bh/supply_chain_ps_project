@@ -67,3 +67,26 @@ To run it locally during development without encountering Cross-Origin Resource 
    flutter run -d chrome --web-browser-flag "--disable-web-security"
    ```
 This will launch a dedicated Chrome instance capable of communicating flawlessly with your local Gilhari backend container.
+
+## AI Semantic Gateway (MCP)
+
+This project includes a Model Context Protocol (MCP) server that seamlessly bridges your AI clients (like Claude Desktop) to the supply chain database. It uses the `ormcp-server` to automatically introspect the database schema and expose CRUD capabilities (query, insert, update, delete) directly to your LLM.
+
+To start the MCP server:
+
+1. Ensure the Gilhari microservice and SQL Server are running.
+2. Run the provided batch script to launch the ORMCP gateway. If you are using PowerShell or Bash, you must include the `.\` or `./` prefix:
+   ```cmd
+   .\start_ormcp.bat
+   ```
+   *Note: This script will automatically create a Python virtual environment, hook into the globally installed `ormcp-server` package, and start the server in `stdio` mode.*
+
+3. Once running, you can configure any standard MCP Client (such as Claude Desktop) to use `start_ormcp.bat` (or `.\start_ormcp.bat` depending on the client's shell context) as your server endpoint.
+
+### Verifying the MCP Server
+
+You can verify the MCP server functionality without Claude by running the local Python validation script:
+```cmd
+python test_mcp_client.py
+```
+This script performs an automated handshake, introspects the available AI tools from the Gilhari instance, and dumps the resulting JSON schemas to `mcp_tools_output.log` for your review.

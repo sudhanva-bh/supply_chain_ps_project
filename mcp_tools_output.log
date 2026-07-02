@@ -1,0 +1,504 @@
+[
+  {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {
+        "experimental": {},
+        "prompts": {
+          "listChanged": false
+        },
+        "resources": {
+          "subscribe": false,
+          "listChanged": false
+        },
+        "tools": {
+          "listChanged": false
+        }
+      },
+      "serverInfo": {
+        "name": "SupplyChainMCP",
+        "version": "1.28.0"
+      },
+      "instructions": "\n    IMPORTANT: Before using any data operations, read the\n    resource://object_model_summary resource to understand\n    the available data model schema.\n    "
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+      "tools": [
+        {
+          "name": "add",
+          "description": "Add two numbers",
+          "inputSchema": {
+            "properties": {
+              "a": {
+                "title": "A",
+                "type": "integer"
+              },
+              "b": {
+                "title": "B",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "a",
+              "b"
+            ],
+            "title": "addArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "addOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "getObjectModelSummary",
+          "description": "\nGet comprehensive information about the underlying object model.\n\n**IMPORTANT: Call this ONCE at the beginning of your session and cache it         before using ANY data manipulation tools (query, getObjectById,             access, getAggregate, insert, update, delete, etc.), UNLESS                 you already have the object model summary in your context                     (e.g., auto-loaded from                         resource://object_model_summary by your client).**\n\nThis provides you with the complete schema including all available         classes (types), their attributes, data types, primary keys, and             relationships. Having this information loaded will make all                 subsequent operations more efficient, accurate, and will help                     you construct valid requests.\n\nReturns:\n    A complete summary of the object model including classes, attributes,             primary keys, relationships, and other schema details.\n\nNote: This is a lightweight metadata call that should be your \\ \nfirst action when starting to work with this MCP server.         The same information is also available via             resource://object_model_summary for clients                 that support auto-loading resources.\n",
+          "inputSchema": {
+            "properties": {},
+            "title": "getObjectModelSummaryArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "getObjectModelSummaryOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "query",
+          "description": "\nQuery all qualifying objects of a particular type (class) based         on the filter condition.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes and             their attributes. This will help you construct valid queries.\n\nArgs:\n    className: Name of the type (class) whose objects need to be retrieved.            If the class belongs to a package, the full class name                (including the package name) should be specified.\n            Check resource://object_model_summary for available classes.\n    filter: Search condition (WHERE clause) for the objects.             May also include an 'ORDER BY' specification.                 A null or empty string means don't apply any search (filter)                     condition for qualifying objects while retrieving the objects.\n    maxObjects: Maximum number of objects to be retrieved             (-1 => all qualified objects).\n    deep: Whether to retrieve referenced objects as well (default: True).\n    operationDetails: JSON array of operational directives for fine-tuning queries.            Supports GraphQL-like operations: 'projections' (select specific attributes),            'ignore' (skip references), 'follow' (include references), 'filters' (apply predicates).            Example: [{\"opType\": \"projections\", \"projectionsDetails\": [{\"type\": \"Employee\", \"attribs\": [\"name\", \"id\"]}]}]            Leave empty for no operational directives.\n\n\nReturns:\n    A list of all the qualified objects in JSON format\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "filter": {
+                "default": "",
+                "title": "Filter",
+                "type": "string"
+              },
+              "maxObjects": {
+                "default": -1,
+                "title": "Maxobjects",
+                "type": "integer"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              },
+              "operationDetails": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {}
+                ],
+                "default": "",
+                "title": "Operationdetails"
+              }
+            },
+            "required": [
+              "className"
+            ],
+            "title": "queryArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "queryOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "access",
+          "description": "\nRetrieve the object(s) referenced by the attributeName attribute of a         referencing object of a particular type (class). If the attribute is a            collection object (e.g., List or Array), an Array object                 is returned.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes and their             attributes. This will help you construct valid access requests.\n\nArgs:\n    className: Name of the type (class) of the referencing object.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    jsonObject: The referencing object whose attribute needs             to be retrieved.\n    attributeName: Name of the attribute whose value needs to be retrieved.\n    deep: Whether to retrieve referenced objects of the retrieved object             as well (default: True).\n    operationDetails: JSON array of operational directives for fine-tuning queries.            Supports GraphQL-like operations: 'projections' (select specific attributes),            'ignore' (skip references), 'follow' (include references), 'filters' (apply predicates).            Example: [{\"opType\": \"projections\", \"projectionsDetails\": [{\"type\": \"Employee\", \"attribs\": [\"name\", \"id\"]}]}]            Leave empty for no operational directives.\n\nReturns:\n    The retrieved object in JSON format\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "jsonObject": {
+                "additionalProperties": true,
+                "title": "Jsonobject",
+                "type": "object"
+              },
+              "attributeName": {
+                "title": "Attributename",
+                "type": "string"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              },
+              "operationDetails": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {}
+                ],
+                "default": "",
+                "title": "Operationdetails"
+              }
+            },
+            "required": [
+              "className",
+              "jsonObject",
+              "attributeName"
+            ],
+            "title": "accessArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "accessOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "getObjectById",
+          "description": "\nQuery the object of a particular type (class) based on the id         (primary key attribute values) of the object. The object is first             checked in the cache (if configured for the class) before going                 to the database.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes and             their primary key structure.\n\nArgs:\n    className: Name of the type (class) whose object needs to be             retrieved. If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    primaryKey: id (primary key attribute values in JSON format) of the object.\n    deep: Whether to retrieve referenced objects as well (default: True).\n    operationDetails: JSON array of operational directives for fine-tuning queries.            Supports GraphQL-like operations: 'projections' (select specific attributes: Not supported),            'ignore' (skip references), 'follow' (include references), 'filters' (apply predicates).            Example: [{\"opType\": \"filters\", \"predicates\": [{\"type\":\"Address\", \"predicate\": \"zip='95007'\"}]}]            Leave empty for no operational directives.\n\nReturns:\n    The retrieved object in JSON format\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "primaryKey": {
+                "additionalProperties": true,
+                "title": "Primarykey",
+                "type": "object"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              },
+              "operationDetails": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {}
+                ],
+                "default": "",
+                "title": "Operationdetails"
+              }
+            },
+            "required": [
+              "className",
+              "primaryKey"
+            ],
+            "title": "getObjectByIdArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "getObjectByIdOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "getAggregate",
+          "description": "\nQuery an aggregate value (COUNT, SUM, AVG, MIN, MAX) for an attribute of         all qualifying objects of a particular type (class) based on             the filter condition.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes and their             attributes for aggregation.\n\nArgs:\n    className: Name of the type (class) whose objects need to be             aggregated. If the class belongs to a package, the full                 class name (including the package name) should be specified.\n    attributeName: Name of the attribute to aggregate.\n    aggregateType: Type of aggregation (COUNT, SUM, AVG, MIN, MAX).\n    filter: Search condition for the objects to be aggregated.             A SQL-like WHERE clause (optional).                 WARNING: Default is include all objects for aggragation.\n\nReturns:\n    A list of all the qualified objects in JSON format\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "attributeName": {
+                "title": "Attributename",
+                "type": "string"
+              },
+              "aggregateType": {
+                "title": "Aggregatetype",
+                "type": "string"
+              },
+              "filter": {
+                "default": "",
+                "title": "Filter",
+                "type": "string"
+              }
+            },
+            "required": [
+              "className",
+              "attributeName",
+              "aggregateType"
+            ],
+            "title": "getAggregateArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "getAggregateOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "get_server_version",
+          "description": "\nGet version and metadata information about this ORMCP Server implementation.\n\nReturns:\n    Version and metadata information about this ORMCP Server implementation.\n",
+          "inputSchema": {
+            "properties": {},
+            "title": "get_server_versionArguments",
+            "type": "object"
+          }
+        },
+        {
+          "name": "insert",
+          "description": "Save (Insert) one or more JSON objects.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to understand the structure, attributes,             and required fields for the objects of the class you're inserting.\n\nArgs:\n    className: Name of the type (class) whose objects need to be saved.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    jsonObjects: A list of one or more more objects in JSON format;             one or more JSON objects can be passed in an array ([...]).\n    deep: Whether to save referenced objects as well (default: True).\n\nReturns:\n    Result of the insert operation.\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "jsonObjects": {
+                "items": {},
+                "title": "Jsonobjects",
+                "type": "array"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "className",
+              "jsonObjects"
+            ],
+            "title": "insertArguments",
+            "type": "object"
+          }
+        },
+        {
+          "name": "update",
+          "description": "\nUpdate one or more JSON objects.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to understand the structure and attributes             of the objects of the class you're updating.\n\nArgs:\n    className: Name of the type (class) whose objects need to be updated.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    jsonObjects: A list of one or more more objects in JSON format;             one or more JSON objects can be passed in an array ([...]).\n    deep: Whether to update referenced (contained) objects as well             (default: True).\n\nReturns:\n    Result of the update operation.\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "jsonObjects": {
+                "items": {},
+                "title": "Jsonobjects",
+                "type": "array"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "className",
+              "jsonObjects"
+            ],
+            "title": "updateArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "updateOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "update2",
+          "description": "\nBulk update selected attributes of all qualifying objects of a particular         type (class) based on the filter condition with the             new attribute values. If deep parameter is true,                 all the contained objects are also updated.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes and their             attributes for bulk updates.\n\nArgs:\n    className: Name of the type (class) whose objects need to be updated.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    filter: Search condition for the objects to be updated.             A SQL-like WHERE clause (optional). WARNING: Default is update all objects.\n    newValues: A comma-separated list of names and values             of the attributes to be updated for the selected objects.                 For example, [\"attribInt\", 100, \"attribString\", 'value']\n    deep: Whether to update referenced objects as well (default: True).\n\nReturns:\n    A count of all the updated top level objects \n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "filter": {
+                "title": "Filter",
+                "type": "string"
+              },
+              "newValues": {
+                "items": {},
+                "title": "Newvalues",
+                "type": "array"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "className",
+              "filter",
+              "newValues"
+            ],
+            "title": "update2Arguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "update2Output",
+            "type": "object"
+          }
+        },
+        {
+          "name": "delete",
+          "description": "\nDelete one or more JSON objects.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to understand the primary key structure of             the objects of the class you're deleting.\n\nArgs:\n    className: Name of the type (class) whose objects need to be deleted.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    jsonObjects: A list of one or more more objects in JSON format;             one or more JSON objects can be passed in an array ([...]).                 Only the primary key attributes of an object need to be                     specified. The other attributes may be specified                         but will be ignored. \n    deep: Whether to delete referenced (contained) objects as well             (default: True).\n\nReturns:\n    Result of the delete operation.\n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "jsonObjects": {
+                "items": {},
+                "title": "Jsonobjects",
+                "type": "array"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "className",
+              "jsonObjects"
+            ],
+            "title": "deleteArguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "string"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "deleteOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "delete2",
+          "description": "\nBulk delete all qualifying objects of a particular type (class)         based on the filter condition. If deep parameter is true,             all the contained objects are also deleted.\n\n**TIP:** If you haven't already done so at the start of your session,         call getObjectModelSummary to discover available classes for             bulk deletion.\n\nArgs:\n    className: Name of the type (class) whose objects need to be deleted.             If the class belongs to a package, the full class name                 (including the package name) should be specified.\n    filter: Search condition for the objects to be deleted.             A SQL-like WHERE clause (optional). WARNING: Default is delete all objects.\n    deep: Whether to delete referenced (contained) objects as well             (default: True).\n\nReturns:\n    A count of all the deleted top level objects \n\n",
+          "inputSchema": {
+            "properties": {
+              "className": {
+                "title": "Classname",
+                "type": "string"
+              },
+              "filter": {
+                "default": "",
+                "title": "Filter",
+                "type": "string"
+              },
+              "deep": {
+                "default": true,
+                "title": "Deep",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "className"
+            ],
+            "title": "delete2Arguments",
+            "type": "object"
+          },
+          "outputSchema": {
+            "properties": {
+              "result": {
+                "title": "Result",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "result"
+            ],
+            "title": "delete2Output",
+            "type": "object"
+          }
+        }
+      ]
+    }
+  }
+]

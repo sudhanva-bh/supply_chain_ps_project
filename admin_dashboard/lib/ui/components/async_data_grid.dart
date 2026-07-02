@@ -137,7 +137,6 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                 final source = _GridDataSource(widget.buildRows(filteredData));
                 
                 final sortableColumns = widget.columns.asMap().entries.map((entry) {
-                  final index = entry.key;
                   final col = entry.value;
                   return DataColumn(
                     label: col.label,
