@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../models/agent_response.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/glass_container.dart';
@@ -17,9 +18,17 @@ class DynamicMessageWidget extends StatelessWidget {
         if (response.conversationalText.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
-            child: Text(
-              response.conversationalText,
-              style: const TextStyle(fontSize: 16, color: AppTheme.primaryText),
+            child: MarkdownBody(
+              data: response.conversationalText,
+              selectable: true,
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(fontSize: 16, color: AppTheme.primaryText),
+                h1: const TextStyle(color: AppTheme.primaryText),
+                h2: const TextStyle(color: AppTheme.primaryText),
+                h3: const TextStyle(color: AppTheme.primaryText),
+                strong: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryText),
+                listBullet: const TextStyle(color: AppTheme.primaryText),
+              ),
             ),
           ),
         _buildGraphicalPayload(context),
@@ -33,12 +42,25 @@ class DynamicMessageWidget extends StatelessWidget {
     switch (response.responseType) {
       case 'table_view':
         final tablePayload = response.payload as TableViewPayload;
+        final source = _TableDataSource(tablePayload.rows);
         return GlassContainer(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: tablePayload.columns.map((c) => DataColumn(label: Text(c, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryText)))).toList(),
-              rows: tablePayload.rows.map((row) => DataRow(cells: row.map((cell) => DataCell(Text(cell.toString(), style: const TextStyle(color: AppTheme.secondaryText)))).toList())).toList(),
+          child: SizedBox(
+            width: double.infinity,
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                cardColor: Colors.transparent,
+                dividerColor: Colors.white24,
+                textTheme: const TextTheme(bodySmall: TextStyle(color: AppTheme.secondaryText)),
+                iconTheme: const IconThemeData(color: AppTheme.primaryText),
+              ),
+              child: PaginatedDataTable(
+                columns: tablePayload.columns.map((c) => DataColumn(label: Text(c, style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryText)))).toList(),
+                source: source,
+                rowsPerPage: 10,
+                columnSpacing: 20,
+                horizontalMargin: 20,
+                showCheckboxColumn: false,
+              ),
             ),
           ),
         );
@@ -176,4 +198,28 @@ class DynamicMessageWidget extends StatelessWidget {
       default: return AppTheme.secondaryText;
     }
   }
+}
+
+class _TableDataSource extends DataTableSource {
+  final List<List<dynamic>> rows;
+
+  _TableDataSource(this.rows);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= rows.length) return null;
+    final row = rows[index];
+    return DataRow(
+      cells: row.map((cell) => DataCell(Text(cell?.toString() ?? '', style: const TextStyle(color: AppTheme.secondaryText)))).toList(),
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => rows.length;
+
+  @override
+  int get selectedRowCount => 0;
 }

@@ -220,7 +220,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
             border: Border.all(color: Colors.white60),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Text(message.text, style: const TextStyle(color: AppTheme.primaryText)),
+          child: SelectableText(message.text, style: const TextStyle(color: AppTheme.primaryText)),
         ),
       );
     } else if (message.error != null) {
@@ -234,7 +234,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
             border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Text(message.error!, style: const TextStyle(color: Colors.redAccent)),
+          child: SelectableText(message.error!, style: const TextStyle(color: Colors.redAccent)),
         ),
       );
     } else {
