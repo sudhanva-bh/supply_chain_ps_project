@@ -28,7 +28,7 @@ Before Gilhari can interact with the database, you must create the tables using 
 
 ```cmd
 docker cp sql\init.sql sqlserver:/init.sql
-docker exec -it sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -i /init.sql
+docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -i /init.sql
 ```
 *(Alternatively, you can connect a database client like SSMS or Azure Data Studio to `localhost:1433` and execute `sql\init.sql` manually).*
 

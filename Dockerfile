@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/supply_chain_service
 
 # Download the Microsoft SQL Server JDBC driver
-RUN wget https://github.com/microsoft/mssql-jdbc/releases/download/v12.4.2/mssql-jdbc-12.4.2.jre11.jar -P /node/node_modules/jdxnode/external_libs/
+RUN wget https://github.com/microsoft/mssql-jdbc/releases/download/v12.4.2/mssql-jdbc-12.4.2.jre8.jar -P /node/node_modules/jdxnode/external_libs/
 
 # Add application files
 ADD bin ./bin
