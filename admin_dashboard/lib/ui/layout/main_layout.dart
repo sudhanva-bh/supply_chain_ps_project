@@ -8,7 +8,7 @@ import '../views/inventory_items_view.dart';
 import '../views/purchase_orders_view.dart';
 import '../views/purchase_order_items_view.dart';
 import '../views/stock_transactions_view.dart';
-
+import '../views/agent_chat_view.dart';
 class NavigationIndexNotifier extends Notifier<int> {
   @override
   int build() => 0;
@@ -33,6 +33,7 @@ class MainLayout extends ConsumerWidget {
       const PurchaseOrdersView(),
       const PurchaseOrderItemsView(),
       const StockTransactionsView(),
+      const AgentChatView(),
     ];
 
     final List<Map<String, dynamic>> menuItems = [
@@ -42,6 +43,7 @@ class MainLayout extends ConsumerWidget {
       {'title': 'Purchase Orders', 'icon': Icons.shopping_cart},
       {'title': 'Purchase Order Items', 'icon': Icons.list_alt},
       {'title': 'Stock Transactions', 'icon': Icons.swap_horiz},
+      {'title': 'AI Analytics', 'icon': Icons.auto_awesome},
     ];
 
     Widget buildSidebar() {

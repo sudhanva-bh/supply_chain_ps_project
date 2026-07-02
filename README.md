@@ -90,3 +90,34 @@ You can verify the MCP server functionality without Claude by running the local 
 python test_mcp_client.py
 ```
 This script performs an automated handshake, introspects the available AI tools from the Gilhari instance, and dumps the resulting JSON schemas to `mcp_tools_output.log` for your review.
+
+## Agentic Generative UI Backend (Phase 4)
+
+A FastAPI backend sits in the `backend/` directory, serving as an agentic AI bridge between your frontend and the supply chain MCP tools. It uses OpenAI's Structured Outputs (`gpt-4o`) to fetch, aggregate, and map data into dynamic formats like tables, charts, or KPIs.
+
+### Setup Instructions
+
+1. Navigate to the `backend/` directory:
+   ```cmd
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```cmd
+   python -m venv .venv
+   .\.venv\Scripts\activate
+   ```
+   *(For bash/Linux users: `source .venv/bin/activate`)*
+
+3. Open the `backend/.env` file and insert your actual `OPENAI_API_KEY`.
+4. Install the required Python dependencies:
+   ```cmd
+   pip install -r requirements.txt
+   ```
+5. Start the FastAPI development server:
+   ```cmd
+   uvicorn main:app --reload
+   ```
+
+*(Note: The FastAPI server automatically spawns and manages the `ormcp-server` MCP connection in the background).*
+
+Once the server is running on port 8000, you can interact with the AI agent via the `POST /api/agentic-chat` endpoint.
