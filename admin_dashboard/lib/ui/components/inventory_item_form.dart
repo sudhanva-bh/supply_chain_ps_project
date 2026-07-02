@@ -4,6 +4,7 @@ import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../../theme/app_theme.dart';
 import 'base_modal.dart';
+import 'foreign_key_autocomplete.dart';
 
 class InventoryItemForm extends ConsumerStatefulWidget {
   const InventoryItemForm({super.key});
@@ -48,6 +49,9 @@ class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
 
   @override
   Widget build(BuildContext context) {
+    final categories = ref.watch(itemCategoriesProvider).value ?? [];
+    final suppliers = ref.watch(suppliersProvider).value ?? [];
+
     return Form(
       key: _formKey,
       child: Column(
@@ -80,18 +84,20 @@ class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          ForeignKeyAutocomplete<ItemCategory>(
+            items: categories,
+            displayStringForOption: (c) => '${c.categoryID} - ${c.categoryName}',
+            idForOption: (c) => c.categoryID.toString(),
             controller: _categoryCtrl,
-            decoration: const InputDecoration(labelText: 'Category ID', border: OutlineInputBorder()),
-            keyboardType: TextInputType.number,
-            validator: (v) => v!.isEmpty ? 'Required' : null,
+            labelText: 'Category',
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          ForeignKeyAutocomplete<Supplier>(
+            items: suppliers,
+            displayStringForOption: (s) => '${s.supplierID} - ${s.companyName}',
+            idForOption: (s) => s.supplierID.toString(),
             controller: _supplierCtrl,
-            decoration: const InputDecoration(labelText: 'Supplier ID', border: OutlineInputBorder()),
-            keyboardType: TextInputType.number,
-            validator: (v) => v!.isEmpty ? 'Required' : null,
+            labelText: 'Supplier',
           ),
           const SizedBox(height: 24),
           ElevatedButton(

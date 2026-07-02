@@ -97,10 +97,17 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: TextFormField(
-                  controller: _statusCtrl,
+                child: DropdownButtonFormField<String>(
+                  value: _statusCtrl.text,
                   decoration: const InputDecoration(labelText: 'Delivery Status', border: OutlineInputBorder()),
-                  validator: (v) => v!.isEmpty ? 'Required' : null,
+                  items: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) {
+                      _statusCtrl.text = v;
+                    }
+                  },
                 ),
               ),
             ],

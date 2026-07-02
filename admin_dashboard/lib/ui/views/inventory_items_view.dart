@@ -30,6 +30,17 @@ class InventoryItemsView extends ConsumerWidget {
             item.categoryID.toString().contains(lowerQuery) ||
             item.supplierID.toString().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.itemID;
+          case 1: return item.name;
+          case 2: return item.stockQuantity;
+          case 3: return item.unitPrice;
+          case 4: return item.categoryID;
+          case 5: return item.supplierID;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('ID')),
         DataColumn(label: Text('Name')),

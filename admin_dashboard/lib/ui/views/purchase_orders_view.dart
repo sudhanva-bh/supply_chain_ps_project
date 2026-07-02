@@ -29,6 +29,15 @@ class PurchaseOrdersView extends ConsumerWidget {
             item.orderDate.toLowerCase().contains(lowerQuery) ||
             item.deliveryStatus.toLowerCase().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.orderID;
+          case 1: return item.orderDate;
+          case 2: return item.totalCost;
+          case 3: return item.deliveryStatus;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('Order ID')),
         DataColumn(label: Text('Date')),
@@ -41,7 +50,22 @@ class PurchaseOrdersView extends ConsumerWidget {
           DataCell(Text(item.orderID.toString())),
           DataCell(Text(item.orderDate)),
           DataCell(Text('\$${item.totalCost.toStringAsFixed(2)}')),
-          DataCell(Text(item.deliveryStatus)),
+          DataCell(
+            DropdownButton<String>(
+              value: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED'].contains(item.deliveryStatus.toUpperCase()) 
+                ? item.deliveryStatus.toUpperCase() 
+                : 'PENDING',
+              items: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (newStatus) {
+                if (newStatus != null && newStatus != item.deliveryStatus) {
+                  ref.read(purchaseOrdersProvider.notifier).updateItem(item.copyWith(deliveryStatus: newStatus));
+                }
+              },
+              underline: const SizedBox(),
+            ),
+          ),
           DataCell(Row(
             children: [
               IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),

@@ -4,6 +4,7 @@ import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../../theme/app_theme.dart';
 import 'base_modal.dart';
+import 'foreign_key_autocomplete.dart';
 
 class StockTransactionForm extends ConsumerStatefulWidget {
   const StockTransactionForm({super.key});
@@ -45,6 +46,8 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
+    final items = ref.watch(inventoryItemsProvider).value ?? [];
+
     return Form(
       key: _formKey,
       child: Column(
@@ -57,11 +60,12 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          ForeignKeyAutocomplete<InventoryItem>(
+            items: items,
+            displayStringForOption: (i) => '${i.itemID} - ${i.name}',
+            idForOption: (i) => i.itemID.toString(),
             controller: _itemIdCtrl,
-            decoration: const InputDecoration(labelText: 'Item ID', border: OutlineInputBorder()),
-            keyboardType: TextInputType.number,
-            validator: (v) => v!.isEmpty ? 'Required' : null,
+            labelText: 'Item',
           ),
           const SizedBox(height: 16),
           TextFormField(

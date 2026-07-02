@@ -82,6 +82,12 @@ class PurchaseOrdersNotifier extends AsyncNotifier<List<PurchaseOrder>> {
     if (success) await fetchData();
     return success;
   }
+
+  Future<bool> updateItem(PurchaseOrder item) async {
+    final success = await gilhariApiService.updateEntity('PurchaseOrder', item.toJson());
+    if (success) await fetchData();
+    return success;
+  }
 }
 
 final purchaseOrdersProvider = AsyncNotifierProvider<PurchaseOrdersNotifier, List<PurchaseOrder>>(PurchaseOrdersNotifier.new);

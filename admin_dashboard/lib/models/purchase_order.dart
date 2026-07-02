@@ -15,6 +15,22 @@ class PurchaseOrder {
     this.purchaseOrderItems,
   });
 
+  PurchaseOrder copyWith({
+    int? orderID,
+    String? orderDate,
+    double? totalCost,
+    String? deliveryStatus,
+    List<PurchaseOrderItem>? purchaseOrderItems,
+  }) {
+    return PurchaseOrder(
+      orderID: orderID ?? this.orderID,
+      orderDate: orderDate ?? this.orderDate,
+      totalCost: totalCost ?? this.totalCost,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+      purchaseOrderItems: purchaseOrderItems ?? this.purchaseOrderItems,
+    );
+  }
+
   factory PurchaseOrder.fromJson(Map<String, dynamic> json) {
     return PurchaseOrder(
       orderID: json['orderID'],

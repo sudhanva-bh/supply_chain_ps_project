@@ -4,6 +4,7 @@ import '../../models/models.dart';
 import '../../providers/providers.dart';
 import '../../theme/app_theme.dart';
 import 'base_modal.dart';
+import 'foreign_key_autocomplete.dart';
 
 class PurchaseOrderItemForm extends ConsumerStatefulWidget {
   const PurchaseOrderItemForm({super.key});
@@ -46,6 +47,9 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
 
   @override
   Widget build(BuildContext context) {
+    final orders = ref.watch(purchaseOrdersProvider).value ?? [];
+    final items = ref.watch(inventoryItemsProvider).value ?? [];
+
     return Form(
       key: _formKey,
       child: Column(
@@ -58,18 +62,20 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          ForeignKeyAutocomplete<PurchaseOrder>(
+            items: orders,
+            displayStringForOption: (o) => '${o.orderID} - ${o.orderDate}',
+            idForOption: (o) => o.orderID.toString(),
             controller: _orderIdCtrl,
-            decoration: const InputDecoration(labelText: 'Order ID', border: OutlineInputBorder()),
-            keyboardType: TextInputType.number,
-            validator: (v) => v!.isEmpty ? 'Required' : null,
+            labelText: 'Order',
           ),
           const SizedBox(height: 16),
-          TextFormField(
+          ForeignKeyAutocomplete<InventoryItem>(
+            items: items,
+            displayStringForOption: (i) => '${i.itemID} - ${i.name}',
+            idForOption: (i) => i.itemID.toString(),
             controller: _itemIdCtrl,
-            decoration: const InputDecoration(labelText: 'Inventory Item ID', border: OutlineInputBorder()),
-            keyboardType: TextInputType.number,
-            validator: (v) => v!.isEmpty ? 'Required' : null,
+            labelText: 'Inventory Item',
           ),
           const SizedBox(height: 16),
           TextFormField(

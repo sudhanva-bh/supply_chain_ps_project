@@ -9,6 +9,7 @@ class AsyncDataGrid<T> extends StatefulWidget {
   final VoidCallback onRefresh;
   final VoidCallback onAdd;
   final bool Function(T item, String query)? searchFilter;
+  final Comparable Function(T item, int columnIndex)? sortValueMapper;
 
   const AsyncDataGrid({
     super.key,
@@ -18,6 +19,7 @@ class AsyncDataGrid<T> extends StatefulWidget {
     required this.onRefresh,
     required this.onAdd,
     this.searchFilter,
+    this.sortValueMapper,
   });
 
   @override
@@ -27,6 +29,8 @@ class AsyncDataGrid<T> extends StatefulWidget {
 class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
   String _activeSearchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  int? _sortColumnIndex;
+  bool _sortAscending = true;
 
   @override
   void dispose() {
@@ -122,12 +126,45 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                   return const Center(child: Text('No matching records found.', style: TextStyle(color: AppTheme.secondaryText)));
                 }
 
+                if (widget.sortValueMapper != null && _sortColumnIndex != null) {
+                  filteredData.sort((a, b) {
+                    final aValue = widget.sortValueMapper!(a, _sortColumnIndex!);
+                    final bValue = widget.sortValueMapper!(b, _sortColumnIndex!);
+                    return _sortAscending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
+                  });
+                }
+
                 final source = _GridDataSource(widget.buildRows(filteredData));
+                
+                final sortableColumns = widget.columns.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final col = entry.value;
+                  return DataColumn(
+                    label: col.label,
+                    tooltip: col.tooltip,
+                    numeric: col.numeric,
+                    onSort: widget.sortValueMapper != null
+                        ? (columnIndex, ascending) {
+                            setState(() {
+                              if (_sortColumnIndex == columnIndex) {
+                                _sortAscending = !_sortAscending;
+                              } else {
+                                _sortColumnIndex = columnIndex;
+                                _sortAscending = true; // default to ascending on new column click
+                              }
+                            });
+                          }
+                        : null,
+                  );
+                }).toList();
+
                 return ListView(
                   children: [
                     PaginatedDataTable(
                       showCheckboxColumn: false,
-                      columns: widget.columns,
+                      sortColumnIndex: _sortColumnIndex,
+                      sortAscending: _sortAscending,
+                      columns: sortableColumns,
                       source: source,
                       rowsPerPage: 10,
                     ),

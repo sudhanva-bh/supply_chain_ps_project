@@ -29,6 +29,14 @@ class ItemCategoriesView extends ConsumerWidget {
             item.categoryName.toLowerCase().contains(lowerQuery) ||
             item.description.toLowerCase().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.categoryID;
+          case 1: return item.categoryName;
+          case 2: return item.description;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('ID')),
         DataColumn(label: Text('Category Name')),

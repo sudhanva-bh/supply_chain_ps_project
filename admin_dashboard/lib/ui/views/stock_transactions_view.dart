@@ -30,6 +30,16 @@ class StockTransactionsView extends ConsumerWidget {
             item.transactionType.toLowerCase().contains(lowerQuery) ||
             item.timestamp.toLowerCase().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.transactionID;
+          case 1: return item.itemID;
+          case 2: return item.quantityChanged;
+          case 3: return item.transactionType;
+          case 4: return item.timestamp;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('TX ID')),
         DataColumn(label: Text('Item ID')),

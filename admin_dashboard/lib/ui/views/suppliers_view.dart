@@ -30,6 +30,15 @@ class SuppliersView extends ConsumerWidget {
             item.contactEmail.toLowerCase().contains(lowerQuery) ||
             item.region.toLowerCase().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.supplierID;
+          case 1: return item.companyName;
+          case 2: return item.contactEmail;
+          case 3: return item.region;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('ID')),
         DataColumn(label: Text('Company Name')),

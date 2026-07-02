@@ -65,16 +65,20 @@ NOUNS = {
     "Displays": ["27-inch 4K Monitor", "34-inch Ultrawide Display", "24-inch 1080p Monitor", "32-inch 1440p Monitor", "Portable USB-C Display"]
 }
 
-# Generate Random IDs to avoid collision with init.sql
-def gen_id():
-    return random.randint(100000, 999999)
+# Generate Serial IDs to avoid collision with init.sql
+_counters = {}
+def gen_id(entity_type):
+    if entity_type not in _counters:
+        _counters[entity_type] = 100000
+    _counters[entity_type] += 1
+    return _counters[entity_type]
 
 # Generate Random Data
 suppliers = []
 supplier_ids = []
 for name in SUPPLIER_NAMES:
     for i in range(3): # 45 suppliers total
-        sid = gen_id()
+        sid = gen_id("supplier")
         supplier_ids.append(sid)
         suppliers.append({
             "supplierID": sid,
@@ -87,7 +91,7 @@ categories = []
 category_ids = []
 category_name_to_id = {}
 for cat_name, desc in CATEGORY_DATA:
-    cid = gen_id()
+    cid = gen_id("category")
     category_ids.append(cid)
     category_name_to_id[cat_name] = cid
     categories.append({
@@ -99,7 +103,7 @@ for cat_name, desc in CATEGORY_DATA:
 items = []
 item_ids = []
 for i in range(1000):
-    iid = gen_id()
+    iid = gen_id("item")
     item_ids.append(iid)
     
     # Pick random category to match the noun
@@ -123,7 +127,7 @@ for i in range(1000):
 orders = []
 order_ids = []
 for i in range(333):
-    oid = gen_id()
+    oid = gen_id("order")
     order_ids.append(oid)
     orders.append({
         "orderID": oid,
@@ -135,7 +139,7 @@ for i in range(333):
 order_items = []
 for i in range(1000):
     order_items.append({
-        "orderItemID": gen_id(),
+        "orderItemID": gen_id("orderItem"),
         "orderID": random.choice(order_ids),
         "itemID": random.choice(item_ids),
         "quantityOrdered": random.randint(1, 150),
@@ -145,7 +149,7 @@ for i in range(1000):
 transactions = []
 for i in range(1666):
     transactions.append({
-        "transactionID": gen_id(),
+        "transactionID": gen_id("transaction"),
         "itemID": random.choice(item_ids),
         "quantityChanged": random.choice([random.randint(10, 200), random.randint(-50, -1)]),
         "transactionType": random.choice(["RESTOCK", "SALE", "ADJUSTMENT", "RETURN", "DAMAGE_WRITE_OFF"]),

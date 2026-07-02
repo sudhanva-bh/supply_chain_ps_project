@@ -29,6 +29,16 @@ class PurchaseOrderItemsView extends ConsumerWidget {
             item.orderID.toString().contains(lowerQuery) ||
             item.itemID.toString().contains(lowerQuery);
       },
+      sortValueMapper: (item, columnIndex) {
+        switch (columnIndex) {
+          case 0: return item.orderItemID;
+          case 1: return item.orderID;
+          case 2: return item.itemID;
+          case 3: return item.quantityOrdered;
+          case 4: return item.negotiatedPrice;
+          default: return '';
+        }
+      },
       columns: const [
         DataColumn(label: Text('Item ID (PK)')),
         DataColumn(label: Text('Order ID')),
