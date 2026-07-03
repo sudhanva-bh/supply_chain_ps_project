@@ -1,0 +1,46 @@
+{
+  "gpt-5.5": {
+    "prompt_cost_per_1m": 5.00,
+    "completion_cost_per_1m": 30.00
+  },
+  "gpt-5.4-mini": {
+    "prompt_cost_per_1m": 0.75,
+    "completion_cost_per_1m": 4.50
+  },
+  "gpt-4o": {
+    "prompt_cost_per_1m": 2.50,
+    "completion_cost_per_1m": 10.00
+  },
+  "gpt-4o-mini": {
+    "prompt_cost_per_1m": 0.15,
+    "completion_cost_per_1m": 0.60
+  },
+  "gemini-3-pro": {
+    "prompt_cost_per_1m": 2.00,
+    "completion_cost_per_1m": 12.00
+  },
+  "gemini-3-flash": {
+    "prompt_cost_per_1m": 0.50,
+    "completion_cost_per_1m": 3.00
+  },
+  "claude-3-5-sonnet-4-6": {
+    "prompt_cost_per_1m": 3.00,
+    "completion_cost_per_1m": 15.00
+  },
+  "claude-3-5-haiku-4-5": {
+    "prompt_cost_per_1m": 1.00,
+    "completion_cost_per_1m": 5.00
+  },
+  "claude-3-opus-4-8": {
+    "prompt_cost_per_1m": 5.00,
+    "completion_cost_per_1m": 25.00
+  },
+  "ollama": {
+    "prompt_cost_per_1m": 0.0,
+    "completion_cost_per_1m": 0.0
+  },
+  "default": {
+    "prompt_cost_per_1m": 2.50,
+    "completion_cost_per_1m": 10.00
+  }
+}

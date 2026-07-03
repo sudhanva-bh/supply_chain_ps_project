@@ -9,13 +9,18 @@ import os
 from datetime import datetime, timezone
 
 class QueryLogger:
-    def __init__(self, user_message: str):
+    def __init__(self, user_message: str, model_name: str):
+        self.model_name = model_name
         self.query_log = {
+            "model": model_name,
             "query": user_message,
             "start_time_stamp": datetime.now(timezone.utc).isoformat(),
             "loops": {},
             "end_time_stamp": None,
-            "total_tokens": 0
+            "total_prompt_tokens": 0,
+            "total_completion_tokens": 0,
+            "total_tokens": 0,
+            "total_cost_usd": 0.0
         }
     
     def log_loop(self, loop_name: str, step_name: str, usage):
@@ -26,10 +31,27 @@ class QueryLogger:
             "completion_tokens": usage.completion_tokens,
             "total_tokens": usage.total_tokens
         }
+        self.query_log["total_prompt_tokens"] += usage.prompt_tokens
+        self.query_log["total_completion_tokens"] += usage.completion_tokens
         self.query_log["total_tokens"] += usage.total_tokens
         
     def save(self):
         self.query_log["end_time_stamp"] = datetime.now(timezone.utc).isoformat()
+        
+        # Calculate cost
+        cost_file = os.path.join(os.path.dirname(__file__), "api_costs.json")
+        try:
+            with open(cost_file, "r", encoding="utf-8") as f:
+                costs = json.load(f)
+            model_costs = costs.get(self.model_name, costs.get("default", {"prompt_cost_per_1m": 0, "completion_cost_per_1m": 0}))
+            
+            prompt_cost = (self.query_log["total_prompt_tokens"] / 1000000.0) * model_costs["prompt_cost_per_1m"]
+            comp_cost = (self.query_log["total_completion_tokens"] / 1000000.0) * model_costs["completion_cost_per_1m"]
+            self.query_log["total_cost_usd"] = round(prompt_cost + comp_cost, 6)
+        except Exception as e:
+            print(f"Error calculating token cost: {e}")
+            pass
+
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
         today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -59,36 +81,34 @@ elif os.environ.get("GEMINI_API_KEY"):
         api_key=os.environ.get("GEMINI_API_KEY"),
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
     )
-    MODEL_NAME = "gemini-flash-lite-latest"
+    MODEL_NAME = os.environ.get("MODEL_NAME") or "gemini-flash-lite-latest"
 else:
     client = AsyncOpenAI()
-    MODEL_NAME = "gpt-4o"
+    MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-4o"
 
-SYSTEM_PROMPT = """You are a supply chain business intelligence assistant.
-Your goal is to answer user queries by fetching data across our 6 schemas, calculating aggregations, or performing multi-hop reasoning. You are also capable of creating, updating, or deleting records if the user explicitly asks you to.
-You have access to a set of database tools provided by the ORMCP Semantic Gateway.
+SYSTEM_PROMPT = """You are a supply chain business intelligence assistant powered by Gilhari ORM.
+Your goal is to answer queries by fetching data, calculating aggregations, or mutating records (create/update/delete) when explicitly requested.
 
-Important:
-1. ALWAYS use the `getObjectModelSummary` tool first if you are unsure of the schema or exact class names.
-2. NEVER use `query` to fetch large datasets (e.g., all items) just to count or sum them. ALWAYS use `getAggregate` for math and aggregations, which computes directly in the database.
-3. DIRECT DATA HYDRATION: If you have access to the `direct_fetch_table` tool, you MUST use it instead of `query` to render tables. It natively builds the table view and saves tokens.
-4. Generative UI Models available:
-   - `text_only`: Simple markdown responses.
-   - `table_view`: (Use `direct_fetch_table` tool instead for fetching tables directly).
-   - `metric_kpi_view`: High-level metrics with trend and colors.
-   - `timeline_view`: History of events.
-   - `chart_view`: Bar, Pie, or Line charts (`chart_type` must be 'bar', 'pie', or 'line').
-   - `regional_view`: Visualizing geographical/regional distributions.
-   - `kanban_view`: Kanban board for order statuses or workflows.
-   - `actionable_form_view`: Output a form when the user wants to execute an action (e.g. Create Order).
-   - `alert_anomaly_view`: Output high-priority red/yellow warnings and anomalies.
-5. If a tool call fails with an error, adjust your arguments and try again.
-6. Formulate your final response to perfectly utilize the Generative UI models.
-7. MULTI-HOP REASONING: When an update requires a condition on a related entity (e.g. updating a PurchaseOrder based on an inventory item id), you MUST perform multi-hop reasoning. Query the bridging table (e.g. PurchaseOrderItem) first to find the relevant primary keys (e.g. orderID), and then perform the update on the target class. Do not hallucinate fields or apply filters on unrelated classes.
+--- 1. DATA READING STRATEGY ---
+- MANDATORY SCHEMA DISCOVERY: You MUST use `getObjectModelSummary` FIRST on every new complex request to ensure you have complete clarity on the schema, exact fields, and class names before writing any queries.
+- DECISION MAKING (RAW SQL vs ORMCP): After fetching the object model, YOU decide the most efficient path to get the data:
+   * Use ORMCP tools (`query`, `getAggregate`, `direct_fetch_table`) for simple, single-table reads.
+   * Use `execute_raw_sql` for complex reads involving JOINs, cross-table filtering, or GROUP BY aggregations.
+- SQL CONVENTIONS: When writing raw SQL, remember that SQL Server table names are simply pluralized versions of the Gilhari class names (e.g. `Supplier` -> `Suppliers`, `PurchaseOrder` -> `PurchaseOrders`).
+- AVOID DATA DUMPS: NEVER use `query` to fetch entire tables without filters/limits. Avoid hallucinating massive `IN (...)` clauses. If you need cross-table filtering, use `execute_raw_sql`.
+
+--- 2. DATA MUTATION STRATEGY ---
+- STRICT TOOL USAGE: `execute_raw_sql` is strictly READ-ONLY. You MUST use the designated ORMCP tools (`insert`, `update`, `delete`) for all data modifications.
+- MULTI-HOP REASONING: If updating/deleting an entity based on a related entity's condition, find the relevant primary keys via a bridging table first, then execute the mutation on the exact target IDs. Do not hallucinate fields across unrelated classes.
+
+--- 3. UI RESPONSE GENERATION ---
+- DIRECT HYDRATION: If requested to show a data table, ALWAYS use `direct_fetch_table`.
+- STOP CALLING TOOLS TO FINISH: Once you have fetched the required data (e.g. from `execute_raw_sql` or `getAggregate`), you MUST STOP calling tools! Simply output a conversational text message (e.g., "I have the data now.") without invoking any tools.
+- Once you stop calling tools, the system will execute a final step where you will be provided with the JSON schemas for the Generative UI (e.g. `chart_view`, `metric_kpi_view`, `timeline_view`, etc.). DO NOT try to call these as tools during the data gathering phase! Just gather the data, then stop calling tools.
 """
 
 async def process_chat_message(user_message: str, mcp_client: MCPClient) -> AsyncGenerator[str, None]:
-    query_logger = QueryLogger(user_message)
+    query_logger = QueryLogger(user_message, MODEL_NAME)
     
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -115,6 +135,21 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                     "limit": {"type": "integer", "description": "Optional maximum number of rows to return"}
                 },
                 "required": ["class_name", "columns"]
+            }
+        }
+    })
+    
+    tools.append({
+        "type": "function",
+        "function": {
+            "name": "execute_raw_sql",
+            "description": "Execute arbitrary READ-ONLY raw SQL queries directly against the database (supports JOINs, GROUP BYs, etc). IMPORTANT: Only use this for SELECT statements to fetch complex data efficiently. NEVER use this for INSERT, UPDATE, or DELETE. The database is 'supply_chain_db'.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "sql_query": {"type": "string", "description": "The exact SQL query to execute. E.g. 'SELECT TOP 5 s.companyName, SUM(poi.quantityOrdered) as totalVol FROM Suppliers s JOIN InventoryItems i ON s.supplierID = i.supplierID JOIN PurchaseOrderItems poi ON i.itemID = poi.itemID GROUP BY s.companyName ORDER BY totalVol DESC'"}
+                },
+                "required": ["sql_query"]
             }
         }
     })
@@ -235,6 +270,56 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
                 query_logger.save()
                 return
+                
+            if tool_name == "execute_raw_sql":
+                print(f"Agent Action -> Executing raw SQL directly via Docker!")
+                yield json.dumps({"type": "status", "message": "Executing complex raw SQL natively..."}) + "\n"
+                
+                sql_q = args.get("sql_query", "")
+                if not sql_q.strip().upper().startswith("SELECT"):
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": "Error: execute_raw_sql is restricted to READ-ONLY (SELECT) queries. Use ORMCP tools for mutations."
+                    })
+                    continue
+                    
+                import asyncio
+                import subprocess
+                try:
+                    def run_docker_sync():
+                        return subprocess.run([
+                            "docker", "exec", "-i", "sqlserver", 
+                            "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", 
+                            "-U", "sa", "-P", "YourStrong!Passw0rd", "-C", 
+                            "-d", "supply_chain_db", "-Q", sql_q, "-s", ",", "-W"
+                        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+                    
+                    proc = await asyncio.to_thread(run_docker_sync)
+                    out_str = proc.stdout.strip()
+                    err_str = proc.stderr.strip()
+                        
+                    if proc.returncode != 0:
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": f"SQL Execution Failed:\n{err_str}\n{out_str}"
+                        })
+                    else:
+                        if len(out_str) > 10000:
+                            out_str = out_str[:10000] + "\n...[TRUNCATED]"
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": out_str if out_str else "Command executed successfully (no output)."
+                        })
+                except Exception as e:
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": f"Failed to run docker process: {str(e)}"
+                    })
+                continue
             
             result_str = await mcp_client.call_tool(tool_name, args)
             yield json.dumps({"type": "status", "message": f"Analyzing results from {tool_name}..."}) + "\n"
