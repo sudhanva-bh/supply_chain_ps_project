@@ -56,14 +56,20 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: 'Search...',
-                            prefixIcon: const Icon(Icons.search, color: AppTheme.secondaryText),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: AppTheme.secondaryText,
+                            ),
                             filled: true,
-                            fillColor: AppTheme.surface.withOpacity(0.5),
+                            fillColor: AppTheme.surface.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                           style: const TextStyle(color: AppTheme.primaryText),
                           onSubmitted: (value) {
@@ -82,9 +88,15 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primaryText,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 16,
+                          ),
                         ),
-                        child: const Text('Search', style: TextStyle(color: AppTheme.background)),
+                        child: const Text(
+                          'Search',
+                          style: TextStyle(color: AppTheme.background),
+                        ),
                       ),
                     ],
                   ),
@@ -101,7 +113,10 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
               ElevatedButton.icon(
                 onPressed: widget.onAdd,
                 icon: const Icon(Icons.add, color: AppTheme.background),
-                label: const Text('Add New', style: TextStyle(color: AppTheme.background)),
+                label: const Text(
+                  'Add New',
+                  style: TextStyle(color: AppTheme.background),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryText,
                 ),
@@ -113,30 +128,57 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
             child: widget.asyncValue.when(
               data: (data) {
                 if (data.isEmpty) {
-                  return const Center(child: Text('No data found.', style: TextStyle(color: AppTheme.secondaryText)));
+                  return const Center(
+                    child: Text(
+                      'No data found.',
+                      style: TextStyle(color: AppTheme.secondaryText),
+                    ),
+                  );
                 }
 
                 // Apply search filter
                 List<T> filteredData = data;
-                if (widget.searchFilter != null && _activeSearchQuery.isNotEmpty) {
-                  filteredData = data.where((item) => widget.searchFilter!(item, _activeSearchQuery)).toList();
+                if (widget.searchFilter != null &&
+                    _activeSearchQuery.isNotEmpty) {
+                  filteredData = data
+                      .where(
+                        (item) =>
+                            widget.searchFilter!(item, _activeSearchQuery),
+                      )
+                      .toList();
                 }
 
                 if (filteredData.isEmpty) {
-                  return const Center(child: Text('No matching records found.', style: TextStyle(color: AppTheme.secondaryText)));
+                  return const Center(
+                    child: Text(
+                      'No matching records found.',
+                      style: TextStyle(color: AppTheme.secondaryText),
+                    ),
+                  );
                 }
 
-                if (widget.sortValueMapper != null && _sortColumnIndex != null) {
+                if (widget.sortValueMapper != null &&
+                    _sortColumnIndex != null) {
                   filteredData.sort((a, b) {
-                    final aValue = widget.sortValueMapper!(a, _sortColumnIndex!);
-                    final bValue = widget.sortValueMapper!(b, _sortColumnIndex!);
-                    return _sortAscending ? Comparable.compare(aValue, bValue) : Comparable.compare(bValue, aValue);
+                    final aValue = widget.sortValueMapper!(
+                      a,
+                      _sortColumnIndex!,
+                    );
+                    final bValue = widget.sortValueMapper!(
+                      b,
+                      _sortColumnIndex!,
+                    );
+                    return _sortAscending
+                        ? Comparable.compare(aValue, bValue)
+                        : Comparable.compare(bValue, aValue);
                   });
                 }
 
                 final source = _GridDataSource(widget.buildRows(filteredData));
-                
-                final sortableColumns = widget.columns.asMap().entries.map((entry) {
+
+                final sortableColumns = widget.columns.asMap().entries.map((
+                  entry,
+                ) {
                   final col = entry.value;
                   return DataColumn(
                     label: col.label,
@@ -149,7 +191,8 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                                 _sortAscending = !_sortAscending;
                               } else {
                                 _sortColumnIndex = columnIndex;
-                                _sortAscending = true; // default to ascending on new column click
+                                _sortAscending =
+                                    true; // default to ascending on new column click
                               }
                             });
                           }
@@ -170,9 +213,14 @@ class _AsyncDataGridState<T> extends State<AsyncDataGrid<T>> {
                   ],
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryText)),
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppTheme.primaryText),
+              ),
               error: (err, stack) => Center(
-                child: Text('Error loading data:\n$err', style: const TextStyle(color: AppTheme.primaryText)),
+                child: Text(
+                  'Error loading data:\n$err',
+                  style: const TextStyle(color: AppTheme.primaryText),
+                ),
               ),
             ),
           ),

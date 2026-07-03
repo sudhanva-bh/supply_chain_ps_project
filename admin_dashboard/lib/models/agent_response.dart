@@ -208,6 +208,22 @@ class AlertAnomalyViewPayload {
   }
 }
 
+class ConfirmationViewPayload {
+  final String toolName;
+  final String argsJson;
+  final String summary;
+
+  ConfirmationViewPayload({required this.toolName, required this.argsJson, required this.summary});
+
+  factory ConfirmationViewPayload.fromJson(Map<String, dynamic> json) {
+    return ConfirmationViewPayload(
+      toolName: json['tool_name'] ?? '',
+      argsJson: json['args_json'] ?? '',
+      summary: json['summary'] ?? '',
+    );
+  }
+}
+
 class AgentResponse {
   final String responseType;
   final String conversationalText;
@@ -241,6 +257,8 @@ class AgentResponse {
         parsedPayload = ActionableFormViewPayload.fromJson(payloadJson);
       } else if (type == 'alert_anomaly_view') {
         parsedPayload = AlertAnomalyViewPayload.fromJson(payloadJson);
+      } else if (type == 'confirmation_view') {
+        parsedPayload = ConfirmationViewPayload.fromJson(payloadJson);
       }
     }
 

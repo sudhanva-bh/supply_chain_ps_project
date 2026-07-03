@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/agent_response.dart';
 
 class AgentApiService {
   final String baseUrl = 'http://localhost:8001/api';
@@ -22,6 +21,28 @@ class AgentApiService {
         if (chunk.trim().isEmpty) continue;
         yield jsonDecode(chunk);
       }
+    } catch (e) {
+      throw Exception('Network error or connection refused: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> executeTool(String toolName, String argsJson) async {
+    final request = http.Request('POST', Uri.parse('$baseUrl/execute-tool'));
+    request.headers['Content-Type'] = 'application/json';
+    request.body = jsonEncode({
+      'tool_name': toolName,
+      'args_json': argsJson
+    });
+
+    try {
+      final response = await http.Client().send(request);
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to execute tool. Status Code: ${response.statusCode}, Body: $responseBody');
+      }
+
+      return jsonDecode(responseBody);
     } catch (e) {
       throw Exception('Network error or connection refused: $e');
     }

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/glass_container.dart';
 
-void showGlassModal(BuildContext context, {required String title, required Widget content}) {
+void showGlassModal(
+  BuildContext context, {
+  required String title,
+  required Widget content,
+}) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -27,9 +31,19 @@ void showGlassModal(BuildContext context, {required String title, required Widge
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.primaryText)),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryText,
+                          ),
+                        ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: AppTheme.primaryText),
+                          icon: const Icon(
+                            Icons.close,
+                            color: AppTheme.primaryText,
+                          ),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
@@ -57,7 +71,11 @@ void showGlassModal(BuildContext context, {required String title, required Widge
   );
 }
 
-void showMonochromaticToast(BuildContext context, String message, {bool isError = false}) {
+void showMonochromaticToast(
+  BuildContext context,
+  String message, {
+  bool isError = false,
+}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Row(
@@ -67,14 +85,23 @@ void showMonochromaticToast(BuildContext context, String message, {bool isError 
             color: AppTheme.primaryText,
           ),
           const SizedBox(width: 16),
-          Expanded(child: Text(message, style: const TextStyle(color: AppTheme.primaryText))),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: AppTheme.primaryText),
+            ),
+          ),
         ],
       ),
       backgroundColor: AppTheme.surfaceVariant,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: isError ? AppTheme.primaryText.withOpacity(0.5) : AppTheme.dividerColor),
+        side: BorderSide(
+          color: isError
+              ? AppTheme.primaryText.withValues(alpha: 0.5)
+              : AppTheme.dividerColor,
+        ),
       ),
     ),
   );

@@ -18,19 +18,19 @@ elif os.environ.get("GEMINI_API_KEY"):
         api_key=os.environ.get("GEMINI_API_KEY"),
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
     )
-    MODEL_NAME = "gemini-2.5-flash"
+    MODEL_NAME = "gemini-flash-lite-latest"
 else:
     client = AsyncOpenAI()
     MODEL_NAME = "gpt-4o"
 
-SYSTEM_PROMPT = """You are a read-only supply chain business intelligence assistant.
-Your goal is to answer user queries by fetching data across our 6 schemas, calculating aggregations, or performing multi-hop reasoning.
+SYSTEM_PROMPT = """You are a supply chain business intelligence assistant.
+Your goal is to answer user queries by fetching data across our 6 schemas, calculating aggregations, or performing multi-hop reasoning. You are also capable of creating, updating, or deleting records if the user explicitly asks you to.
 You have access to a set of database tools provided by the ORMCP Semantic Gateway.
 
 Important:
 1. ALWAYS use the `getObjectModelSummary` tool first if you are unsure of the schema or exact class names.
 2. NEVER use `query` to fetch large datasets (e.g., all items) just to count or sum them. ALWAYS use `getAggregate` for math and aggregations, which computes directly in the database.
-3. DIRECT DATA HYDRATION: If the user asks to see a data table (e.g. "List all pending orders"), DO NOT use the `query` tool to fetch the data into your context. Instead, immediately call `direct_fetch_table`. The backend will natively run the query and build a `table_view`, saving tokens.
+3. DIRECT DATA HYDRATION: If you have access to the `direct_fetch_table` tool, you MUST use it instead of `query` to render tables. It natively builds the table view and saves tokens.
 4. Generative UI Models available:
    - `text_only`: Simple markdown responses.
    - `table_view`: (Use `direct_fetch_table` tool instead for fetching tables directly).
@@ -43,6 +43,7 @@ Important:
    - `alert_anomaly_view`: Output high-priority red/yellow warnings and anomalies.
 5. If a tool call fails with an error, adjust your arguments and try again.
 6. Formulate your final response to perfectly utilize the Generative UI models.
+7. MULTI-HOP REASONING: When an update requires a condition on a related entity (e.g. updating a PurchaseOrder based on an inventory item id), you MUST perform multi-hop reasoning. Query the bridging table (e.g. PurchaseOrderItem) first to find the relevant primary keys (e.g. orderID), and then perform the update on the target class. Do not hallucinate fields or apply filters on unrelated classes.
 """
 
 async def process_chat_message(user_message: str, mcp_client: MCPClient) -> AsyncGenerator[str, None]:
@@ -53,12 +54,13 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
 
     tools = await mcp_client.get_openai_tools()
     
-    # Inject our custom Direct Data Hydration tool
-    tools.append({
-        "type": "function",
-        "function": {
-            "name": "direct_fetch_table",
-            "description": "Call this tool instead of 'query' when the user asks for a table of data. IMPORTANT: You MUST call 'getObjectModelSummary' first to get the correct fully-qualified 'class_name' and correct 'columns' before calling this tool!",
+    # Inject our custom Direct Data Hydration tool only if a table is requested
+    if "table" in user_message.lower():
+        tools.append({
+            "type": "function",
+            "function": {
+                "name": "direct_fetch_table",
+                "description": "Call this tool instead of 'query' when the user asks for a table of data. IMPORTANT: You MUST call 'getObjectModelSummary' first to get the correct fully-qualified 'class_name' and correct 'columns' before calling this tool!",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -168,6 +170,22 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
                 return
             
+            if tool_name in ["insert", "update", "update2", "delete", "delete2"]:
+                print(f"Agent Action -> Intercepting data mutation tool {tool_name} for user confirmation!")
+                yield json.dumps({"type": "status", "message": "Requires user confirmation for data mutation..."}) + "\n"
+                
+                final_data = {
+                    "response_type": "confirmation_view",
+                    "conversational_text": f"I need your confirmation before executing the **{tool_name}** action.",
+                    "payload": {
+                        "tool_name": tool_name,
+                        "args_json": json.dumps(args),
+                        "summary": f"The agent is preparing to execute `{tool_name}` with the provided arguments."
+                    }
+                }
+                yield json.dumps({"type": "final", "data": final_data}) + "\n"
+                return
+            
             result_str = await mcp_client.call_tool(tool_name, args)
             yield json.dumps({"type": "status", "message": f"Analyzing results from {tool_name}..."}) + "\n"
             
@@ -218,6 +236,8 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
         payload = parsed.actionable_form_payload.model_dump() if parsed.actionable_form_payload else None
     elif parsed.response_type == "alert_anomaly_view":
         payload = parsed.alert_anomaly_payload.model_dump() if parsed.alert_anomaly_payload else None
+    elif parsed.response_type == "confirmation_view":
+        payload = parsed.confirmation_payload.model_dump() if parsed.confirmation_payload else None
 
     final_data = {
         "response_type": parsed.response_type,

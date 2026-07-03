@@ -68,8 +68,13 @@ class AlertAnomaly(BaseModel):
 class AlertAnomalyViewPayload(BaseModel):
     alerts: List[AlertAnomaly]
 
+class ConfirmationViewPayload(BaseModel):
+    tool_name: str = Field(description="The name of the tool to execute")
+    args_json: str = Field(description="JSON string of the tool arguments")
+    summary: str = Field(description="A concise summary of the action that will be performed")
+
 class AgentResponse(BaseModel):
-    response_type: Literal["text_only", "table_view", "metric_kpi_view", "timeline_view", "chart_view", "direct_fetch_table", "regional_view", "kanban_view", "actionable_form_view", "alert_anomaly_view"]
+    response_type: Literal["text_only", "table_view", "metric_kpi_view", "timeline_view", "chart_view", "direct_fetch_table", "regional_view", "kanban_view", "actionable_form_view", "alert_anomaly_view", "confirmation_view"]
     conversational_text: str = Field(description="Natural language summary or commentary explaining the data.")
     table_payload: Optional[TableViewPayload] = Field(None, description="Populate only if response_type is table_view")
     metric_kpi_payload: Optional[List[MetricKPIViewPayload]] = Field(None, description="Populate only if response_type is metric_kpi_view")
@@ -80,3 +85,4 @@ class AgentResponse(BaseModel):
     kanban_payload: Optional[KanbanViewPayload] = Field(None, description="Populate only if response_type is kanban_view")
     actionable_form_payload: Optional[ActionableFormViewPayload] = Field(None, description="Populate only if response_type is actionable_form_view")
     alert_anomaly_payload: Optional[AlertAnomalyViewPayload] = Field(None, description="Populate only if response_type is alert_anomaly_view")
+    confirmation_payload: Optional[ConfirmationViewPayload] = Field(None, description="Populate only if response_type is confirmation_view")

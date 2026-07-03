@@ -28,21 +28,23 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
   List<ChatMessage> build() {
     return [
       ChatMessage(
-        text: "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
+        text:
+            "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
         isUser: false,
         agentResponse: AgentResponse(
-          responseType: "text_only", 
-          conversationalText: "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders."
-        )
-      )
+          responseType: "text_only",
+          conversationalText:
+              "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
+        ),
+      ),
     ];
   }
 
   Future<void> sendMessage(String message) async {
     if (message.trim().isEmpty) return;
-    
+
     final apiService = ref.read(agentApiServiceProvider);
-    
+
     state = [...state, ChatMessage(text: message, isUser: true)];
     isLoading = true;
     loadingMessage = "Connecting to agent...";
@@ -50,7 +52,7 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
 
     try {
       final stream = apiService.sendMessageStream(message);
-      
+
       await for (final event in stream) {
         if (event['type'] == 'status') {
           loadingMessage = event['message'] as String;
@@ -58,23 +60,19 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
         } else if (event['type'] == 'final') {
           final response = AgentResponse.fromJson(event['data']);
           state = [
-            ...state, 
+            ...state,
             ChatMessage(
-              text: response.conversationalText, 
-              isUser: false, 
-              agentResponse: response
-            )
+              text: response.conversationalText,
+              isUser: false,
+              agentResponse: response,
+            ),
           ];
         }
       }
     } catch (e) {
       state = [
-        ...state, 
-        ChatMessage(
-          text: "Error", 
-          isUser: false, 
-          error: e.toString()
-        )
+        ...state,
+        ChatMessage(text: "Error", isUser: false, error: e.toString()),
       ];
     } finally {
       isLoading = false;
@@ -82,9 +80,63 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
       state = [...state];
     }
   }
+
+  Future<void> confirmAndExecuteTool(String toolName, String argsJson) async {
+    final apiService = ref.read(agentApiServiceProvider);
+
+    isLoading = true;
+    loadingMessage = "Executing $toolName...";
+    state = [...state];
+
+    try {
+      final result = await apiService.executeTool(toolName, argsJson);
+
+      state = [
+        ...state,
+        ChatMessage(
+          text: "Action '$toolName' executed successfully.",
+          isUser: false,
+          agentResponse: AgentResponse(
+            responseType: "text_only",
+            conversationalText:
+                "Action '$toolName' executed successfully.\n\nResult:\n```json\n${result['result']}\n```",
+          ),
+        ),
+      ];
+    } catch (e) {
+      state = [
+        ...state,
+        ChatMessage(
+          text: "Failed to execute '$toolName'",
+          isUser: false,
+          error: e.toString(),
+        ),
+      ];
+    } finally {
+      isLoading = false;
+      loadingMessage = "Agent is reasoning...";
+      state = [...state];
+    }
+  }
+
+  void abortAction() {
+    state = [
+      ...state,
+      ChatMessage(
+        text: "Action aborted by user.",
+        isUser: false,
+        agentResponse: AgentResponse(
+          responseType: "text_only",
+          conversationalText: "Action aborted by user.",
+        ),
+      ),
+    ];
+  }
 }
 
-final chatProvider = NotifierProvider<ChatStateNotifier, List<ChatMessage>>(ChatStateNotifier.new);
+final chatProvider = NotifierProvider<ChatStateNotifier, List<ChatMessage>>(
+  ChatStateNotifier.new,
+);
 
 class AgentChatView extends ConsumerStatefulWidget {
   const AgentChatView({super.key});
@@ -113,7 +165,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
   Widget build(BuildContext context) {
     final messages = ref.watch(chatProvider);
     final isLoading = ref.watch(chatProvider.notifier).isLoading;
-    
+
     // Auto-scroll when new messages arrive
     ref.listen<List<ChatMessage>>(chatProvider, (previous, next) {
       if (previous?.length != next.length) {
@@ -136,7 +188,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
                     if (index == messages.length) {
                       return _buildLoadingIndicator();
                     }
-                    
+
                     final msg = messages[index];
                     return _buildMessageBubble(msg);
                   },
@@ -147,7 +199,10 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
           const SizedBox(height: 16),
           GlassContainer(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -168,14 +223,16 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
                   IconButton(
                     icon: const Icon(Icons.send, color: AppTheme.primaryText),
                     onPressed: () {
-                      ref.read(chatProvider.notifier).sendMessage(_textController.text);
+                      ref
+                          .read(chatProvider.notifier)
+                          .sendMessage(_textController.text);
                       _textController.clear();
                     },
-                  )
+                  ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -194,12 +251,21 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(
-                  width: 16, 
-                  height: 16, 
-                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryText)
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppTheme.primaryText,
+                  ),
                 ),
                 const SizedBox(width: 12),
-                Text(loadingMessage, style: const TextStyle(color: AppTheme.secondaryText, fontStyle: FontStyle.italic)),
+                Text(
+                  loadingMessage,
+                  style: const TextStyle(
+                    color: AppTheme.secondaryText,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               ],
             ),
           ),
@@ -216,11 +282,16 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
           margin: const EdgeInsets.only(bottom: 16.0, left: 64.0),
           decoration: BoxDecoration(
             color: Colors.white24,
-            borderRadius: BorderRadius.circular(16).copyWith(bottomRight: const Radius.circular(4)),
+            borderRadius: BorderRadius.circular(
+              16,
+            ).copyWith(bottomRight: const Radius.circular(4)),
             border: Border.all(color: Colors.white60),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: SelectableText(message.text, style: const TextStyle(color: AppTheme.primaryText)),
+          child: SelectableText(
+            message.text,
+            style: const TextStyle(color: AppTheme.primaryText),
+          ),
         ),
       );
     } else if (message.error != null) {
@@ -229,12 +300,17 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
         child: Container(
           margin: const EdgeInsets.only(bottom: 16.0, right: 64.0),
           decoration: BoxDecoration(
-            color: Colors.redAccent.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16).copyWith(bottomLeft: const Radius.circular(4)),
-            border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
+            color: Colors.redAccent.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(
+              16,
+            ).copyWith(bottomLeft: const Radius.circular(4)),
+            border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: SelectableText(message.error!, style: const TextStyle(color: Colors.redAccent)),
+          child: SelectableText(
+            message.error!,
+            style: const TextStyle(color: Colors.redAccent),
+          ),
         ),
       );
     } else {

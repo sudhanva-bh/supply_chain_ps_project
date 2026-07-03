@@ -20,7 +20,8 @@ class AppTheme {
         onSecondary: background,
         surface: surface,
         onSurface: primaryText,
-        error: primaryText, // Using primary text or light grey for errors to maintain monochromatic
+        error:
+            primaryText, // Using primary text or light grey for errors to maintain monochromatic
         onError: background,
       ),
       dividerTheme: const DividerThemeData(
@@ -31,9 +32,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surface,
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent, // Handled by GlassContainer
@@ -53,7 +52,7 @@ class AppTheme {
         headingRowColor: WidgetStateProperty.all(surfaceVariant),
         dataRowColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.hovered)) {
-            return surfaceVariant.withOpacity(0.5);
+            return surfaceVariant.withValues(alpha: 0.5);
           }
           return surface;
         }),
