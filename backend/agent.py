@@ -6,6 +6,47 @@ from mcp_client import MCPClient
 from models import AgentResponse
 
 import os
+from datetime import datetime, timezone
+
+class QueryLogger:
+    def __init__(self, user_message: str):
+        self.query_log = {
+            "query": user_message,
+            "start_time_stamp": datetime.now(timezone.utc).isoformat(),
+            "loops": {},
+            "end_time_stamp": None,
+            "total_tokens": 0
+        }
+    
+    def log_loop(self, loop_name: str, step_name: str, usage):
+        if not usage: return
+        self.query_log["loops"][loop_name] = {
+            "step": step_name,
+            "prompt_tokens": usage.prompt_tokens,
+            "completion_tokens": usage.completion_tokens,
+            "total_tokens": usage.total_tokens
+        }
+        self.query_log["total_tokens"] += usage.total_tokens
+        
+    def save(self):
+        self.query_log["end_time_stamp"] = datetime.now(timezone.utc).isoformat()
+        log_dir = "logs"
+        os.makedirs(log_dir, exist_ok=True)
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        log_file_path = os.path.join(log_dir, f"log_{today_str}.json")
+        
+        log_data = {"date": today_str, "queries": []}
+        if os.path.exists(log_file_path):
+            try:
+                with open(log_file_path, "r", encoding="utf-8") as f:
+                    log_data = json.load(f)
+            except Exception:
+                pass
+                
+        log_data["queries"].append(self.query_log)
+        
+        with open(log_file_path, "w", encoding="utf-8") as f:
+            json.dump(log_data, f, indent=2)
 
 if os.environ.get("OLLAMA_MODEL"):
     client = AsyncOpenAI(
@@ -47,6 +88,8 @@ Important:
 """
 
 async def process_chat_message(user_message: str, mcp_client: MCPClient) -> AsyncGenerator[str, None]:
+    query_logger = QueryLogger(user_message)
+    
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_message}
@@ -88,6 +131,11 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
         )
         
         response_message = response.choices[0].message
+        
+        if hasattr(response, 'usage') and response.usage:
+            print(f"Token Usage (Loop {loop_count+1}): Prompt={response.usage.prompt_tokens}, Completion={response.usage.completion_tokens}, Total={response.usage.total_tokens}")
+            step_name = ",".join(tc.function.name for tc in response_message.tool_calls) if response_message.tool_calls else "no_tools"
+            query_logger.log_loop(f"loop_{loop_count+1}", step_name, response.usage)
         
         # Pydantic/OpenAI parses need the message to be converted to dict sometimes,
         # but in openai>=1.0, we can often just append the model object directly.
@@ -168,6 +216,7 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                 }
                 
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
+                query_logger.save()
                 return
             
             if tool_name in ["insert", "update", "update2", "delete", "delete2"]:
@@ -184,6 +233,7 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                     }
                 }
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
+                query_logger.save()
                 return
             
             result_str = await mcp_client.call_tool(tool_name, args)
@@ -216,6 +266,10 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
         response_format=AgentResponse,
     )
     
+    if hasattr(final_response, 'usage') and final_response.usage:
+        print(f"Token Usage (Final Structuring): Prompt={final_response.usage.prompt_tokens}, Completion={final_response.usage.completion_tokens}, Total={final_response.usage.total_tokens}")
+        query_logger.log_loop("final_structuring", "generate_ui_payload", final_response.usage)
+        
     parsed = final_response.choices[0].message.parsed
     
     # Format payload (normal path)
@@ -246,3 +300,4 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
     }
     
     yield json.dumps({"type": "final", "data": final_data}) + "\n"
+    query_logger.save()

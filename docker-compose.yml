@@ -10,6 +10,8 @@ services:
       MSSQL_PID: "Developer"
     ports:
       - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
 
   gilhari-service:
     build: .
@@ -18,3 +20,6 @@ services:
       - sqlserver
     ports:
       - "80:8081"
+
+volumes:
+  sqlserver_data:
