@@ -9,7 +9,7 @@ from mcp_client import MCPClient
 from agent import process_chat_message
 from models import AgentResponse
 
-load_dotenv()
+load_dotenv(override=True)
 
 mcp_client = MCPClient()
 

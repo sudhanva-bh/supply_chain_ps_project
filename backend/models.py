@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal, Any
+from typing import List, Optional, Literal, Any, Union
 
 class TableViewPayload(BaseModel):
     columns: List[str]
-    rows: List[List[Any]]
+    rows: List[List[Union[str, int, float, bool, None]]]
 
 class DirectFetchTablePayload(BaseModel):
     class_name: str = Field(description="The Gilhari class name to query, e.g. com.supplychain.model.PurchaseOrder")

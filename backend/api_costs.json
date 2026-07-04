@@ -3,9 +3,65 @@
     "prompt_cost_per_1m": 5.00,
     "completion_cost_per_1m": 30.00
   },
+  "gpt-5.5-pro": {
+    "prompt_cost_per_1m": 30.00,
+    "completion_cost_per_1m": 180.00
+  },
+  "gpt-5.4": {
+    "prompt_cost_per_1m": 2.50,
+    "completion_cost_per_1m": 15.00
+  },
   "gpt-5.4-mini": {
     "prompt_cost_per_1m": 0.75,
     "completion_cost_per_1m": 4.50
+  },
+  "gpt-5.4-nano": {
+    "prompt_cost_per_1m": 0.20,
+    "completion_cost_per_1m": 1.25
+  },
+  "gpt-5.4-pro": {
+    "prompt_cost_per_1m": 30.00,
+    "completion_cost_per_1m": 180.00
+  },
+  "gpt-5.2": {
+    "prompt_cost_per_1m": 1.75,
+    "completion_cost_per_1m": 14.00
+  },
+  "gpt-5.2-pro": {
+    "prompt_cost_per_1m": 21.00,
+    "completion_cost_per_1m": 168.00
+  },
+  "gpt-5.1": {
+    "prompt_cost_per_1m": 1.25,
+    "completion_cost_per_1m": 10.00
+  },
+  "gpt-5": {
+    "prompt_cost_per_1m": 1.25,
+    "completion_cost_per_1m": 10.00
+  },
+  "gpt-5-mini": {
+    "prompt_cost_per_1m": 0.25,
+    "completion_cost_per_1m": 2.00
+  },
+  "gpt-5-nano": {
+    "prompt_cost_per_1m": 0.05,
+    "completion_cost_per_1m": 0.40
+  },
+  "gpt-5-pro": {
+    "prompt_cost_per_1m": 15.00,
+    "completion_cost_per_1m": 120.00
+  },
+  "gpt-4.1": {
+    "prompt_cost_per_1m": 2.00,
+    "completion_cost_per_1m": 8.00
+  },
+  "gpt-4.1-mini": {
+    "prompt_cost_per_1m": 0.40,
+    "completion_cost_per_1m": 1.60
+  },
+  "gpt-4.1-nano": {
+    "prompt_cost_per_1m": 0.10,
+    "completion_cost_per_1m": 0.40
   },
   "gpt-4o": {
     "prompt_cost_per_1m": 2.50,
@@ -15,7 +71,23 @@
     "prompt_cost_per_1m": 0.15,
     "completion_cost_per_1m": 0.60
   },
-  "gemini-3-pro": {
+  "o4-mini": {
+    "prompt_cost_per_1m": 1.10,
+    "completion_cost_per_1m": 4.40
+  },
+  "o3": {
+    "prompt_cost_per_1m": 2.00,
+    "completion_cost_per_1m": 8.00
+  },
+  "o3-mini": {
+    "prompt_cost_per_1m": 1.10,
+    "completion_cost_per_1m": 4.40
+  },
+  "gemini-3.5-flash": {
+    "prompt_cost_per_1m": 1.50,
+    "completion_cost_per_1m": 9.00
+  },
+  "gemini-3.1-pro": {
     "prompt_cost_per_1m": 2.00,
     "completion_cost_per_1m": 12.00
   },
@@ -23,17 +95,25 @@
     "prompt_cost_per_1m": 0.50,
     "completion_cost_per_1m": 3.00
   },
-  "claude-3-5-sonnet-4-6": {
-    "prompt_cost_per_1m": 3.00,
-    "completion_cost_per_1m": 15.00
+  "gemini-3.1-flash-lite": {
+    "prompt_cost_per_1m": 0.25,
+    "completion_cost_per_1m": 1.50
   },
-  "claude-3-5-haiku-4-5": {
-    "prompt_cost_per_1m": 1.00,
-    "completion_cost_per_1m": 5.00
+  "gemini-2.5-pro": {
+    "prompt_cost_per_1m": 1.25,
+    "completion_cost_per_1m": 10.00
   },
-  "claude-3-opus-4-8": {
-    "prompt_cost_per_1m": 5.00,
-    "completion_cost_per_1m": 25.00
+  "gemini-2.5-flash": {
+    "prompt_cost_per_1m": 0.30,
+    "completion_cost_per_1m": 2.50
+  },
+  "gemini-flash-latest": {
+    "prompt_cost_per_1m": 0.50,
+    "completion_cost_per_1m": 3.00
+  },
+  "gemini-flash-lite-latest": {
+    "prompt_cost_per_1m": 0.25,
+    "completion_cost_per_1m": 1.50
   },
   "ollama": {
     "prompt_cost_per_1m": 0.0,
@@ -41,6 +121,6 @@
   },
   "default": {
     "prompt_cost_per_1m": 2.50,
-    "completion_cost_per_1m": 10.00
+    "completion_cost_per_1m": 15.00
   }
 }

@@ -484,65 +484,7 @@ class DynamicMessageWidget extends ConsumerWidget {
 
       case 'kanban_view':
         final kanban = response.payload as KanbanViewPayload;
-        return GlassContainer(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: kanban.columns.map((colName) {
-                final colCards = kanban.cards
-                    .where((c) => c.column == colName)
-                    .toList();
-                return Container(
-                  width: 250,
-                  margin: const EdgeInsets.only(right: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          colName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryText,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      ...colCards.map(
-                        (c) => Card(
-                          color: _parseColor(c.color).withValues(alpha: 0.2),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              c.title,
-                              style: const TextStyle(
-                                color: AppTheme.primaryText,
-                              ),
-                            ),
-                            subtitle: Text(
-                              c.subtitle,
-                              style: const TextStyle(
-                                color: AppTheme.secondaryText,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        );
+        return KanbanBoardWidget(kanban: kanban);
 
       case 'actionable_form_view':
         final formPayload = response.payload as ActionableFormViewPayload;
@@ -781,4 +723,138 @@ class _TableDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+class KanbanBoardWidget extends StatefulWidget {
+  final KanbanViewPayload kanban;
+
+  const KanbanBoardWidget({super.key, required this.kanban});
+
+  @override
+  State<KanbanBoardWidget> createState() => _KanbanBoardWidgetState();
+}
+
+class _KanbanBoardWidgetState extends State<KanbanBoardWidget> {
+  final ScrollController _horizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _horizontalController.dispose();
+    super.dispose();
+  }
+
+  Color _parseColor(String colorStr) {
+    switch (colorStr.toLowerCase()) {
+      case 'red':
+        return Colors.redAccent;
+      case 'green':
+        return Colors.greenAccent;
+      case 'gray':
+      case 'grey':
+        return Colors.grey;
+      case 'yellow':
+        return Colors.amber;
+      case 'blue':
+        return Colors.lightBlueAccent;
+      default:
+        return AppTheme.secondaryText;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassContainer(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 400),
+          child: Scrollbar(
+            controller: _horizontalController,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              controller: _horizontalController,
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: widget.kanban.columns.map((colName) {
+                    final colCards = widget.kanban.cards
+                        .where((c) => c.column == colName)
+                        .toList();
+                    return Container(
+                      width: 280,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              colName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryText,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              itemCount: colCards.length,
+                              itemBuilder: (context, cardIndex) {
+                                final c = colCards[cardIndex];
+                                return Card(
+                                  color: _parseColor(c.color).withValues(alpha: 0.2),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          c.title,
+                                          style: const TextStyle(
+                                            color: AppTheme.primaryText,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          c.subtitle,
+                                          style: const TextStyle(
+                                            color: AppTheme.secondaryText,
+                                            fontSize: 13,
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

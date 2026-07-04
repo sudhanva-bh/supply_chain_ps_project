@@ -35,10 +35,7 @@ class QueryLogger:
         self.query_log["total_completion_tokens"] += usage.completion_tokens
         self.query_log["total_tokens"] += usage.total_tokens
         
-    def save(self):
-        self.query_log["end_time_stamp"] = datetime.now(timezone.utc).isoformat()
-        
-        # Calculate cost
+    def calculate_cost(self):
         cost_file = os.path.join(os.path.dirname(__file__), "api_costs.json")
         try:
             with open(cost_file, "r", encoding="utf-8") as f:
@@ -51,6 +48,10 @@ class QueryLogger:
         except Exception as e:
             print(f"Error calculating token cost: {e}")
             pass
+
+    def save(self):
+        self.query_log["end_time_stamp"] = datetime.now(timezone.utc).isoformat()
+        self.calculate_cost()
 
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
@@ -70,12 +71,18 @@ class QueryLogger:
         with open(log_file_path, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=2)
 
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 if os.environ.get("OLLAMA_MODEL"):
     client = AsyncOpenAI(
         api_key="ollama", # required but ignored by ollama
         base_url="http://localhost:11434/v1"
     )
     MODEL_NAME = os.environ.get("OLLAMA_MODEL")
+elif os.environ.get("OPENAI_API_KEY"):
+    client = AsyncOpenAI()
+    MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-4o"
 elif os.environ.get("GEMINI_API_KEY"):
     client = AsyncOpenAI(
         api_key=os.environ.get("GEMINI_API_KEY"),
@@ -85,6 +92,8 @@ elif os.environ.get("GEMINI_API_KEY"):
 else:
     client = AsyncOpenAI()
     MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-4o"
+
+print(f"Loaded environment. Current model set to: {MODEL_NAME}")
 
 SYSTEM_PROMPT = """You are a supply chain business intelligence assistant powered by Gilhari ORM.
 Your goal is to answer queries by fetching data, calculating aggregations, or mutating records (create/update/delete) when explicitly requested.
@@ -157,7 +166,7 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
     # Tool execution loop
     max_loops = 12
     for loop_count in range(max_loops):
-        print(f"\n--- Agent Reasoning Loop {loop_count+1}/{max_loops} ---")
+        print(f"\n--- Agent Reasoning Loop {loop_count+1}/{max_loops} [Model: {MODEL_NAME}] ---")
         response = await client.chat.completions.create(
             model=MODEL_NAME,
             messages=messages,
@@ -244,10 +253,15 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                     "rows": rows
                 }
                 
+                query_logger.calculate_cost()
                 final_data = {
                     "response_type": "table_view",
                     "conversational_text": "Here is the data table you requested. *(Rendered via Direct Data Hydration)*",
-                    "payload": payload
+                    "payload": payload,
+                    "meta": {
+                        "total_cost_usd": query_logger.query_log["total_cost_usd"],
+                        "total_tokens": query_logger.query_log["total_tokens"]
+                    }
                 }
                 
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
@@ -258,6 +272,7 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                 print(f"Agent Action -> Intercepting data mutation tool {tool_name} for user confirmation!")
                 yield json.dumps({"type": "status", "message": "Requires user confirmation for data mutation..."}) + "\n"
                 
+                query_logger.calculate_cost()
                 final_data = {
                     "response_type": "confirmation_view",
                     "conversational_text": f"I need your confirmation before executing the **{tool_name}** action.",
@@ -265,6 +280,10 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                         "tool_name": tool_name,
                         "args_json": json.dumps(args),
                         "summary": f"The agent is preparing to execute `{tool_name}` with the provided arguments."
+                    },
+                    "meta": {
+                        "total_cost_usd": query_logger.query_log["total_cost_usd"],
+                        "total_tokens": query_logger.query_log["total_tokens"]
                     }
                 }
                 yield json.dumps({"type": "final", "data": final_data}) + "\n"
@@ -361,6 +380,8 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
     payload = None
     if parsed.response_type == "table_view":
         payload = parsed.table_payload.model_dump() if parsed.table_payload else None
+    elif parsed.response_type == "direct_fetch_table":
+        payload = parsed.direct_fetch_payload.model_dump() if parsed.direct_fetch_payload else None
     elif parsed.response_type == "metric_kpi_view":
         payload = [m.model_dump() for m in parsed.metric_kpi_payload] if parsed.metric_kpi_payload else None
     elif parsed.response_type == "timeline_view":
@@ -378,10 +399,15 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
     elif parsed.response_type == "confirmation_view":
         payload = parsed.confirmation_payload.model_dump() if parsed.confirmation_payload else None
 
+    query_logger.calculate_cost()
     final_data = {
         "response_type": parsed.response_type,
         "conversational_text": parsed.conversational_text,
-        "payload": payload
+        "payload": payload,
+        "meta": {
+            "total_cost_usd": query_logger.query_log["total_cost_usd"],
+            "total_tokens": query_logger.query_log["total_tokens"]
+        }
     }
     
     yield json.dumps({"type": "final", "data": final_data}) + "\n"
