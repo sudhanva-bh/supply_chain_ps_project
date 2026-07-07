@@ -76,7 +76,7 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _typeCtrl.text,
+            initialValue: _typeCtrl.text,
             decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
             items: ['Inbound', 'Outbound', 'Adjustment']
                 .map((e) => DropdownMenuItem(value: e, child: Text(e)))

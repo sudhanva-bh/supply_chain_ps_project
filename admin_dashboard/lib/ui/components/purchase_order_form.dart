@@ -20,7 +20,7 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
   final _totalCostCtrl = TextEditingController();
   final _statusCtrl = TextEditingController(text: 'PENDING');
 
-  List<PurchaseOrderItem> _items = [];
+  final List<PurchaseOrderItem> _items = [];
 
   void _addItem() {
     setState(() {
@@ -98,7 +98,7 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               const SizedBox(width: 16),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _statusCtrl.text,
+                  initialValue: _statusCtrl.text,
                   decoration: const InputDecoration(labelText: 'Delivery Status', border: OutlineInputBorder()),
                   items: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
