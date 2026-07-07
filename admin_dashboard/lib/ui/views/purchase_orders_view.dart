@@ -31,11 +31,16 @@ class PurchaseOrdersView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.orderID;
-          case 1: return item.orderDate;
-          case 2: return item.totalCost;
-          case 3: return item.deliveryStatus;
-          default: return '';
+          case 0:
+            return item.orderID;
+          case 1:
+            return item.orderDate;
+          case 2:
+            return item.totalCost;
+          case 3:
+            return item.deliveryStatus;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -46,33 +51,53 @@ class PurchaseOrdersView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.orderID.toString())),
-          DataCell(Text(item.orderDate)),
-          DataCell(Text('\$${item.totalCost.toStringAsFixed(2)}')),
-          DataCell(
-            DropdownButton<String>(
-              value: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED'].contains(item.deliveryStatus.toUpperCase()) 
-                ? item.deliveryStatus.toUpperCase() 
-                : 'PENDING',
-              items: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (newStatus) {
-                if (newStatus != null && newStatus != item.deliveryStatus) {
-                  ref.read(purchaseOrdersProvider.notifier).updateItem(item.copyWith(deliveryStatus: newStatus));
-                }
-              },
-              underline: const SizedBox(),
+        return DataRow(
+          cells: [
+            DataCell(Text(item.orderID.toString())),
+            DataCell(Text(item.orderDate)),
+            DataCell(Text('\$${item.totalCost.toStringAsFixed(2)}')),
+            DataCell(
+              DropdownButton<String>(
+                value:
+                    [
+                      'PENDING',
+                      'APPROVED',
+                      'SHIPPED',
+                      'DELIVERED',
+                      'CANCELLED',
+                    ].contains(item.deliveryStatus.toUpperCase())
+                    ? item.deliveryStatus.toUpperCase()
+                    : 'PENDING',
+                items:
+                    ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                onChanged: (newStatus) {
+                  if (newStatus != null && newStatus != item.deliveryStatus) {
+                    ref
+                        .read(purchaseOrdersProvider.notifier)
+                        .updateItem(item.copyWith(deliveryStatus: newStatus));
+                  }
+                },
+                underline: const SizedBox(),
+              ),
             ),
-          ),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }

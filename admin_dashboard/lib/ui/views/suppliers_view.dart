@@ -32,11 +32,16 @@ class SuppliersView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.supplierID;
-          case 1: return item.companyName;
-          case 2: return item.contactEmail;
-          case 3: return item.region;
-          default: return '';
+          case 0:
+            return item.supplierID;
+          case 1:
+            return item.companyName;
+          case 2:
+            return item.contactEmail;
+          case 3:
+            return item.region;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -47,18 +52,28 @@ class SuppliersView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.supplierID.toString())),
-          DataCell(Text(item.companyName)),
-          DataCell(Text(item.contactEmail)),
-          DataCell(Text(item.region)),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(Text(item.supplierID.toString())),
+            DataCell(Text(item.companyName)),
+            DataCell(Text(item.contactEmail)),
+            DataCell(Text(item.region)),
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }

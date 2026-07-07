@@ -10,13 +10,16 @@ class StockTransactionForm extends ConsumerStatefulWidget {
   const StockTransactionForm({super.key});
 
   @override
-  ConsumerState<StockTransactionForm> createState() => _StockTransactionFormState();
+  ConsumerState<StockTransactionForm> createState() =>
+      _StockTransactionFormState();
 }
 
 class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _idCtrl = TextEditingController(text: (DateTime.now().millisecondsSinceEpoch % 100000).toString());
+  final _idCtrl = TextEditingController(
+    text: (DateTime.now().millisecondsSinceEpoch % 100000).toString(),
+  );
   final _itemIdCtrl = TextEditingController();
   final _qtyCtrl = TextEditingController();
   final _typeCtrl = TextEditingController(text: 'Inbound');
@@ -31,14 +34,20 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
         timestamp: DateTime.now().toIso8601String(),
       );
 
-      final success = await ref.read(stockTransactionsProvider.notifier).create(item);
+      final success = await ref
+          .read(stockTransactionsProvider.notifier)
+          .create(item);
 
       if (mounted) {
         if (success) {
           showMonochromaticToast(context, 'Transaction created successfully!');
           Navigator.of(context).pop();
         } else {
-          showMonochromaticToast(context, 'Failed to create Transaction.', isError: true);
+          showMonochromaticToast(
+            context,
+            'Failed to create Transaction.',
+            isError: true,
+          );
         }
       }
     }
@@ -55,7 +64,10 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
         children: [
           TextFormField(
             controller: _idCtrl,
-            decoration: const InputDecoration(labelText: 'Transaction ID', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Transaction ID',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
@@ -70,17 +82,25 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _qtyCtrl,
-            decoration: const InputDecoration(labelText: 'Quantity Changed', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Quantity Changed',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _typeCtrl.text,
-            decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
-            items: ['Inbound', 'Outbound', 'Adjustment']
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                .toList(),
+            decoration: const InputDecoration(
+              labelText: 'Type',
+              border: OutlineInputBorder(),
+            ),
+            items: [
+              'Inbound',
+              'Outbound',
+              'Adjustment',
+            ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
             onChanged: (v) {
               if (v != null) {
                 _typeCtrl.text = v;
@@ -94,7 +114,10 @@ class _StockTransactionFormState extends ConsumerState<StockTransactionForm> {
               backgroundColor: AppTheme.primaryText,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Save Transaction', style: TextStyle(color: AppTheme.background, fontSize: 16)),
+            child: const Text(
+              'Save Transaction',
+              style: TextStyle(color: AppTheme.background, fontSize: 16),
+            ),
           ),
         ],
       ),

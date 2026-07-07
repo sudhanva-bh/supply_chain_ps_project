@@ -16,7 +16,9 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
   final _formKey = GlobalKey<FormState>();
 
   final _orderIdCtrl = TextEditingController();
-  final _orderDateCtrl = TextEditingController(text: DateTime.now().toIso8601String().split('T')[0]);
+  final _orderDateCtrl = TextEditingController(
+    text: DateTime.now().toIso8601String().split('T')[0],
+  );
   final _totalCostCtrl = TextEditingController();
   final _statusCtrl = TextEditingController(text: 'PENDING');
 
@@ -24,13 +26,15 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
 
   void _addItem() {
     setState(() {
-      _items.add(PurchaseOrderItem(
-        orderItemID: DateTime.now().millisecondsSinceEpoch % 100000,
-        orderID: int.tryParse(_orderIdCtrl.text) ?? 0,
-        itemID: 0,
-        quantityOrdered: 1,
-        negotiatedPrice: 0.0,
-      ));
+      _items.add(
+        PurchaseOrderItem(
+          orderItemID: DateTime.now().millisecondsSinceEpoch % 100000,
+          orderID: int.tryParse(_orderIdCtrl.text) ?? 0,
+          itemID: 0,
+          quantityOrdered: 1,
+          negotiatedPrice: 0.0,
+        ),
+      );
     });
   }
 
@@ -44,14 +48,23 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
         purchaseOrderItems: _items.isNotEmpty ? _items : null,
       );
 
-      final success = await ref.read(purchaseOrdersProvider.notifier).create(newOrder);
+      final success = await ref
+          .read(purchaseOrdersProvider.notifier)
+          .create(newOrder);
 
       if (mounted) {
         if (success) {
-          showMonochromaticToast(context, 'Purchase Order created successfully!');
+          showMonochromaticToast(
+            context,
+            'Purchase Order created successfully!',
+          );
           Navigator.of(context).pop();
         } else {
-          showMonochromaticToast(context, 'Failed to create Purchase Order.', isError: true);
+          showMonochromaticToast(
+            context,
+            'Failed to create Purchase Order.',
+            isError: true,
+          );
         }
       }
     }
@@ -69,7 +82,10 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               Expanded(
                 child: TextFormField(
                   controller: _orderIdCtrl,
-                  decoration: const InputDecoration(labelText: 'Order ID', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Order ID',
+                    border: OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.number,
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
@@ -78,7 +94,10 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               Expanded(
                 child: TextFormField(
                   controller: _orderDateCtrl,
-                  decoration: const InputDecoration(labelText: 'Order Date', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Order Date',
+                    border: OutlineInputBorder(),
+                  ),
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
               ),
@@ -90,7 +109,10 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               Expanded(
                 child: TextFormField(
                   controller: _totalCostCtrl,
-                  decoration: const InputDecoration(labelText: 'Total Cost', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Total Cost',
+                    border: OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.number,
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
@@ -99,10 +121,22 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   initialValue: _statusCtrl.text,
-                  decoration: const InputDecoration(labelText: 'Delivery Status', border: OutlineInputBorder()),
-                  items: ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED']
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
+                  decoration: const InputDecoration(
+                    labelText: 'Delivery Status',
+                    border: OutlineInputBorder(),
+                  ),
+                  items:
+                      [
+                            'PENDING',
+                            'APPROVED',
+                            'SHIPPED',
+                            'DELIVERED',
+                            'CANCELLED',
+                          ]
+                          .map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          )
+                          .toList(),
                   onChanged: (v) {
                     if (v != null) {
                       _statusCtrl.text = v;
@@ -116,12 +150,20 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Order Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Order Items',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               ElevatedButton.icon(
                 onPressed: _addItem,
                 icon: const Icon(Icons.add, color: AppTheme.background),
-                label: const Text('Add Item', style: TextStyle(color: AppTheme.background)),
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryText),
+                label: const Text(
+                  'Add Item',
+                  style: TextStyle(color: AppTheme.background),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryText,
+                ),
               ),
             ],
           ),
@@ -137,7 +179,9 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
                   Expanded(
                     child: TextFormField(
                       initialValue: item.itemID.toString(),
-                      decoration: const InputDecoration(labelText: 'Inventory Item ID'),
+                      decoration: const InputDecoration(
+                        labelText: 'Inventory Item ID',
+                      ),
                       onChanged: (val) {
                         _items[index] = PurchaseOrderItem(
                           orderItemID: item.orderItemID,
@@ -182,13 +226,16 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete, color: AppTheme.secondaryText),
+                    icon: const Icon(
+                      Icons.delete,
+                      color: AppTheme.secondaryText,
+                    ),
                     onPressed: () {
                       setState(() {
                         _items.removeAt(index);
                       });
                     },
-                  )
+                  ),
                 ],
               ),
             );
@@ -200,7 +247,10 @@ class _PurchaseOrderFormState extends ConsumerState<PurchaseOrderForm> {
               backgroundColor: AppTheme.primaryText,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Save Purchase Order', style: TextStyle(color: AppTheme.background, fontSize: 16)),
+            child: const Text(
+              'Save Purchase Order',
+              style: TextStyle(color: AppTheme.background, fontSize: 16),
+            ),
           ),
         ],
       ),

@@ -16,7 +16,9 @@ class InventoryItemForm extends ConsumerStatefulWidget {
 class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _idCtrl = TextEditingController(text: (DateTime.now().millisecondsSinceEpoch % 100000).toString());
+  final _idCtrl = TextEditingController(
+    text: (DateTime.now().millisecondsSinceEpoch % 100000).toString(),
+  );
   final _nameCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
@@ -34,14 +36,23 @@ class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
         supplierID: int.parse(_supplierCtrl.text),
       );
 
-      final success = await ref.read(inventoryItemsProvider.notifier).create(item);
+      final success = await ref
+          .read(inventoryItemsProvider.notifier)
+          .create(item);
 
       if (mounted) {
         if (success) {
-          showMonochromaticToast(context, 'Inventory Item created successfully!');
+          showMonochromaticToast(
+            context,
+            'Inventory Item created successfully!',
+          );
           Navigator.of(context).pop();
         } else {
-          showMonochromaticToast(context, 'Failed to create Inventory Item.', isError: true);
+          showMonochromaticToast(
+            context,
+            'Failed to create Inventory Item.',
+            isError: true,
+          );
         }
       }
     }
@@ -59,34 +70,47 @@ class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
         children: [
           TextFormField(
             controller: _idCtrl,
-            decoration: const InputDecoration(labelText: 'Item ID', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Item ID',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _nameCtrl,
-            decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Name',
+              border: OutlineInputBorder(),
+            ),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _stockCtrl,
-            decoration: const InputDecoration(labelText: 'Stock Quantity', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Stock Quantity',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _priceCtrl,
-            decoration: const InputDecoration(labelText: 'Unit Price', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Unit Price',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           ForeignKeyAutocomplete<ItemCategory>(
             items: categories,
-            displayStringForOption: (c) => '${c.categoryID} - ${c.categoryName}',
+            displayStringForOption: (c) =>
+                '${c.categoryID} - ${c.categoryName}',
             idForOption: (c) => c.categoryID.toString(),
             controller: _categoryCtrl,
             labelText: 'Category',
@@ -106,7 +130,10 @@ class _InventoryItemFormState extends ConsumerState<InventoryItemForm> {
               backgroundColor: AppTheme.primaryText,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Save Item', style: TextStyle(color: AppTheme.background, fontSize: 16)),
+            child: const Text(
+              'Save Item',
+              style: TextStyle(color: AppTheme.background, fontSize: 16),
+            ),
           ),
         ],
       ),

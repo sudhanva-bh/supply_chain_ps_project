@@ -15,7 +15,8 @@ class PurchaseOrderItemsView extends ConsumerWidget {
 
     return AsyncDataGrid<PurchaseOrderItem>(
       asyncValue: state,
-      onRefresh: () => ref.read(purchaseOrderItemsProvider.notifier).fetchData(),
+      onRefresh: () =>
+          ref.read(purchaseOrderItemsProvider.notifier).fetchData(),
       onAdd: () {
         showGlassModal(
           context,
@@ -31,12 +32,18 @@ class PurchaseOrderItemsView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.orderItemID;
-          case 1: return item.orderID;
-          case 2: return item.itemID;
-          case 3: return item.quantityOrdered;
-          case 4: return item.negotiatedPrice;
-          default: return '';
+          case 0:
+            return item.orderItemID;
+          case 1:
+            return item.orderID;
+          case 2:
+            return item.itemID;
+          case 3:
+            return item.quantityOrdered;
+          case 4:
+            return item.negotiatedPrice;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -48,19 +55,29 @@ class PurchaseOrderItemsView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.orderItemID.toString())),
-          DataCell(Text(item.orderID.toString())),
-          DataCell(Text(item.itemID.toString())),
-          DataCell(Text(item.quantityOrdered.toString())),
-          DataCell(Text('\$${item.negotiatedPrice.toStringAsFixed(2)}')),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(Text(item.orderItemID.toString())),
+            DataCell(Text(item.orderID.toString())),
+            DataCell(Text(item.itemID.toString())),
+            DataCell(Text(item.quantityOrdered.toString())),
+            DataCell(Text('\$${item.negotiatedPrice.toStringAsFixed(2)}')),
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }

@@ -37,8 +37,10 @@ class PurchaseOrder {
       orderDate: json['orderDate'],
       totalCost: (json['totalCost'] as num).toDouble(),
       deliveryStatus: json['deliveryStatus'],
-      purchaseOrderItems: json['purchaseOrderItems'] != null 
-          ? (json['purchaseOrderItems'] as List).map((i) => PurchaseOrderItem.fromJson(i)).toList()
+      purchaseOrderItems: json['purchaseOrderItems'] != null
+          ? (json['purchaseOrderItems'] as List)
+                .map((i) => PurchaseOrderItem.fromJson(i))
+                .toList()
           : null,
     );
   }
@@ -51,7 +53,9 @@ class PurchaseOrder {
       'deliveryStatus': deliveryStatus,
     };
     if (purchaseOrderItems != null) {
-      map['purchaseOrderItems'] = purchaseOrderItems!.map((i) => i.toJson()).toList();
+      map['purchaseOrderItems'] = purchaseOrderItems!
+          .map((i) => i.toJson())
+          .toList();
     }
     return map;
   }

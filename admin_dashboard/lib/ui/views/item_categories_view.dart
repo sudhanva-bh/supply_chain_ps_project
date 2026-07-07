@@ -31,10 +31,14 @@ class ItemCategoriesView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.categoryID;
-          case 1: return item.categoryName;
-          case 2: return item.description;
-          default: return '';
+          case 0:
+            return item.categoryID;
+          case 1:
+            return item.categoryName;
+          case 2:
+            return item.description;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -44,17 +48,27 @@ class ItemCategoriesView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.categoryID.toString())),
-          DataCell(Text(item.categoryName)),
-          DataCell(Text(item.description)),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(Text(item.categoryID.toString())),
+            DataCell(Text(item.categoryName)),
+            DataCell(Text(item.description)),
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }

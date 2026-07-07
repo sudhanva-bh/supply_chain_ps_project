@@ -15,7 +15,9 @@ class SupplierForm extends ConsumerStatefulWidget {
 class _SupplierFormState extends ConsumerState<SupplierForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _idCtrl = TextEditingController(text: (DateTime.now().millisecondsSinceEpoch % 100000).toString());
+  final _idCtrl = TextEditingController(
+    text: (DateTime.now().millisecondsSinceEpoch % 100000).toString(),
+  );
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _regionCtrl = TextEditingController();
@@ -36,7 +38,11 @@ class _SupplierFormState extends ConsumerState<SupplierForm> {
           showMonochromaticToast(context, 'Supplier created successfully!');
           Navigator.of(context).pop();
         } else {
-          showMonochromaticToast(context, 'Failed to create Supplier.', isError: true);
+          showMonochromaticToast(
+            context,
+            'Failed to create Supplier.',
+            isError: true,
+          );
         }
       }
     }
@@ -51,26 +57,38 @@ class _SupplierFormState extends ConsumerState<SupplierForm> {
         children: [
           TextFormField(
             controller: _idCtrl,
-            decoration: const InputDecoration(labelText: 'Supplier ID', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Supplier ID',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _nameCtrl,
-            decoration: const InputDecoration(labelText: 'Company Name', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Company Name',
+              border: OutlineInputBorder(),
+            ),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _emailCtrl,
-            decoration: const InputDecoration(labelText: 'Contact Email', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Contact Email',
+              border: OutlineInputBorder(),
+            ),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _regionCtrl,
-            decoration: const InputDecoration(labelText: 'Region', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Region',
+              border: OutlineInputBorder(),
+            ),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 24),
@@ -80,7 +98,10 @@ class _SupplierFormState extends ConsumerState<SupplierForm> {
               backgroundColor: AppTheme.primaryText,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Save Supplier', style: TextStyle(color: AppTheme.background, fontSize: 16)),
+            child: const Text(
+              'Save Supplier',
+              style: TextStyle(color: AppTheme.background, fontSize: 16),
+            ),
           ),
         ],
       ),

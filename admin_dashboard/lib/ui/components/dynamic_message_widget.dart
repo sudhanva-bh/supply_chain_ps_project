@@ -75,7 +75,11 @@ class DynamicMessageWidget extends ConsumerWidget {
                     )
                     .toList(),
                 source: source,
-                rowsPerPage: tablePayload.rows.isEmpty ? 1 : (tablePayload.rows.length < 10 ? tablePayload.rows.length : 10),
+                rowsPerPage: tablePayload.rows.isEmpty
+                    ? 1
+                    : (tablePayload.rows.length < 10
+                          ? tablePayload.rows.length
+                          : 10),
                 columnSpacing: 20,
                 horizontalMargin: 20,
                 showCheckboxColumn: false,
@@ -151,91 +155,96 @@ class DynamicMessageWidget extends ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: ListView.builder(
                 shrinkWrap: true,
-              itemCount: timeline.length,
-              itemBuilder: (context, index) {
-                final item = timeline[index];
-                final isLast = index == timeline.length - 1;
-                return IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        width: 40,
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blueAccent.withValues(alpha: 0.5),
-                                    blurRadius: 8,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (!isLast)
-                              Expanded(
-                                child: Container(
-                                  width: 2,
-                                  color: Colors.white24,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 24.0, right: 8.0),
+                itemCount: timeline.length,
+                itemBuilder: (context, index) {
+                  final item = timeline[index];
+                  final isLast = index == timeline.length - 1;
+                  return IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(
+                          width: 40,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                item.timestamp,
-                                style: const TextStyle(
+                              Container(
+                                width: 16,
+                                height: 16,
+                                decoration: BoxDecoration(
                                   color: Colors.blueAccent,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blueAccent.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      blurRadius: 8,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.title,
-                                style: const TextStyle(
-                                  color: AppTheme.primaryText,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              if (!isLast)
+                                Expanded(
+                                  child: Container(
+                                    width: 2,
+                                    color: Colors.white24,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.subtitle,
-                                style: const TextStyle(
-                                  color: AppTheme.secondaryText,
-                                  fontSize: 14,
-                                  height: 1.4,
-                                ),
-                              ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 24.0,
+                              right: 8.0,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.timestamp,
+                                  style: const TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.title,
+                                  style: const TextStyle(
+                                    color: AppTheme.primaryText,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  item.subtitle,
+                                  style: const TextStyle(
+                                    color: AppTheme.secondaryText,
+                                    fontSize: 14,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
       case 'chart_view':
         final chart = response.payload as ChartViewPayload;
@@ -344,7 +353,9 @@ class DynamicMessageWidget extends ConsumerWidget {
                         end: Alignment.topCenter,
                       ),
                       width: 24,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(8),
+                      ),
                     ),
                   ],
                 );
@@ -585,10 +596,7 @@ class DynamicMessageWidget extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.grey,
-                    ),
+                    const Icon(Icons.warning_amber_rounded, color: Colors.grey),
                     const SizedBox(width: 8),
                     Text(
                       'Action Required: ${confirmation.toolName}',
@@ -699,7 +707,7 @@ class _TableDataSource extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     if (index >= rows.length) return null;
-    
+
     final row = rows[index];
     return DataRow(
       cells: row
@@ -812,7 +820,9 @@ class _KanbanBoardWidgetState extends State<KanbanBoardWidget> {
                               itemBuilder: (context, cardIndex) {
                                 final c = colCards[cardIndex];
                                 return Card(
-                                  color: _parseColor(c.color).withValues(alpha: 0.2),
+                                  color: _parseColor(
+                                    c.color,
+                                  ).withValues(alpha: 0.2),
                                   margin: const EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 6,
@@ -820,7 +830,8 @@ class _KanbanBoardWidgetState extends State<KanbanBoardWidget> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           c.title,

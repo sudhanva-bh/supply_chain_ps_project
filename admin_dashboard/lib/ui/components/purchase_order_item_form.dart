@@ -10,13 +10,16 @@ class PurchaseOrderItemForm extends ConsumerStatefulWidget {
   const PurchaseOrderItemForm({super.key});
 
   @override
-  ConsumerState<PurchaseOrderItemForm> createState() => _PurchaseOrderItemFormState();
+  ConsumerState<PurchaseOrderItemForm> createState() =>
+      _PurchaseOrderItemFormState();
 }
 
 class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _idCtrl = TextEditingController(text: (DateTime.now().millisecondsSinceEpoch % 100000).toString());
+  final _idCtrl = TextEditingController(
+    text: (DateTime.now().millisecondsSinceEpoch % 100000).toString(),
+  );
   final _orderIdCtrl = TextEditingController();
   final _itemIdCtrl = TextEditingController();
   final _qtyCtrl = TextEditingController();
@@ -32,14 +35,20 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
         negotiatedPrice: double.parse(_priceCtrl.text),
       );
 
-      final success = await ref.read(purchaseOrderItemsProvider.notifier).create(item);
+      final success = await ref
+          .read(purchaseOrderItemsProvider.notifier)
+          .create(item);
 
       if (mounted) {
         if (success) {
           showMonochromaticToast(context, 'Order Item created successfully!');
           Navigator.of(context).pop();
         } else {
-          showMonochromaticToast(context, 'Failed to create Order Item.', isError: true);
+          showMonochromaticToast(
+            context,
+            'Failed to create Order Item.',
+            isError: true,
+          );
         }
       }
     }
@@ -57,7 +66,10 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
         children: [
           TextFormField(
             controller: _idCtrl,
-            decoration: const InputDecoration(labelText: 'Order Item ID', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Order Item ID',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
@@ -80,14 +92,20 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _qtyCtrl,
-            decoration: const InputDecoration(labelText: 'Quantity Ordered', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Quantity Ordered',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.number,
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _priceCtrl,
-            decoration: const InputDecoration(labelText: 'Negotiated Price', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+              labelText: 'Negotiated Price',
+              border: OutlineInputBorder(),
+            ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
@@ -98,7 +116,10 @@ class _PurchaseOrderItemFormState extends ConsumerState<PurchaseOrderItemForm> {
               backgroundColor: AppTheme.primaryText,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Save Order Item', style: TextStyle(color: AppTheme.background, fontSize: 16)),
+            child: const Text(
+              'Save Order Item',
+              style: TextStyle(color: AppTheme.background, fontSize: 16),
+            ),
           ),
         ],
       ),

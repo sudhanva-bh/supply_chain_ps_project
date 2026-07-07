@@ -32,13 +32,20 @@ class InventoryItemsView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.itemID;
-          case 1: return item.name;
-          case 2: return item.stockQuantity;
-          case 3: return item.unitPrice;
-          case 4: return item.categoryID;
-          case 5: return item.supplierID;
-          default: return '';
+          case 0:
+            return item.itemID;
+          case 1:
+            return item.name;
+          case 2:
+            return item.stockQuantity;
+          case 3:
+            return item.unitPrice;
+          case 4:
+            return item.categoryID;
+          case 5:
+            return item.supplierID;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -51,20 +58,30 @@ class InventoryItemsView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.itemID.toString())),
-          DataCell(Text(item.name)),
-          DataCell(Text(item.stockQuantity.toString())),
-          DataCell(Text('\$${item.unitPrice.toStringAsFixed(2)}')),
-          DataCell(Text(item.categoryID.toString())),
-          DataCell(Text(item.supplierID.toString())),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(Text(item.itemID.toString())),
+            DataCell(Text(item.name)),
+            DataCell(Text(item.stockQuantity.toString())),
+            DataCell(Text('\$${item.unitPrice.toStringAsFixed(2)}')),
+            DataCell(Text(item.categoryID.toString())),
+            DataCell(Text(item.supplierID.toString())),
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }

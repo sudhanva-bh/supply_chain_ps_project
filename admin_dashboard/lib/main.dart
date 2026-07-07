@@ -4,11 +4,7 @@ import 'theme/app_theme.dart';
 import 'ui/layout/main_layout.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: AdminDashboardApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: AdminDashboardApp()));
 }
 
 class AdminDashboardApp extends StatelessWidget {

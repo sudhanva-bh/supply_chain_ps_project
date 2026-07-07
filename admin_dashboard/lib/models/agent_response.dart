@@ -7,7 +7,9 @@ class TableViewPayload {
   factory TableViewPayload.fromJson(Map<String, dynamic> json) {
     return TableViewPayload(
       columns: List<String>.from(json['columns'] ?? []),
-      rows: (json['rows'] as List).map((row) => List<dynamic>.from(row)).toList(),
+      rows: (json['rows'] as List)
+          .map((row) => List<dynamic>.from(row))
+          .toList(),
     );
   }
 }
@@ -73,7 +75,9 @@ class ChartViewPayload {
     return ChartViewPayload(
       chartType: json['chart_type'] ?? 'bar',
       labels: List<String>.from(json['labels'] ?? []),
-      values: (json['values'] as List).map((e) => (e as num).toDouble()).toList(),
+      values: (json['values'] as List)
+          .map((e) => (e as num).toDouble())
+          .toList(),
     );
   }
 }
@@ -83,7 +87,11 @@ class RegionalData {
   final double value;
   final double percentage;
 
-  RegionalData({required this.region, required this.value, required this.percentage});
+  RegionalData({
+    required this.region,
+    required this.value,
+    required this.percentage,
+  });
 
   factory RegionalData.fromJson(Map<String, dynamic> json) {
     return RegionalData(
@@ -103,7 +111,11 @@ class RegionalViewPayload {
   factory RegionalViewPayload.fromJson(Map<String, dynamic> json) {
     return RegionalViewPayload(
       title: json['title'] ?? '',
-      regions: (json['regions'] as List?)?.map((e) => RegionalData.fromJson(e)).toList() ?? [],
+      regions:
+          (json['regions'] as List?)
+              ?.map((e) => RegionalData.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -115,7 +127,13 @@ class KanbanCard {
   final String column;
   final String color;
 
-  KanbanCard({required this.id, required this.title, required this.subtitle, required this.column, required this.color});
+  KanbanCard({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.column,
+    required this.color,
+  });
 
   factory KanbanCard.fromJson(Map<String, dynamic> json) {
     return KanbanCard(
@@ -137,7 +155,11 @@ class KanbanViewPayload {
   factory KanbanViewPayload.fromJson(Map<String, dynamic> json) {
     return KanbanViewPayload(
       columns: List<String>.from(json['columns'] ?? []),
-      cards: (json['cards'] as List?)?.map((e) => KanbanCard.fromJson(e)).toList() ?? [],
+      cards:
+          (json['cards'] as List?)
+              ?.map((e) => KanbanCard.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -149,7 +171,13 @@ class FormFieldSchema {
   final String defaultValue;
   final List<String>? options;
 
-  FormFieldSchema({required this.name, required this.label, required this.fieldType, required this.defaultValue, this.options});
+  FormFieldSchema({
+    required this.name,
+    required this.label,
+    required this.fieldType,
+    required this.defaultValue,
+    this.options,
+  });
 
   factory FormFieldSchema.fromJson(Map<String, dynamic> json) {
     return FormFieldSchema(
@@ -157,7 +185,9 @@ class FormFieldSchema {
       label: json['label'] ?? '',
       fieldType: json['field_type'] ?? 'text',
       defaultValue: json['default_value'] ?? '',
-      options: json['options'] != null ? List<String>.from(json['options']) : null,
+      options: json['options'] != null
+          ? List<String>.from(json['options'])
+          : null,
     );
   }
 }
@@ -167,13 +197,21 @@ class ActionableFormViewPayload {
   final String actionIntent;
   final List<FormFieldSchema> fields;
 
-  ActionableFormViewPayload({required this.formTitle, required this.actionIntent, required this.fields});
+  ActionableFormViewPayload({
+    required this.formTitle,
+    required this.actionIntent,
+    required this.fields,
+  });
 
   factory ActionableFormViewPayload.fromJson(Map<String, dynamic> json) {
     return ActionableFormViewPayload(
       formTitle: json['form_title'] ?? '',
       actionIntent: json['action_intent'] ?? '',
-      fields: (json['fields'] as List?)?.map((e) => FormFieldSchema.fromJson(e)).toList() ?? [],
+      fields:
+          (json['fields'] as List?)
+              ?.map((e) => FormFieldSchema.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -184,7 +222,12 @@ class AlertAnomaly {
   final String description;
   final String suggestedAction;
 
-  AlertAnomaly({required this.severity, required this.title, required this.description, required this.suggestedAction});
+  AlertAnomaly({
+    required this.severity,
+    required this.title,
+    required this.description,
+    required this.suggestedAction,
+  });
 
   factory AlertAnomaly.fromJson(Map<String, dynamic> json) {
     return AlertAnomaly(
@@ -203,7 +246,11 @@ class AlertAnomalyViewPayload {
 
   factory AlertAnomalyViewPayload.fromJson(Map<String, dynamic> json) {
     return AlertAnomalyViewPayload(
-      alerts: (json['alerts'] as List?)?.map((e) => AlertAnomaly.fromJson(e)).toList() ?? [],
+      alerts:
+          (json['alerts'] as List?)
+              ?.map((e) => AlertAnomaly.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -213,7 +260,11 @@ class ConfirmationViewPayload {
   final String argsJson;
   final String summary;
 
-  ConfirmationViewPayload({required this.toolName, required this.argsJson, required this.summary});
+  ConfirmationViewPayload({
+    required this.toolName,
+    required this.argsJson,
+    required this.summary,
+  });
 
   factory ConfirmationViewPayload.fromJson(Map<String, dynamic> json) {
     return ConfirmationViewPayload(
@@ -238,15 +289,19 @@ class AgentResponse {
   factory AgentResponse.fromJson(Map<String, dynamic> json) {
     final type = json['response_type'] ?? 'text_only';
     final payloadJson = json['payload'];
-    
+
     dynamic parsedPayload;
     if (payloadJson != null) {
       if (type == 'table_view') {
         parsedPayload = TableViewPayload.fromJson(payloadJson);
       } else if (type == 'metric_kpi_view') {
-        parsedPayload = (payloadJson as List).map((e) => MetricKPIViewPayload.fromJson(e)).toList();
+        parsedPayload = (payloadJson as List)
+            .map((e) => MetricKPIViewPayload.fromJson(e))
+            .toList();
       } else if (type == 'timeline_view') {
-        parsedPayload = (payloadJson as List).map((e) => TimelineViewPayload.fromJson(e)).toList();
+        parsedPayload = (payloadJson as List)
+            .map((e) => TimelineViewPayload.fromJson(e))
+            .toList();
       } else if (type == 'chart_view') {
         parsedPayload = ChartViewPayload.fromJson(payloadJson);
       } else if (type == 'regional_view') {

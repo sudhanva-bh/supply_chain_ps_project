@@ -32,12 +32,18 @@ class StockTransactionsView extends ConsumerWidget {
       },
       sortValueMapper: (item, columnIndex) {
         switch (columnIndex) {
-          case 0: return item.transactionID;
-          case 1: return item.itemID;
-          case 2: return item.quantityChanged;
-          case 3: return item.transactionType;
-          case 4: return item.timestamp;
-          default: return '';
+          case 0:
+            return item.transactionID;
+          case 1:
+            return item.itemID;
+          case 2:
+            return item.quantityChanged;
+          case 3:
+            return item.transactionType;
+          case 4:
+            return item.timestamp;
+          default:
+            return '';
         }
       },
       columns: const [
@@ -49,19 +55,29 @@ class StockTransactionsView extends ConsumerWidget {
         DataColumn(label: Text('Actions')),
       ],
       buildRows: (data) => data.map((item) {
-        return DataRow(cells: [
-          DataCell(Text(item.transactionID.toString())),
-          DataCell(Text(item.itemID.toString())),
-          DataCell(Text(item.quantityChanged.toString())),
-          DataCell(Text(item.transactionType)),
-          DataCell(Text(item.timestamp)),
-          DataCell(Row(
-            children: [
-              IconButton(icon: const Icon(Icons.edit, size: 20), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.delete, size: 20), onPressed: () {}),
-            ],
-          )),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(Text(item.transactionID.toString())),
+            DataCell(Text(item.itemID.toString())),
+            DataCell(Text(item.quantityChanged.toString())),
+            DataCell(Text(item.transactionType)),
+            DataCell(Text(item.timestamp)),
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }
