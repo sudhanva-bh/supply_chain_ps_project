@@ -1,13 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AgentApiService {
   final String baseUrl = 'http://localhost:8001/api';
 
+  Future<String?> _getPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('app_password');
+  }
+
   Stream<Map<String, dynamic>> sendMessageStream(String message) async* {
+    final pass = await _getPassword();
     final request = http.Request('POST', Uri.parse('$baseUrl/agentic-chat'));
     request.headers['Content-Type'] = 'application/json';
+    if (pass != null) request.headers['X-App-Password'] = pass;
     request.body = jsonEncode({'message': message});
 
     try {
@@ -35,8 +43,10 @@ class AgentApiService {
     String toolName,
     String argsJson,
   ) async {
+    final pass = await _getPassword();
     final request = http.Request('POST', Uri.parse('$baseUrl/execute-tool'));
     request.headers['Content-Type'] = 'application/json';
+    if (pass != null) request.headers['X-App-Password'] = pass;
     request.body = jsonEncode({'tool_name': toolName, 'args_json': argsJson});
 
     try {
@@ -59,3 +69,4 @@ class AgentApiService {
 final agentApiServiceProvider = Provider<AgentApiService>((ref) {
   return AgentApiService();
 });
+

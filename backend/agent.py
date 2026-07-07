@@ -417,7 +417,6 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
         error_msg = f"Error during agent execution: {str(e)}"
         print(f"{error_msg}\n{traceback.format_exc()}")
         query_logger.query_log["error"] = error_msg
-        import json
         yield json.dumps({"type": "status", "message": f"Fatal Error: {str(e)}"}) + "\n"
     finally:
         query_logger.save()
