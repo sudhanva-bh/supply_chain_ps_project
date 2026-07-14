@@ -16,6 +16,7 @@ class GilhariApiService {
     final pass = await _getPassword();
     return {
       'Content-Type': 'application/json',
+      // ignore: use_null_aware_elements
       if (pass != null) 'X-App-Password': pass,
     };
   }

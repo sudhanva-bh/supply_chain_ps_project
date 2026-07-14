@@ -69,4 +69,3 @@ class AgentApiService {
 final agentApiServiceProvider = Provider<AgentApiService>((ref) {
   return AgentApiService();
 });
-

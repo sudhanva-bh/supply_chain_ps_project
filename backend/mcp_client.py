@@ -60,6 +60,53 @@ class MCPClient:
             
         return openai_tools
 
+    async def get_langchain_tools(self) -> List[Any]:
+        if not self.session:
+            raise Exception("Not connected to MCP server")
+            
+        tools_resp = await self.session.list_tools()
+        
+        from langchain_core.tools import StructuredTool
+        from pydantic import create_model, Field
+        from typing import Any
+        
+        langchain_tools = []
+        for tool in tools_resp.tools:
+            fields = {}
+            properties = tool.inputSchema.get("properties", {})
+            required = tool.inputSchema.get("required", [])
+            for prop_name, prop_info in properties.items():
+                prop_type = str
+                if prop_info.get("type") == "integer":
+                    prop_type = int
+                elif prop_info.get("type") == "number":
+                    prop_type = float
+                elif prop_info.get("type") == "boolean":
+                    prop_type = bool
+                elif prop_info.get("type") == "array":
+                    prop_type = list
+                
+                default = ... if prop_name in required else None
+                fields[prop_name] = (prop_type, Field(default, description=prop_info.get("description", "")))
+            
+            ArgsSchema = create_model(f"{tool.name}Args", **fields)
+            
+            def create_run(t_name):
+                async def _run(**kwargs) -> str:
+                    return await self.call_tool(t_name, kwargs)
+                return _run
+
+            lc_tool = StructuredTool(
+                name=tool.name,
+                description=tool.description or "No description",
+                args_schema=ArgsSchema,
+                coroutine=create_run(tool.name),
+                func=lambda **kwargs: "Sync not supported"
+            )
+            langchain_tools.append(lc_tool)
+            
+        return langchain_tools
+
     async def call_tool(self, name: str, arguments: Dict[str, Any]) -> str:
         if not self.session:
             raise Exception("Not connected to MCP server")
