@@ -75,7 +75,7 @@ async def auth_verify():
 @app.api_route("/api/gilhari/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], dependencies=[Depends(verify_password)])
 async def proxy_gilhari(path: str, request: Request):
     gilhari_url = f"http://127.0.0.1:80/gilhari/v1/{path}"
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=120.0) as client:
         body = await request.body()
         headers = dict(request.headers)
         headers.pop("host", None) # Remove host header so httpx uses the correct one

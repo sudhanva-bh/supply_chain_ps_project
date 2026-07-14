@@ -37,15 +37,15 @@ class RegionalViewPayload(BaseModel):
     regions: List[RegionalData]
 
 class KanbanCard(BaseModel):
-    id: str
-    title: str
-    subtitle: str
-    column: str
-    color: str = Field(description="E.g., 'red', 'green', 'blue', 'yellow'")
+    id: str = Field(description="Unique identifier for the card, e.g. the PO ID or record ID")
+    title: str = Field(description="Primary display text for the card. Use the most identifying info, e.g. 'PO #1234 - Acme Corp' or the order/item name")
+    subtitle: str = Field(description="Secondary detail line. Include key metrics like amount, date, quantity, or status details. E.g. '$5,200 · Due 2024-03-15'")
+    column: str = Field(description="Must exactly match one of the column names in the columns list")
+    color: str = Field(description="E.g., 'red', 'green', 'blue', 'yellow', 'orange', 'purple'")
 
 class KanbanViewPayload(BaseModel):
-    columns: List[str]
-    cards: List[KanbanCard]
+    columns: List[str] = Field(description="Ordered list of column names (e.g. ['PENDING', 'PROCESSING', 'IN_TRANSIT']). Each card's column field must exactly match one of these strings.")
+    cards: List[KanbanCard] = Field(description="All cards to display. Every card must have a non-empty title and subtitle with real data from the query results.")
 
 class FormFieldSchema(BaseModel):
     name: str

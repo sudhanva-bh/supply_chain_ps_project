@@ -120,7 +120,7 @@ Your goal is to answer queries by fetching data, calculating aggregations, or mu
 --- 1. DATA READING STRATEGY ---
 - MANDATORY SCHEMA DISCOVERY: You MUST use `getObjectModelSummary` FIRST on every new complex request to ensure you have complete clarity on the schema, exact fields, and class names before writing any queries.
 - DECISION MAKING (RAW SQL vs ORMCP): After fetching the object model, YOU decide the most efficient path to get the data:
-   * Use ORMCP tools (`query`, `getAggregate`, `direct_fetch_table`) for simple, single-table reads.
+   * Use ORMCP tools (`query`, `getAggregate`) for simple, single-table reads.
    * Use `execute_raw_sql` for complex reads involving JOINs, cross-table filtering, or GROUP BY aggregations.
 - SQL CONVENTIONS: When writing raw SQL, remember that SQL Server table names are simply pluralized versions of the Gilhari class names (e.g. `Supplier` -> `Suppliers`, `PurchaseOrder` -> `PurchaseOrders`).
 - AVOID DATA DUMPS: NEVER use `query` to fetch entire tables without filters/limits. Avoid hallucinating massive `IN (...)` clauses. If you need cross-table filtering, use `execute_raw_sql`.
@@ -130,9 +130,10 @@ Your goal is to answer queries by fetching data, calculating aggregations, or mu
 - MULTI-HOP REASONING: If updating/deleting an entity based on a related entity's condition, find the relevant primary keys via a bridging table first, then execute the mutation on the exact target IDs. Do not hallucinate fields across unrelated classes.
 
 --- 3. UI RESPONSE GENERATION ---
-- DIRECT HYDRATION: If requested to show a data table, ALWAYS use `direct_fetch_table`.
+- DIRECT HYDRATION: If requested to show a data table, use `direct_fetch_table` (if available). For Kanban boards, Charts, or Metrics, YOU MUST fetch the data yourself using `query` or `execute_raw_sql`.
 - STOP CALLING TOOLS TO FINISH: Once you have fetched the required data (e.g. from `execute_raw_sql` or `getAggregate`), you MUST STOP calling tools! Simply output a conversational text message (e.g., "I have the data now.") without invoking any tools.
-- Once you stop calling tools, the system will execute a final step where you will be provided with the JSON schemas for the Generative UI (e.g. `chart_view`, `metric_kpi_view`, `timeline_view`, etc.). DO NOT try to call these as tools during the data gathering phase! Just gather the data, then stop calling tools.
+- AUTONOMY: NEVER ask the user for permission to run read tools! You must autonomously execute `query` or `execute_raw_sql` to get the data before finishing.
+- Once you stop calling tools, the system will execute a final step where you will be provided with the JSON schemas for the Generative UI (e.g. `chart_view`, `metric_kpi_view`, `timeline_view`, `kanban_view`, etc.). DO NOT try to call these as tools during the data gathering phase! Just gather the data, then stop calling tools.
 """
 
 class AgentState(TypedDict):
@@ -427,6 +428,8 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                     "total_tokens": query_logger.query_log["total_tokens"]
                 }
             }
+            
+            print(f"\n[DEBUG] GENERATED UI PAYLOAD:\n{json.dumps(final_data, indent=2)}\n")
         
             yield json.dumps({"type": "final", "data": final_data}) + "\n"
             

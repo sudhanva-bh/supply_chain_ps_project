@@ -72,11 +72,13 @@ class MainLayout extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: ListView.builder(
-                  itemCount: menuItems.length,
-                  itemBuilder: (context, index) {
-                    final isSelected = currentIndex == index;
-                    return ListTile(
+                child: Material(
+                  color: Colors.transparent,
+                  child: ListView.builder(
+                    itemCount: menuItems.length,
+                    itemBuilder: (context, index) {
+                      final isSelected = currentIndex == index;
+                      return ListTile(
                       leading: Icon(
                         menuItems[index]['icon'],
                         color: isSelected
@@ -107,7 +109,8 @@ class MainLayout extends ConsumerWidget {
                         }
                       },
                     );
-                  },
+                    },
+                  ),
                 ),
               ),
             ],
