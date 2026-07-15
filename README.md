@@ -1,77 +1,182 @@
-# Supply Chain Database Backend
+﻿# Agentic Supply Chain Intelligence Platform
 
-This project is a comprehensive Supply Chain Management system that combines a robust Microsoft SQL Server backend with a Gilhari REST microservice, an ORMCP Semantic Gateway (MCP Server), a FastAPI agentic AI backend, and a complete Flutter web dashboard. It enables AI-driven data analytics and manipulation directly through the user interface using Generative UI payloads.
+[![Gilhari](https://img.shields.io/badge/Gilhari-ORM%20Microservice-blue?style=for-the-badge)](https://www.softwaretree.com/v1/products/gilhari/gilhari.php)
+[![ORMCP](https://img.shields.io/badge/ORMCP-MCP%20Server-8A2BE2?style=for-the-badge)](https://pypi.org/project/ormcp-server/)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-FF6B35?style=for-the-badge&logo=langchain&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![MicrosoftSQLServer](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white)
 
-## Database Tables Overview
+> **Topics:** `ORMCP` `MCP` `Gilhari` `object-relational-mapping` `ORM` `mcp-server` `rdbms` `supply-chain` `ai-agents` `langchain` `langgraph` `gemini` `generative-ui` `flutter` `fastapi` `docker` `mssql` `agentic-ai` `structured-outputs` `e-commerce`
 
-The system manages the supply chain using the following 6 core tables:
-- **Suppliers**: Stores information about the vendors providing inventory items, including contact details and regions.
-- **ItemCategories**: Categorizes the inventory items into different classifications for organization.
-- **InventoryItems**: The core catalog of products managed in the warehouse, tracking current stock levels, pricing, and associations with suppliers and categories.
-- **PurchaseOrders**: Tracks purchase orders made for inventory items, including order dates, total costs, and delivery statuses.
-- **PurchaseOrderItems**: A bridging table mapping individual items and quantities to specific purchase orders, recording negotiated prices.
-- **StockTransactions**: An audit log tracking all movements of inventory, recording the quantity changed, transaction type (e.g., restock, sale, return), and timestamps.
+---
+
+## What This Project Does
+
+This repository demonstrates a complete, production-grade **Agentic Supply Chain Management** system. It is designed to showcase the full power of [Gilhari](https://www.softwaretree.com/v1/products/gilhari/gilhari.php) — a zero-boilerplate Object-Relational Mapping (ORM) microservice — paired with [ORMCP](https://pypi.org/project/ormcp-server/), a semantic gateway that exposes any Gilhari-managed database as a set of structured **Model Context Protocol (MCP)** tools that AI agents can understand and call directly.
+
+In practical terms: you run this project and you get a **web dashboard** where a supply chain manager can either manually manage inventory, suppliers, and purchase orders through standard data grids, or simply type a natural-language question such as:
+
+> "Show me a Kanban board of all purchase orders grouped by delivery status, sorted by total cost."
+
+The AI agent will then autonomously query the database through MCP tool calls, aggregate the data, and respond with a fully rendered, interactive UI component — a Kanban board, a bar chart, a KPI card, a data table — drawn directly inside the chat panel. No custom API endpoints. No hand-written SQL in the frontend. No glue code.
+
+### Why This Matters
+
+- **Zero SQL in your AI layer.** The ORMCP server introspects Gilhari's REST surface and auto-generates typed MCP tools (`query_InventoryItems`, `insert_StockTransactions`, etc.). The LLM never writes raw SQL for standard CRUD — it calls safe, schema-validated functions.
+- **Generative UI, not just text.** The agent's response is a structured JSON payload that the Flutter frontend parses and renders as a live UI widget. The model decides the correct visualization for the data it just retrieved.
+- **Swappable LLM backend.** The system works with both OpenAI (GPT-4o, GPT-4o-mini) and Google (Gemini Flash, Gemini Pro) with a single environment variable change.
+- **Fully containerized infrastructure.** SQL Server and the Gilhari microservice run in Docker with a single command.
+- **Dual data pathway.** Standard CRUD operations bypass the AI entirely and talk directly to the Gilhari REST API, keeping latency low for routine operations.
+
+---
+
+## Architectural Overview
+
+```
+                       [ Flutter Web Admin Dashboard ]
+                                      |
+         +----------------------------+-------------------------------+
+         |  Pathway A: Manual CRUD                                   |  Pathway B: Agentic AI Query
+         |                                               [ FastAPI Backend (Python) ]
+         |                                                            |
+         |                                               [ LangGraph Agent Loop ]
+         |                                                            |  (MCP Tool Calls)
+         |                                               [ ORMCP Server (Python) ]
+         |                                                            |  (HTTP / REST)
+         +----------------------------+-------------------------------+
+                                      |
+                       [ Gilhari Microservice (Docker) ]
+                                      |  (Microsoft JDBC Driver)
+                                      |
+                         [ Microsoft SQL Server (Docker) ]
+```
+
+| Layer | Technology | Role |
+|---|---|---|
+| Frontend | Flutter Web | Admin dashboard with manual CRUD views and an AI chat panel that renders Generative UI widgets |
+| AI Orchestration | FastAPI + LangGraph + LangChain | Receives chat requests, runs the agentic tool-calling loop, streams structured JSON responses |
+| Semantic Gateway | ORMCP (`ormcp-server`) | Introspects Gilhari and exposes database operations as typed MCP tools for the LLM |
+| Data Abstraction | Gilhari (Docker) | Automatic REST API generation from JDX ORM mappings; no hand-written data access code |
+| Database | Microsoft SQL Server 2022 | Persistent relational store for the six-table supply chain schema |
+| ORM Mapping | JDX + Java Container Classes | Declarative mapping of Java objects to SQL tables; compiled into the Gilhari container |
+
+---
+
+## Repository Structure
+
+| Directory / File | Type | Description |
+|---|---|---|
+| [`backend/`](./backend/) | Python Service | FastAPI agentic AI backend. Runs the LangGraph agent loop, connects to ORMCP, and streams Generative UI responses. See [Backend README](./backend/README.md). |
+| [`admin_dashboard/`](./admin_dashboard/) | Flutter Web App | Single-page web dashboard with six CRUD views and an AI Analytics chat panel. See [Frontend README](./admin_dashboard/README.md). |
+| [`src/`](./src/) | Java Source | Container model classes (`Supplier`, `InventoryItem`, etc.) extending `JDX_JSONObject`. Compiled into `bin/` and packaged into the Gilhari Docker image. |
+| [`bin/`](./bin/) | Compiled Classes | Pre-compiled Java `.class` files for the Gilhari ORM. Produced by `compile.cmd`. |
+| [`config/`](./config/) | ORM Configuration | `supply_chain.jdx` — JDX grammar file mapping Java object fields to SQL columns and defining foreign-key relationships. Also contains `classnames_map.json`. |
+| [`sql/`](./sql/) | SQL Scripts | `init.sql` — creates the six-table schema and inserts a baseline dataset into the SQL Server instance. |
+| [`Dockerfile`](./Dockerfile) | Docker Build | Extends `softwaretree/gilhari`, downloads the Microsoft SQL Server JDBC driver, and packages the compiled models and JDX config. |
+| [`docker-compose.yml`](./docker-compose.yml) | Docker Compose | Defines and links the `sqlserver` and `gilhari-service` containers. SQL Server on port `1433`, Gilhari on port `80`. |
+| [`gilhari_service.config`](./gilhari_service.config) | Gilhari Config | JSON config read by the Gilhari REST server at startup — points to the JDX spec, JDBC driver, and compiled class directory. |
+| [`seed.py`](./seed.py) / [`seed_lite.py`](./seed_lite.py) | Python Scripts | Populates the database with randomized supply chain data via the Gilhari REST API. |
+| [`start_ormcp.bat`](./start_ormcp.bat) | Batch Script | Standalone launcher for the ORMCP server — for use with Claude Desktop or any other MCP-compatible client. |
+| [`test_mcp_client.py`](./test_mcp_client.py) | Test Script | Validates that ORMCP connects to Gilhari and exposes the expected MCP tools. Dumps tool schemas to `mcp_tools_output.log`. |
+| [`compile.cmd`](./compile.cmd) | Build Script | Compiles Java container model classes in `src/` into `bin/`. Only required when modifying Java source files. |
+
+---
+
+## Database Schema
+
+The system manages six normalized tables representing a complete supply chain:
+
+| Table | Purpose | Key Relationships |
+|---|---|---|
+| `Suppliers` | Vendor profiles: company name, contact email, geographic region | One-to-Many with `InventoryItems` |
+| `ItemCategories` | Product category classifications with descriptions | One-to-Many with `InventoryItems` |
+| `InventoryItems` | Central product catalog with stock quantities and unit prices | Many-to-One with `Suppliers` and `ItemCategories` |
+| `PurchaseOrders` | Order headers with date, total cost, and delivery status | One-to-Many with `PurchaseOrderItems` |
+| `PurchaseOrderItems` | Junction table mapping items and quantities to purchase orders, recording negotiated prices | Many-to-One with `PurchaseOrders` and `InventoryItems` |
+| `StockTransactions` | Immutable audit log of all stock movements (RESTOCK, SALE, ADJUSTMENT) | Many-to-One with `InventoryItems` |
+
+---
 
 ## Prerequisites
 
-- **Docker Desktop** installed and running.
-- **Python 3.x** installed (only needed if you want to run the automatic seeding script).
-- **Java JDK** (only needed if you want to re-compile the Java container models).
+| Dependency | Required For |
+|---|---|
+| Docker Desktop | Running SQL Server and the Gilhari microservice containers |
+| Python 3.10+ | FastAPI backend, ORMCP server, and seeding scripts |
+| Flutter SDK 3.x | Admin dashboard web application |
+| Java JDK 8+ | Only needed to recompile Java ORM container classes (`compile.cmd`) |
+| Google Gemini API key or OpenAI API key | AI agent functionality |
 
-## Setting up
+---
 
-Please choose the setup guide that matches your current situation:
-- [Brand New Setup](#brand-new-setup) (First time running the project)
-- [Starting Up Everything Once Again](#starting-up-everything-once-again) (Resuming work on an existing project)
-- [Shutting Everything Down](#shutting-everything-down) (Safely stopping all components)
+## Setup and Running
+
+Choose the guide that matches your situation:
+
+- [Brand New Setup](#brand-new-setup) — First time running, or after deleting Docker volumes
+- [Resuming an Existing Setup](#resuming-an-existing-setup) — Starting everything back up after a prior session
+- [Shutting Everything Down](#shutting-everything-down) — Safely stopping all components
 
 ---
 
 ### Brand New Setup
 
-Follow these steps if this is your very first time running the project, or if you deleted your Docker volumes and need to start fresh.
+#### Step 1 — Start the Docker Infrastructure
 
-#### 1. Docker (Infrastructure & Database)
-*(Optional)* If you modified any `.java` files in the `src` directory, first run `.\compile.cmd` to compile the Java models into the `bin` directory before building the Docker image.
+If you modified any `.java` files in `src/`, recompile them first:
+```cmd
+.\compile.cmd
+```
 
-Spin up the Microsoft SQL Server and the custom Gilhari Microservice:
+Spin up Microsoft SQL Server and the Gilhari microservice:
 ```cmd
 docker-compose up -d --build
 ```
-*Wait about 10-20 seconds for the SQL Server instance to fully initialize on port `1433`.*
 
-Next, initialize the database schema and populate it with data:
+Wait approximately 15-20 seconds for SQL Server to finish initializing on port `1433`.
+
+#### Step 2 — Initialize the Database Schema
+
+Copy and execute the schema initialization script inside the SQL Server container:
 ```cmd
 docker cp sql\init.sql sqlserver:/init.sql
 docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -i /init.sql
 ```
-Then, install the python requests library and seed the database:
+
+#### Step 3 — Seed the Database
+
+Install dependencies and run the seeding script:
 ```cmd
 pip install requests
 python seed.py
 ```
-*(Alternatively, run `python seed_lite.py` for a smaller dataset).*
 
-#### 2. ORMCP (Semantic Gateway)
-*(Note: The FastAPI backend automatically spawns the ORMCP server in the background, but if you want to run it standalone for Claude Desktop, use `.\start_ormcp.bat`)*
+For a smaller, faster dataset, use `python seed_lite.py` instead.
 
-#### 3. Backend (Agentic AI API)
-Navigate to the `backend/` directory, set up your Python environment, and start the FastAPI server:
+#### Step 4 — Configure and Start the Agentic Backend
+
 ```cmd
 cd backend
 python -m venv .venv --system-site-packages
 .\.venv\Scripts\activate
 pip install -r requirements.txt
+copy .env.example .env
 ```
-**Important:** Make sure you open the `backend/.env` file and insert your actual `OPENAI_API_KEY`. 
 
-Then start the server:
+Open `backend/.env` and set either `GEMINI_API_KEY` (default provider) or `OPENAI_API_KEY`, then start the server:
+
 ```cmd
 uvicorn main:app --port 8001 --reload
 ```
 
-#### 4. Frontend (Flutter Dashboard)
-Open a new terminal, navigate to the `admin_dashboard` directory, and launch the web app with security disabled (to prevent CORS errors during local development):
+#### Step 5 — Start the Frontend Dashboard
+
+Open a new terminal:
 ```cmd
 cd admin_dashboard
 flutter run -d chrome --web-browser-flag "--disable-web-security"
@@ -79,30 +184,20 @@ flutter run -d chrome --web-browser-flag "--disable-web-security"
 
 ---
 
-### Starting Up Everything Once Again
+### Resuming an Existing Setup
 
-Because `docker-compose.yml` uses a persistent volume (`sqlserver_data`), your database and seeded data are completely safe. When resuming work, you **do not** need to run any initialization or seeding scripts.
+Your database is stored in a persistent Docker volume (`sqlserver_data`). Do not re-run initialization or seeding scripts.
 
-#### 1. Docker
-Start the existing infrastructure:
 ```cmd
+# Terminal 1 — Infrastructure
 docker-compose up -d
-```
 
-#### 2. ORMCP
-No standalone action needed. The backend will automatically manage the MCP connection.
-
-#### 3. Backend
-Open a terminal, activate your existing virtual environment, and start the API:
-```cmd
+# Terminal 2 — Backend
 cd backend
 .\.venv\Scripts\activate
 uvicorn main:app --port 8001 --reload
-```
 
-#### 4. Frontend
-Open another terminal and launch the dashboard:
-```cmd
+# Terminal 3 — Frontend
 cd admin_dashboard
 flutter run -d chrome --web-browser-flag "--disable-web-security"
 ```
@@ -111,53 +206,99 @@ flutter run -d chrome --web-browser-flag "--disable-web-security"
 
 ### Shutting Everything Down
 
-To safely stop all components without losing your permanent data:
-
-#### 1. Frontend
-In the terminal running the Flutter app, press `q` to quit the Chrome instance and stop the server.
-
-#### 2. Backend & ORMCP
-In the terminal running the FastAPI server, press `Ctrl + C` to stop the API. This will also automatically terminate the background ORMCP server.
-
-#### 3. Docker
-Tear down the containers safely (your database volume will be preserved):
 ```cmd
+# Frontend: press 'q' in the Flutter terminal
+
+# Backend: press Ctrl+C in the uvicorn terminal (also terminates the background ORMCP process)
+
+# Docker infrastructure
 docker-compose down
 ```
 
-## Component Verification (Testing)
+---
 
-Use the following commands to verify that each component of the architecture is properly running:
+## Component Verification
 
 ### 1. SQL Server Database
-Verify the SQL Server container is running and accepting queries:
 ```cmd
 docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -Q "SELECT @@VERSION"
 ```
 
 ### 2. Gilhari REST Microservice
-Verify the Gilhari engine is successfully exposing the data model:
 ```cmd
 curl.exe -X GET "http://localhost/gilhari/v1/health/check"
 ```
+Expected: `{"status":"ok"}`
 
-### 3. ORMCP Semantic Gateway (MCP Server)
-*(Ensure `start_ormcp.bat` is already running in a separate terminal)*
-Verify the MCP Server connects to Gilhari and exposes the database tools:
+### 3. ORMCP Semantic Gateway
 ```cmd
 python test_mcp_client.py
 ```
+Performs a handshake with the ORMCP server and dumps all available tool schemas to `mcp_tools_output.log`.
 
 ### 4. FastAPI Agentic Backend
-*(Ensure you are in the `backend/` directory and `uvicorn main:app --port 8001 --reload` is running)*
-You can test the agent interactively by visiting the auto-generated Swagger UI in your browser:
-**http://localhost:8001/docs**
 
-Alternatively, trigger it via PowerShell:
-```cmd
-Invoke-RestMethod -Method Post -Uri "http://localhost:8001/api/agentic-chat" -Headers @{"Content-Type"="application/json"} -Body '{"message": "Hello"}'
+Open the Swagger UI: [http://localhost:8001/docs](http://localhost:8001/docs)
+
+Or via PowerShell:
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:8001/api/agentic-chat" `
+  -Headers @{"Content-Type"="application/json"; "X-App-Password"="secret123"} `
+  -Body '{"message": "How many inventory items are below 100 units in stock?"}'
 ```
 
-### 5. Flutter Admin Dashboard (Generative UI)
-*(Ensure `flutter run -d chrome --web-browser-flag "--disable-web-security"` is running)*
-Simply open the provided Chrome instance and click on the **AI Analytics** sidebar tab to visually verify the frontend integration!
+### 5. Flutter Admin Dashboard
+
+Open the Chrome instance launched by `flutter run` and navigate to the **AI Analytics** tab in the left sidebar to verify Generative UI rendering.
+
+---
+
+## Standalone MCP Integration (Claude Desktop)
+
+The ORMCP server can be connected to any MCP-compatible client independently of the full backend stack. This lets you query and manipulate the supply chain database directly from Claude Desktop:
+
+```cmd
+.\start_ormcp.bat
+```
+
+Configure your MCP client to invoke `start_ormcp.bat` as its server command. The ORMCP server will auto-discover the Gilhari REST surface and expose typed tools for every entity in the schema.
+
+---
+
+## Generative UI Response Types
+
+The AI agent returns a structured `AgentResponse` JSON payload. The Flutter frontend inspects the `response_type` field and renders the corresponding widget:
+
+| Response Type | Rendered Widget |
+|---|---|
+| `text_only` | Plain markdown text response |
+| `table_view` | Static data table with columns and rows |
+| `direct_fetch_table` | Live data table fetched on demand from Gilhari |
+| `metric_kpi_view` | KPI summary cards with values, trend direction, and color coding |
+| `chart_view` | Bar, pie, or line chart rendered with `fl_chart` |
+| `timeline_view` | Chronological event timeline |
+| `kanban_view` | Multi-column Kanban board with color-coded status cards |
+| `regional_view` | SVG world map with regional data overlays |
+| `actionable_form_view` | Dynamic form for creating or updating records through the agent |
+| `alert_anomaly_view` | Severity-ranked alert cards for detected anomalies |
+| `confirmation_view` | Pre-execution confirmation dialog before a destructive mutation |
+
+---
+
+## Component Documentation
+
+- [Backend README](./backend/README.md) — FastAPI service, LangGraph agent, ORMCP integration, API reference, and environment configuration
+- [Frontend README](./admin_dashboard/README.md) — Flutter architecture, Generative UI widget system, CRUD view structure, and theming
+
+## External References
+
+- [Gilhari Product Page](https://www.softwaretree.com/v1/products/gilhari/gilhari.php) — Official documentation for the Gilhari ORM microservice
+- [ORMCP on PyPI](https://pypi.org/project/ormcp-server/) — The Python package powering the MCP semantic gateway
+- [Model Context Protocol Specification](https://modelcontextprotocol.io/) — The open protocol standard for connecting LLMs to external tools
+
+---
+
+## License
+
+This project is provided as a demonstration and example application under the Gilhari SDK. Please refer to the Gilhari SDK license terms for conditions of use.
+
