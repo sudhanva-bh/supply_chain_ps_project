@@ -82,6 +82,14 @@ async def execute_tool(request: ExecuteToolRequest):
 async def auth_verify():
     return {"status": "success"}
 
+@app.get("/api/mcp-logs")
+async def get_mcp_logs():
+    try:
+        with open("/home/site/wwwroot/mcp_stderr.log", "r") as f:
+            return Response(content=f.read(), media_type="text/plain")
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.api_route("/api/gilhari/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], dependencies=[Depends(verify_password)])
 async def proxy_gilhari(path: str, request: Request):
     base_url = os.environ.get("GILHARI_BASE_URL", "http://127.0.0.1:80/gilhari/v1/")

@@ -1,4 +1,4 @@
-fastapi>=0.111.0
+﻿fastapi>=0.111.0
 uvicorn>=0.30.1
 openai>=1.35.7
 pydantic>=2.8.0
@@ -10,3 +10,6 @@ langchain-openai>=0.2.0
 langgraph>=0.2.14
 langchain-google-genai>=1.0.0
 pyodbc>=5.1.0
+ormcp-server
+
+

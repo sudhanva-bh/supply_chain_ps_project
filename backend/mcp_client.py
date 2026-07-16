@@ -13,12 +13,17 @@ class MCPClient:
         python_exe = os.path.join(root_dir, '.venv', 'Scripts', 'python.exe')
         
         if not os.path.exists(python_exe):
-            python_exe = "python" # fallback
+            import sys
+            python_exe = sys.executable # fallback to current Python interpreter
             
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["LANG"] = "en_US.UTF-8"
+        
         self.server_params = StdioServerParameters(
-            command=python_exe,
-            args=["-m", "ormcp_server"],
-            env=os.environ.copy()
+            command="bash",
+            args=["-c", f"{python_exe} -m ormcp_server 2> /home/site/wwwroot/mcp_stderr.log"],
+            env=env
         )
         self.session: ClientSession = None
         self._exit_stack = None
