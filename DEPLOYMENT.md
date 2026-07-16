@@ -4,6 +4,14 @@ This document records the exact steps taken to deploy the Stockx Agentic Supply 
 
 ---
 
+## 🌐 Live Deployments
+
+- **Admin Dashboard (Flutter Frontend):** [https://thankful-water-0f80cc410.7.azurestaticapps.net/](https://thankful-water-0f80cc410.7.azurestaticapps.net/)
+- **AI Agent API (Python Backend):** [https://supply-chain-agentic-1234.azurewebsites.net/docs](https://supply-chain-agentic-1234.azurewebsites.net/docs)
+- **Gilhari Microservice (REST API):** `https://gilhari-service-app.orangesand-d052af28.southindia.azurecontainerapps.io`
+
+---
+
 ## 🏗️ Architecture Overview
 
 The production deployment utilizes four primary Microsoft Azure PaaS components:
