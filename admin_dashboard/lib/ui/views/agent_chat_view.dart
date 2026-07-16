@@ -29,12 +29,12 @@ class ChatStateNotifier extends Notifier<List<ChatMessage>> {
     return [
       ChatMessage(
         text:
-            "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
+            "Hello! I am your AI Stockx Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
         isUser: false,
         agentResponse: AgentResponse(
           responseType: "text_only",
           conversationalText:
-              "Hello! I am your AI Supply Chain Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
+              "Hello! I am your AI Stockx Assistant. Ask me anything about suppliers, inventory, or purchase orders.",
         ),
       ),
     ];
@@ -210,7 +210,7 @@ class _AgentChatViewState extends ConsumerState<AgentChatView> {
                       controller: _textController,
                       style: const TextStyle(color: AppTheme.primaryText),
                       decoration: const InputDecoration(
-                        hintText: 'Ask about the supply chain...',
+                        hintText: 'Ask about Stockx...',
                         hintStyle: TextStyle(color: AppTheme.secondaryText),
                         border: InputBorder.none,
                       ),

@@ -13,7 +13,7 @@ class AdminDashboardApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gilhari Admin Dashboard',
+      title: 'Stockx',
       theme: AppTheme.darkTheme,
       home: const AuthView(),
       debugShowCheckedModeBanner: false,

@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 [![ORMCP](https://img.shields.io/badge/ORMCP-MCP%20Server-8A2BE2?style=for-the-badge)](https://pypi.org/project/ormcp-server/)
 
-> Part of the [Agentic Supply Chain Intelligence Platform](../README.md). Also see the [Frontend README](../admin_dashboard/README.md).
+> Part of the [Stockx Platform](../README.md). Also see the [Frontend README](../admin_dashboard/README.md).
 
 ---
 

@@ -1,18 +1,18 @@
-﻿# Frontend — Flutter Web Admin Dashboard
+# Frontend — Flutter Web Admin Dashboard
 
 [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
 [![Riverpod](https://img.shields.io/badge/Riverpod-State%20Management-00B4D8?style=for-the-badge)](https://riverpod.dev/)
 
-> Part of the [Agentic Supply Chain Intelligence Platform](../README.md). Also see the [Backend README](../backend/README.md).
+> Part of the [Stockx Platform](../README.md). Also see the [Backend README](../backend/README.md).
 
 ---
 
 ## Overview
 
-This directory contains the Flutter web application that serves as the user-facing interface for the supply chain management system. The dashboard provides two distinct interaction modes that operate in parallel:
+This directory contains the Flutter web application that serves as the user-facing interface for Stockx. The dashboard provides two distinct interaction modes that operate in parallel:
 
-**Manual CRUD Mode (Pathway A):** Six data grid views — one for each database table — allow supply chain administrators to browse, create, update, and delete records. These views call the Gilhari REST API directly (routed through the FastAPI proxy at `/api/gilhari/`) using standard HTTP requests. No AI is involved in this pathway.
+**Manual CRUD Mode (Pathway A):** Six data grid views — one for each database table — allow administrators to browse, create, update, and delete records. These views call the Gilhari REST API directly (routed through the FastAPI proxy at `/api/gilhari/`) using standard HTTP requests. No AI is involved in this pathway.
 
 **AI Analytics Mode (Pathway B):** A dedicated chat panel accepts natural language queries. Messages are sent to the FastAPI agentic backend at `/api/agentic-chat`, which runs the LangGraph agent loop and streams back a structured `AgentResponse` JSON payload. The frontend parses the `response_type` field and renders the appropriate Generative UI widget inline within the chat conversation.
 
@@ -42,7 +42,7 @@ The `--disable-web-security` flag is required during local development to preven
 admin_dashboard/
 ├── lib/
 │   ├── main.dart                    # App entry point; wires up Riverpod and theming
-│   ├── models/                      # Dart data classes for all six supply chain entities
+│   ├── models/                      # Dart data classes for all six Stockx entities
 │   ├── providers/                   # Riverpod state providers
 │   ├── services/                    # HTTP service layer (Gilhari API calls, agent chat)
 │   ├── theme/                       # App-wide color palette, text styles, and Material theme
