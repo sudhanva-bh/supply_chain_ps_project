@@ -310,26 +310,41 @@ async def process_chat_message(user_message: str, mcp_client: MCPClient) -> Asyn
                         continue
                         
                     try:
-                        def run_docker_sync():
-                            return subprocess.run([
-                                "docker", "exec", "-i", "sqlserver", 
-                                "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", 
-                                "-U", "sa", "-P", "YourStrong!Passw0rd", "-C", 
-                                "-d", "supply_chain_db", "-Q", sql_q, "-s", ",", "-W"
-                            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+                        def run_sql_sync():
+                            import pyodbc
+                            import os
+                            server = os.environ.get("AZURE_SQL_SERVER")
+                            database = os.environ.get("AZURE_SQL_DATABASE")
+                            username = os.environ.get("AZURE_SQL_USER")
+                            password = os.environ.get("AZURE_SQL_PASSWORD")
+                            
+                            drivers = [d for d in pyodbc.drivers() if 'SQL Server' in d]
+                            if not drivers:
+                                raise Exception("No ODBC Driver for SQL Server found. Please install the Microsoft ODBC Driver.")
+                            driver = '{ODBC Driver 18 for SQL Server}' if 'ODBC Driver 18 for SQL Server' in drivers else (
+                                '{ODBC Driver 17 for SQL Server}' if 'ODBC Driver 17 for SQL Server' in drivers else '{' + drivers[-1] + '}'
+                            )
+                            
+                            conn_str = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+                            
+                            with pyodbc.connect(conn_str) as conn:
+                                cursor = conn.cursor()
+                                cursor.execute(sql_q)
+                                rows = cursor.fetchall()
+                                
+                                columns = [column[0] for column in cursor.description]
+                                out_str = ",".join(columns) + "\n"
+                                for row in rows:
+                                    out_str += ",".join([str(x) if x is not None else "NULL" for x in row]) + "\n"
+                                return out_str, ""
                     
-                        proc = await asyncio.to_thread(run_docker_sync)
-                        out_str = proc.stdout.strip()
-                        err_str = proc.stderr.strip()
+                        out_str, err_str = await asyncio.to_thread(run_sql_sync)
                         
-                        if proc.returncode != 0:
-                            tool_messages.append(ToolMessage(content=f"SQL Execution Failed:\n{err_str}\n{out_str}", tool_call_id=tool_call['id']))
-                        else:
-                            if len(out_str) > 10000:
-                                out_str = out_str[:10000] + "\n...[TRUNCATED]"
-                            tool_messages.append(ToolMessage(content=out_str if out_str else "Command executed successfully (no output).", tool_call_id=tool_call['id']))
+                        if len(out_str) > 10000:
+                            out_str = out_str[:10000] + "\n...[TRUNCATED]"
+                        tool_messages.append(ToolMessage(content=out_str if out_str else "Command executed successfully (no output).", tool_call_id=tool_call['id']))
                     except Exception as e:
-                        tool_messages.append(ToolMessage(content=f"Failed to run docker process: {str(e)}", tool_call_id=tool_call['id']))
+                        tool_messages.append(ToolMessage(content=f"SQL Execution Failed: {str(e)}", tool_call_id=tool_call['id']))
                         
                 else:
                     status_msg = f"Analyzing results from {tool_name}..."

@@ -1,4 +1,4 @@
-﻿# Agentic Supply Chain Intelligence Platform
+# Agentic Supply Chain Intelligence Platform
 
 [![Gilhari](https://img.shields.io/badge/Gilhari-ORM%20Microservice-blue?style=for-the-badge)](https://www.softwaretree.com/v1/products/gilhari/gilhari.php)
 [![ORMCP](https://img.shields.io/badge/ORMCP-MCP%20Server-8A2BE2?style=for-the-badge)](https://pypi.org/project/ormcp-server/)

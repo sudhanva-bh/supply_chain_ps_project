@@ -184,7 +184,7 @@ def post_data(endpoint, data):
 
 if __name__ == "__main__":
     print("Starting Seeding Process via Gilhari REST API...\n")
-    truncate_tables()
+    # truncate_tables()
     
     post_data("Supplier", suppliers)
     post_data("ItemCategory", categories)

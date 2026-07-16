@@ -1,0 +1,335 @@
+\documentclass{book}
+
+\usepackage{graphicx,epsfig}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[toc,page]{appendix}
+\renewcommand{\baselinestretch}{1}
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{6.5in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\parindent}{.3in}
+\pagestyle{plain}
+
+\begin{document}
+\bibliographystyle{plain}
+
+\large
+
+\thispagestyle{empty}
+\centerline{\bf A REPORT}
+\vspace*{0.3cm}
+\centerline{\bf ON}
+\vspace*{0.3cm}
+\centerline{\bf DEVELOPMENT OF AN APP-SPECIFIC GILHARI LIBRARY}
+\centerline{\bf MANAGEMENT MICROSERVICE WITH A FLUTTER FRONTEND} 
+\vspace*{2cm}
+
+\centerline{BY}
+\vspace*{1cm}
+
+\begin{center}
+	\begin{tabular}{lll} 
+		Name(s) of the students & \hspace*{2cm} ID No(s). & \hspace*{2cm} Discipline(s) \\ 
+		Sudhanva B H &\hspace*{2cm} 2024A7PS0085H &\hspace*{2cm} B.E. Computer Science \\
+	\end{tabular}
+\end{center}
+
+\vspace*{2cm}
+\begin{center}
+	{\bf Prepared in partial fulfillment of the \\
+	Practice School - I} \\ 
+\end{center}
+
+\vspace*{0.5cm}
+
+\centerline{AT}
+
+\vspace*{1cm}
+        \centerline{\bf Software Tree, California, USA} 
+	\vspace{0.2cm}
+	\centerline{\bf A Practice School - I}
+	\vspace{0.2cm}
+	\centerline{\bf Station of}
+	\vspace{0.5cm}
+\begin{figure}[ht]
+\epsfxsize=1.0in
+\centerline{\epsffile{logo.eps}}
+\end{figure}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.5cm}
+	\centerline{\bf June, 2026} 
+	\newpage
+
+\thispagestyle{empty}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.2cm}
+	\centerline{\bf Practice School Division}
+	\vspace*{0.3cm}
+	%\begin{center}
+		\begin{tabular}{p{4.5cm} p{10.5cm}}
+			\textbf{Station} & Software Tree, California, USA \\ 
+			\textbf{Duration} & May 2026 -- July 2026 \\ 
+			\textbf{Date of start} & 28 May 2026 \\ 
+			\textbf{Date of submission} & 18 June 2026 \\ 
+			\textbf{Title of the project} & Development of an App-Specific Gilhari Library Management Microservice with a Flutter Frontend \\ 
+			\textbf{ID No., Name and Discipline of the student} & 2024A7PS0085H, Sudhanva B H, B.E. Computer Science \\
+			\textbf{Name and Designation of the expert} & Damodar Periwal, Founder/CEO, Software Tree LLC \\
+			\textbf{Name of the PS faculty member} & Ajaya Kumar Pani \\
+			\textbf{Key words} & Gilhari, JDX ORM, REST API, Docker, PostgreSQL, JDBC, Library Management, JSON Object Model, Flutter, BYVALUE Relationships \\ 
+			\textbf{Project area} & Object-Relational Mapping, Database-backed REST APIs, Frontend Development \\ 
+			\textbf{Abstract} & This report states the work done during PS I at Software until 18-06-2026. The work was focused on understanding and utilising the Gilhari microservice, along with ORM concepts to finally develop an app-specific Gilhari project. With the learning that I had, a Library Management object model was designed. It contains nested BYVALUE relationships, namely Library, Librarian, Books, Authors, Members, Publishers, and LoanRecords. The main workflow involved Java container classes definition, JDX ORM mappings and configuration, PostgreSQL connectivity through JDBC Driver and a simple Flutter app to showcase the API end points for ease of use. Docker framework was used to containerize the RESTful microservice. Python was used to seed the data and API end points were tested through standard HTTP requests. Git was used for source control and the project repository is hosted on GitHub. \\ 
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			\textbf{Signature of the student} & \hspace*{2cm}\textbf{Signature of the PS faculty member} \\
+			& \\
+			\textbf{Date} & \hspace*{2cm}\textbf{Date} \\ 
+		\end{tabular}
+
+	\newpage
+	\centerline{\bf \Large Acknowledgements}
+	\vspace*{0.5cm}
+	
+		\par\noindent I would like to extend my sincere thanks to Software Tree for giving me an opportunity to work on Gilhari and associated microservice technologies during PS I.
+		
+		\par\noindent I am extremely thankful to Mr. Damodar Periwal, Founder and CEO of Software Tree LLC for conducting informative sessions and providing the basic knowledge on ORM concepts, JDX and Gilhari framework. His technical discussions helped me to design and build the project independently in a very effective way.
+		
+		\par\noindent I would also like to express my sincere thanks to my mentor, Ms. Sruthi Gomathi Veeramani for her constant coordination, guidance and support throughout the initial phase of the internship.
+		
+		\par\noindent I would also like to thank Prof. Ajaya Kumar Pani, Faculty-in-Charge and the Practice School Division, BITS Pilani for organizing and guiding the Practice School programme. This internship has helped me a lot in understanding backend Microservices, Database Management and Frontend Integrations.
+		
+		\vfill
+
+		\par\noindent {\bf Signature of the student}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter{Introduction}
+\section{Background}
+In the starting days of PS I, we had a quick introduction on ORM(Object Relational Mapping). Then we learnt about the Gilhari microservice. Gilhari is an app-specific RESTful microservice framework. This software is developed by Software Tree. It uses JDX ORM to map JSON objects directly to relational database tables. This bypasses the need to write repetitive boilerplate code for databases and RESP API generation. The initial phase of the internship involved downloading the Gilhari SDK and JDX software. The software was packed with plenty of examples which helped me on easily understanding how the configuration needed to be done and how a new service could be written on my own and helped me in understanding the core concepts of ORM.
+\section{Problem Statement}
+After the introduction, we were tasked to build an app specific Gilhari project for a real world application. I decided on designing a Library Management app, containing various BYVALUE containment relationships. Furthermore, to provide a user friendly interface, I decided to develop a custom Flutter app to consume the generated REST APIs by Gilhari.
+
+\section{Objectives}
+The primary objectives of the project were as follows:
+\begin{itemize}[itemsep=0pt]
+\item To understand the fundamentals of ORM and the role of Gilhari as a RESTful microservice framework.
+\item To study the relationship between JSON object models, Java container classes, JDX ORM mappings, and relational database tables.
+\item To design a real world object model, to demonstrate various feasible relations.
+\item To implement one-to-one and one-to-many BYVALUE relationships using JDX ORM specifications.
+\item To configure an external database(Postgres) using a JDBC driver.
+\item To build and run the custom Gilhari service using Docker.
+\item To test the generated REST endpoints through curl-style requests.
+\end{itemize}
+
+\section{Scope of the Report}
+In this report we describe the work done between 28 May 2026 and 18 June 2026. The report mainly covers the Gilhari framework, the custom Library Management object model, JDX ORM mapping configurations, Docker based execution and finally the integration of the Flutter frontend. The main focus of the internship is on the backend Gilhari framework, however the custom frontend development is also discussed for completeness.
+
+\chapter{Literature Review and Technical Background}
+
+\section{Object-Relational Mapping}
+When receiving data through REST API calls, the data is generally in a JSON object oriented style. This data cannot be directly stored in databases as it contains a lot of redundant text field names, which would consume unnecessary memory and increase fetching time. Thus, ORM (Object Relational Mapping) technique connects the object oriented JSON data with the relational database tables in the application. It defines how objects and their attributes correspond with the existing database tables and their columns. In our project, JDX ORM specifications are used to define these mappings \cite{jdx}.
+\section{JSON Object Models}
+As mentioned earlier, JSON is widely used for representing data in a structured manner in web applications and REST APIs. A JSON object model is very flexible. It can contain both simple attributes or complex fields such as nested objects and arrays. As the number of relations are high in this particular model, a complex JSON object model is used to structure various models like a \texttt{Librarian} object (one-to-one), and arrays of \texttt{Book}, \texttt{Author}, \texttt{Member}, \texttt{Publisher}, and \texttt{LoanRecord} objects (one-to-many).
+
+\section{Gilhari and JDX ORM}
+To convert JSON objects and store it into the relational database, Gilhari uses JDX ORM protocol \cite{gilhari}. The developer provides Java shell/container classes and a JDX mapping file. The Java classes act as the container representation of the domain objects, while the JDX file defines attributes, primary keys, relationship mappings, and database table mapping. This allows Gilhari to automatically expose REST APIs such as GET, POST, PUT, DELETE, in a configuration driven approach, for the object model without the developer writing the entire endpoint logic themselves.
+\section{BYVALUE Relationships}
+Ownership and containment relationship between objects is represented by a BYVALUE relationship. In this, the parent objects still owns the child object. For example, in this project, \texttt{Library} contains \texttt{Book} objects, and the books are considered part of the library. In case \texttt{Library} is deleted, its associated \texttt{Book} objects are also managed or removed along with it. In contrast to reference based relationship, where objects exist independently, this causes cascades to properly occur in the database.
+
+\section{Docker}
+The projects uses Docker. It is a containerization platform that allows applications and their dependencies to be packaged into lightweight, portable containers. This allows the application to run consistently across different environments. Without containerization, an application can face issues like dependency collision. When it is containerized with Docker, the application runs consistently across different environments, regardless of differences in operating systems or system configurations \cite{docker}. It also ensures that the service could be run without requiring extensive manual configuration.
+
+\section{PostgreSQL}
+PostgreSQL is used as the backend database for this project. PostgreSQL is a robust open-source relational database management system widely used for storing and managing structured data \cite{postgresql}. It guarantees reliability, scalability, and support for advanced SQL features. The Gilhari microservice communicated with PostgreSQL through the JDBC driver, using the database connection details specified in the JDX configuration. This enabled the application to efficiently store, retrieve, and manage data.
+\section{Flutter Frontend}
+Flutter is a cross-platform UI framework developed by Google \cite{flutter}. It is used in this project build the web-based frontend dashboard. The app uses modular architecture and uses \texttt{Provider} for state management. Further, \texttt{http} package was used to fetch data from the Gilhari REST API. Material 3 design was used to show the same data in a clear visual manner.
+\chapter{Methodology}
+
+\section{Exploration of Gilhari Examples}
+After deciding on doing a Library Management app for my assigned task, examples provided in the Gilhari SDK were studied. I started with \texttt{gilhari\_simple\_example}. This process helped me understand how Java container classes correspond to \texttt{.jdx} files and how relationships are structured. Then the understanding of how nested child objects can be mapped to schemas using BYVALUE relationships was understood by studying \texttt{gilhari\_relationships\_example}.
+
+\section{Designing the Library Management Object Model}
+Seven main object classes were used to design the Library Management object model. It is summarised in the Table \ref{tab:objectmodel}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{2.5cm}|p{5cm}|p{6.5cm}|}
+\hline
+\textbf{Class} & \textbf{Purpose} & \textbf{Key Attributes} \\
+\hline
+Library & Root object representing the library system & id, name, location \\
+\hline
+Librarian & Manages library operations & id, name, salary \\
+\hline
+Book & Stores book information & id, authorId, title, price \\
+\hline
+Author & Stores author details & id, name \\
+\hline
+Member & Stores member information & id, name, email \\
+\hline
+Publisher & Stores publisher information & id, name, city \\
+\hline
+LoanRecord & Tracks book borrowing transactions & id, bookId, memberId, checkoutDate, dueDate \\
+\hline
+\end{tabular}
+\caption{Library Management object model}
+\label{tab:objectmodel}
+\end{table}
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{object_model_diagram.pdf}
+\caption{Library Management Object Model Diagram}
+\label{fig:objectmodel}
+\end{figure}
+
+\section{Creating Java Container Classes}
+After identifying the required models, for every object in the model, a Java container class was created under the \texttt{com.softwaretree.library.model} package. In order to specify that it was a JSON object, each class extended the \texttt{JDX\_JSONObject} base class. Then the classes were compiled into \texttt{.class} files in the \texttt{bin} directory to be used by the Docker container.
+
+\section{Configuring JDX ORM Mappings}
+The \texttt{gilhari\_library\_example.jdx} file was written to map the classes to database tables. The file defines the database type as \texttt{POSTGRES} and establishes the relationships. A snippet of the configuration demonstrating the relationship mapping is shown below:
+
+\begin{verbatim}
+CLASS .Library TABLE Library
+    VIRTUAL_ATTRIB id ATTRIB_TYPE int
+    VIRTUAL_ATTRIB name ATTRIB_TYPE java.lang.String
+    VIRTUAL_ATTRIB location ATTRIB_TYPE java.lang.String
+    PRIMARY_KEY id
+    RELATIONSHIP librarian REFERENCES .Librarian BYVALUE REFERENCED_KEY parentId WITH id
+    RELATIONSHIP books REFERENCES ArrayBook BYVALUE WITH id
+    ...
+\end{verbatim}
+
+\section{PostgreSQL and Service Configuration}
+PostgreSQL was used as the backend. The JDBC connection was specified in the JDX configuration using \texttt{host.docker.internal:5433} . This allows the Dockerized Gilhari service to access the database running on the host machine. The \texttt{gilhari\_service.config} file brought the mapping and the JDBC driver paths together.
+
+\section{Dockerization and API Testing}
+A Dockerfile extending \texttt{softwaretree/gilhari} was written. Batch scripts (\texttt{compile.cmd}, \texttt{build.cmd}, and \texttt{run\_docker\_app.cmd}) automated compiling Java sources and starting of the container. A Python script (\texttt{seed.py}) was created to populate the database via REST POST calls. It inserted a dataset including 10 books, 15 members, and 12 loan records. API operations were also validated by running the \texttt{curlCommands.cmd}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{curl_commands.png}
+\caption{REST API Testing via curl}
+\label{fig:curltest}
+\end{figure}
+
+\section{Flutter Frontend Integration}
+For ease of use, a Flutter application was developed. The application uses the REST APIs generated by Gilhari. A \texttt{GilhariApiService} class was implemented to perform GET and POST HTTP requests. The UI comprises of a modern, dark-themed dashboard displaying the API outputs and also allowing the user to write data into the database using the PUT REST API functions.
+
+Figure \ref{fig:flutterui} showcases the different views developed for the frontend demo:
+\begin{itemize}
+\item \textbf{Overview Dashboard}: Displays key metrics like total books, members, and active checkouts.
+\item \textbf{Members View}: Lists all registered members fetched via the REST API.
+\item \textbf{Catalog View}: Displays the library's catalog of books and their prices.
+\item \textbf{Checkouts View}: Shows the active loan records including checkout and due dates.
+\end{itemize}
+
+\begin{figure}[htbp!]
+\centering
+\includegraphics[width=0.4\textwidth]{sc1.png}\hfill
+\includegraphics[width=0.4\textwidth]{sc2.png}
+
+\vspace{0.2cm}
+
+\includegraphics[width=0.4\textwidth]{sc3.png}\hfill
+\includegraphics[width=0.4\textwidth]{sc4.png}
+\caption{Flutter Frontend Demo Views: (Top-Left) Dashboard, (Top-Right) Members, (Bottom-Left) Catalog, (Bottom-Right) Checkouts}
+\label{fig:flutterui}
+\end{figure}
+
+\chapter{Results and Discussions}
+
+\section{Completed Deliverables}
+The major deliverables completed during the first half of the internship include:
+\begin{itemize}[itemsep=0pt]
+\item A custom real world object model with several related classes.
+\item Java container classes compiled to \texttt{.class} files.
+\item A JDX ORM specification file defining PostgreSQL database mappings and nested BYVALUE relationships.
+\item Docker build and execution scripts.
+\item REST API testing scripts and a Python database seeding script.
+\item A GitHub repository managed successfully: \href{https://github.com/sudhanva-bh/gilhari_library_example.git}{gilhari\_library\_example.git}.
+\item A complete Flutter web dashboard interfacing with the backend.
+\end{itemize}
+
+\section{Configuration and API Results}
+The Dockerized Gilhari service started successfully. It was hosted on port 80, as per convention. The microservice managed database schema creation in PostgreSQL and provided full CRUD REST APIs. 
+Fetching the \texttt{/gilhari/v1/Library} endpoint correctly returned the nested JSON structure encompassing the \texttt{Library}, \texttt{Librarian}, \texttt{Books}, \texttt{Members}, and other related objects.
+
+\section{Frontend Integration Result}
+The Flutter frontend queried the Gilhari API and rendered the data in a dynamic dashboard. It handled cross-origin requests properly. This demo demonstrated the utility of Gilhari as a backend for real-world applications.
+
+\section{Discussion}
+A crucial finding during the implementation was the strict dependency on alignment among Java class names, JDX mapping names, the \texttt{classnames\_map\_library.json} file, and the backend database configurations. A misalignment in any of these components impedes the framework's ability to map objects correctly.
+Additionally, while the primary focus of the internship was the backend Gilhari framework, developing the Flutter frontend emphasized the framework's ease of use. Once the model was configured, developing the client-side logic became very straightforward since standard REST APIs were already exposed.
+
+\chapter{Conclusions and Future Work}
+
+\section{Conclusion}
+The main goal of creating an independent, app specific Gilhari project was completed. The Library Management object model was a solid use case that demonstrated the use case of dealing with multi-level, one-to-many and one-to-one BYVALUE relationships in an Object-Relational Mapping environment. Java container classes and the JDX ORM framework masked the difficult tasks of database persistence, schema generation and REST API creation. This got me a fully functional, containerized backend microservice built on PostgreSQL and Docker with minimal boilerplate code.
+
+Furthermore, the seamless integration of a custom Flutter web frontend highlighted the framework's practical applicability in real-world, full-stack application development. The ability to rapidly consume Gilhari-generated APIs allowed for the creation of a modern, responsive dashboard that brought the underlying data model to life. Ultimately, this project solidified core concepts of microservice architecture, containerization, and the massive efficiency gains provided by app-specific frameworks like Gilhari.
+
+\section{Future Work}
+Building upon the foundational knowledge of object-relational mapping and microservices gained thus far, the focus of the internship will now transition toward advanced AI integrations. The next major undertaking involves developing an intelligent AI Agent leveraging the OpenAI Agents SDK. This agent will be designed to interact with relational data stored in the cloud via ORMCP (Object-Relational Mapping Context Protocol), an innovative software product developed by Software Tree.
+
+This upcoming project will require deep integrations with GPT language models, Azure cloud infrastructure, and enterprise-grade databases such as SQL Server. Initial exploratory work has already commenced to understand the Model Context Protocol (MCP) and how ORMCP bridges the gap between Large Language Models and structured relational databases. The ultimate goal is to create an agent capable of translating natural language queries into complex database operations, thereby redefining how users interact with enterprise data.
+
+\chapter{Recommendations}
+Based on the completed work and my experience, I would recommend the following for someone starting out with Gilhari:
+\begin{itemize}
+\item \textbf{Proper Documentation}: App-specific Gilhari projects should include clear README files detailing the object model and execution steps.
+\item \textbf{Precompiled Assets}: Examples provided in the package itself are useful. Go through them first. Also repositories should include precompiled \texttt{.class} files to enable straightforward, Docker-based evaluations without requiring local Java development environments.
+\item \textbf{Relational Clarity}: Developers must carefully design object models, correctly distinguishing between BYVALUE containment and standard reference relationships to ensure proper cascading persistence behavior.
+\item \textbf{UI Development}: Providing a simple web UI (such as the Flutter dashboard) greatly aids in demonstrating the functionality and value of the generated REST APIs.
+\end{itemize}
+
+% Removed nocite
+\bibliography{ref}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\begin{appendices}
+\chapter{Project Repository Checklist}
+The GitHub repository (\href{https://github.com/sudhanva-bh/gilhari_library_example.git}{gilhari\_library\_example.git}) prepared for this project contains:
+\begin{itemize}
+\item \texttt{src/} directory with Java source files.
+\item \texttt{bin/} directory with compiled \texttt{.class} files.
+\item \texttt{config/} directory with the JDX mapping file and classnames map.
+\item \texttt{Dockerfile} and batch scripts (\texttt{build.cmd}, \texttt{run\_docker\_app.cmd}, \texttt{compile.cmd}).
+\item \texttt{library\_frontend\_flutter/} directory containing the complete Flutter codebase.
+\item \texttt{seed.py} and \texttt{curlCommands.cmd} for testing.
+\item \texttt{README.md} and \texttt{.gitignore}.
+\end{itemize}
+
+\chapter{Main Tools Used}
+The primary tools and technologies used were:
+\begin{itemize}
+\item Gilhari SDK
+\item JDX ORM
+\item Java
+\item PostgreSQL and JDBC Driver
+\item Docker
+\item Flutter and Dart
+\item Visual Studio Code
+\item Git and GitHub
+\item curl and Python (for API scripting)
+\end{itemize}
+
+\end{appendices}
+
+\end{document}

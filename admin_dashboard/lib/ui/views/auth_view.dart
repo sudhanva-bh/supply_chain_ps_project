@@ -44,7 +44,7 @@ class _AuthViewState extends State<AuthView> {
   Future<bool> _verifyPassword(String password) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/auth/verify'),
+        Uri.parse('https://supply-chain-agentic-1234.azurewebsites.net/api/auth/verify'),
         headers: {'X-App-Password': password},
       );
       return response.statusCode == 200;

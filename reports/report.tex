@@ -1,0 +1,651 @@
+\documentclass{book}
+
+\usepackage{graphicx,epsfig}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[toc,page]{appendix}
+\usepackage{xcolor}
+\renewcommand{\baselinestretch}{1}
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{6.5in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\parindent}{.3in}
+\pagestyle{plain}
+
+% Helper macro for image placeholders
+\newcommand{\imgplaceholder}[2]{%
+  \begin{center}%
+    \fbox{\parbox{0.72\textwidth}{\centering\vspace{1.4cm}%
+      {\large\textbf{[Image Placeholder]}}\\[0.35cm]%
+      \textbf{#1}\\[0.2cm]%
+      \textit{\small #2}%
+      \vspace{1.4cm}}}%
+  \end{center}%
+}
+
+\begin{document}
+\bibliographystyle{plain}
+
+\large
+
+\thispagestyle{empty}
+\centerline{\bf A REPORT}
+\vspace*{0.3cm}
+\centerline{\bf ON}
+\vspace*{0.3cm}
+\centerline{\bf DEVELOPMENT OF AN AGENTIC SUPPLY CHAIN}
+\centerline{\bf INTELLIGENCE PLATFORM USING GILHARI, ORMCP,}
+\centerline{\bf LANGGRAPH, AND AZURE CLOUD}
+\vspace*{2cm}
+
+\centerline{BY}
+\vspace*{1cm}
+
+\begin{center}
+	\begin{tabular}{lll}
+		Name(s) of the students & \hspace*{2cm} ID No(s). & \hspace*{2cm} Discipline(s) \\
+		Sudhanva B H &\hspace*{2cm} 2024A7PS0085H &\hspace*{2cm} B.E. Computer Science \\
+	\end{tabular}
+\end{center}
+
+\vspace*{2cm}
+\begin{center}
+	{\bf Prepared in partial fulfillment of the \\
+	Practice School - I} \\
+\end{center}
+
+\vspace*{0.5cm}
+
+\centerline{AT}
+
+\vspace*{1cm}
+        \centerline{\bf Software Tree, California, USA}
+	\vspace{0.2cm}
+	\centerline{\bf A Practice School - I}
+	\vspace{0.2cm}
+	\centerline{\bf Station of}
+	\vspace{0.5cm}
+\begin{figure}[ht]
+\epsfxsize=1.0in
+\centerline{\epsffile{logo.eps}}
+\end{figure}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.5cm}
+	\centerline{\bf July, 2026}
+	\newpage
+
+\thispagestyle{empty}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.2cm}
+	\centerline{\bf Practice School Division}
+	\vspace*{0.3cm}
+	%\begin{center}
+		\begin{tabular}{p{4.5cm} p{10.5cm}}
+			\textbf{Station} & Software Tree, California, USA \\
+			\textbf{Duration} & May 2026 -- July 2026 \\
+			\textbf{Date of start} & 28 May 2026 \\
+			\textbf{Date of submission} & 16 July 2026 \\
+			\textbf{Title of the project} & Development of an Agentic Supply Chain Intelligence Platform using Gilhari, ORMCP, LangGraph, and Azure Cloud \\
+			\textbf{ID No., Name and Discipline of the student} & 2024A7PS0085H, Sudhanva B H, B.E. Computer Science \\
+			\textbf{Name and Designation of the expert} & Damodar Periwal, Founder/CEO, Software Tree LLC \\
+			\textbf{Name of the PS faculty member} & Ajaya Kumar Pani \\
+			\textbf{Key words} & Gilhari, JDX ORM, ORMCP, Model Context Protocol, LangGraph, LangChain, FastAPI, Flutter, Azure SQL Server, Azure Container Apps, Docker, Generative UI, Supply Chain, Agentic AI, REST API \\
+			\textbf{Project area} & Agentic AI, Object-Relational Mapping, Cloud Computing, Full-Stack Development \\
+			\textbf{Abstract} & This report describes the second and primary phase of work completed during PS-I at Software Tree (May--July 2026). Building upon foundational Gilhari ORM skills acquired through an initial Library Management practice project, this phase focused on the design and implementation of a production-grade, full-stack Agentic Supply Chain Intelligence Platform. The system integrates five architectural layers: a Microsoft Azure SQL Server database hosting a six-table normalized supply chain schema; a Dockerized Gilhari REST microservice deployed on Azure Container Apps; a Python-based ORMCP semantic gateway exposing the database as typed Model Context Protocol tools; a LangGraph agentic backend orchestrating an iterative tool-calling loop with OpenAI GPT-4o or Google Gemini; and a Flutter web admin dashboard supporting both manual CRUD operations and an AI Analytics chat panel with eleven distinct Generative UI response types. The entire infrastructure was deployed to Microsoft Azure and managed via Git and GitHub. \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			\textbf{Signature of the student} & \hspace*{2cm}\textbf{Signature of the PS faculty member} \\
+			& \\
+			\textbf{Date} & \hspace*{2cm}\textbf{Date} \\
+		\end{tabular}
+
+	\newpage
+	\centerline{\bf \Large Acknowledgements}
+	\vspace*{0.5cm}
+
+		\par\noindent I would like to extend my sincere thanks to Software Tree for providing me with the exceptional opportunity to work on cutting-edge Gilhari and agentic AI technologies during Practice School I.
+
+		\par\noindent I am extremely grateful to Mr.\ Damodar Periwal, Founder and CEO of Software Tree LLC, for his guidance, technical mentorship, and for conducting informative sessions on ORM concepts, the Gilhari framework, and the Model Context Protocol. His insights into enterprise software architecture were invaluable in helping me design and build a complex, production-grade system independently and effectively.
+
+		\par\noindent I would also like to express my sincere thanks to my mentor, Ms.\ Sruthi Gomathi Veeramani, for her constant coordination, guidance, and support throughout the internship.
+
+		\par\noindent I would like to thank Prof.\ Ajaya Kumar Pani, Faculty-in-Charge and the Practice School Division, BITS Pilani, for organizing and guiding the Practice School programme. This internship has greatly enriched my understanding of cloud-native microservices, agentic AI systems, and full-stack development at a professional level.
+
+		\vfill
+
+		\par\noindent {\bf Signature of the student}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+% =========================================================
+\chapter{Introduction}
+% =========================================================
+
+\section{Background}
+
+Practice School I at Software Tree was structured in two phases. The first phase served as a foundational exercise: building an app-specific Gilhari Library Management system from scratch. This involved designing a seven-class object model with nested BYVALUE relationships, configuring JDX ORM mappings, setting up a PostgreSQL backend, containerizing the service with Docker, and developing a Flutter web dashboard. That project was completed as a guided practice to develop core proficiency with the Gilhari and JDX ORM toolchain \cite{gilhari}.
+
+With the foundational skills firmly established, the internship transitioned to a significantly more advanced undertaking --- the primary deliverable of PS-I. The assigned project (Project 23) required designing and implementing a production-grade Agentic Supply Chain Intelligence Platform integrating cloud infrastructure, Large Language Models (LLMs), the Model Context Protocol, and a Generative UI system. This report covers this second, primary phase of the internship.
+
+\section{Problem Statement}
+
+The project required the development of an AI agent using the OpenAI Agents SDK and the LangChain/LangGraph framework to interact with a relational database hosted on Microsoft Azure, through ORMCP --- a semantic gateway developed by Software Tree. The formal problem statement encompassed the following tasks:
+
+\begin{itemize}[itemsep=0pt]
+\item \textbf{Cloud Deployment}: Configure, build, and run a Dockerized Gilhari microservice on Microsoft Azure using a free-tier developer license.
+\item \textbf{Database Management}: Set up and interact with a Microsoft Azure SQL Server database using an enterprise-grade, six-table normalized schema representing a complete supply chain system.
+\item \textbf{AI Agent Development}: Build an intelligent AI agent using OpenAI's tools and/or LangChain/LangGraph that interacts with the relational database through ORMCP's typed MCP tool interface, translating natural language queries into structured database operations.
+\item \textbf{Frontend Integration}: Develop a web admin dashboard supporting both standard manual CRUD operations and an agentic AI chat panel rendering dynamic, data-driven UI components.
+\item \textbf{Version Control and Documentation}: Maintain the codebase on GitHub with a comprehensive README file and complete project documentation.
+\end{itemize}
+
+\section{Objectives}
+
+The primary technical objectives of this project were:
+\begin{itemize}[itemsep=0pt]
+\item To design and implement a six-table normalized supply chain database schema on Azure SQL Server.
+\item To configure JDX ORM mappings for the supply chain object model and compile Java container classes for use by the Gilhari microservice.
+\item To containerize the Gilhari REST microservice using Docker and deploy it to Azure Container Apps.
+\item To integrate the ORMCP server, enabling the supply chain database to be exposed as typed Model Context Protocol tools.
+\item To implement a LangGraph-based agentic loop orchestrating iterative LLM tool calls against ORMCP to answer natural language queries.
+\item To design and implement eleven distinct Generative UI response types, enabling the AI agent's output to be rendered as charts, Kanban boards, KPI cards, timelines, and other interactive widgets in the Flutter frontend.
+\item To build a Flutter web admin dashboard with dual-pathway interaction: direct REST CRUD and AI-powered analytics.
+\item To deploy the complete system to Microsoft Azure (Azure SQL, Azure Container Apps, Azure App Service, Azure Static Web Apps).
+\item To validate the end-to-end system through integration testing and natural language query demonstrations.
+\end{itemize}
+
+\section{Scope of the Report}
+
+This report describes work completed during PS-I at Software Tree, covering the primary project phase from approximately late June 2026 to 16 July 2026. The report covers the complete five-layer system architecture: the Azure SQL Server database, the Gilhari ORM microservice, the ORMCP semantic gateway, the LangGraph agentic backend, and the Flutter web dashboard. Both local development and Azure cloud deployment aspects are covered. The cloud deployment process, as documented in \texttt{cloud\_deployment.md}, is treated as completed and verified in this report.
+
+
+% =========================================================
+\chapter{Literature Review and Technical Background}
+% =========================================================
+
+\section{Object-Relational Mapping and the Gilhari Framework}
+
+Object-Relational Mapping (ORM) is a programming technique that creates a correspondence between object-oriented data representations and their persistence in relational database tables. Rather than writing explicit SQL for every data access operation, the developer defines a declarative mapping that the ORM framework uses to handle all translation automatically. Gilhari, developed by Software Tree, is an app-specific ORM microservice built on the JDX ORM engine \cite{gilhari}. Given a set of compiled Java container classes and a JDX mapping specification, Gilhari automatically generates a complete RESTful API surface (GET, POST, PUT, DELETE) for each mapped object, eliminating the need for any hand-written data access code.
+
+\section{JDX ORM Specification Language}
+
+The JDX grammar file (\texttt{.jdx}) is the declarative configuration artifact that drives Gilhari \cite{jdx}. It specifies the database type and JDBC connection parameters, the Java object model package, and for each class: the corresponding database table name, all virtual attributes with their Java types, primary key designations, and inter-object relationships. JDX supports BYVALUE containment relationships, in which parent objects own their child collections, enabling nested JSON object representations. In the supply chain project, for example, a \texttt{PurchaseOrder} contains a BYVALUE array of \texttt{PurchaseOrderItem} objects, and a \texttt{Supplier} contains its associated \texttt{InventoryItem} records.
+
+\section{Model Context Protocol}
+
+The Model Context Protocol (MCP) is an open standard specification for providing a standardized interface through which AI agents and Large Language Models can communicate with external data sources and tools \cite{mcp}. MCP defines a JSON-RPC-based protocol for tool discovery and tool invocation. An MCP server exposes a catalogue of typed tools, each described by a name, a human-readable description, and a JSON Schema-validated parameter list. An MCP client (such as an agent's orchestration layer) can list available tools, select the appropriate one for a given query, and invoke it with structured arguments, receiving a structured result. This design allows AI models to interact with databases and APIs through safe, schema-validated function calls rather than generating free-form SQL.
+
+\section{ORMCP: The Semantic Gateway}
+
+ORMCP is a Python package developed by Software Tree that serves as a semantic bridge between the Gilhari REST microservice and any MCP-compatible AI agent \cite{ormcp}. On startup, the ORMCP server introspects the running Gilhari instance by reading its object model configuration. It then automatically generates named, typed MCP tools for each entity in the model --- for example, \texttt{query\_InventoryItems}, \texttt{insert\_StockTransaction}, \texttt{update\_PurchaseOrder}, \texttt{delete\_Supplier}, and \texttt{execute\_raw\_sql}. These tools are registered as an MCP server accessible over standard I/O, allowing any MCP-capable client to discover and invoke them without any custom integration code.
+
+\section{LangChain and LangGraph}
+
+LangChain is an open-source Python framework providing standardized abstractions for building LLM-powered applications \cite{langchain}. It offers unified interfaces for connecting to multiple LLM providers, managing prompt templates, and wrapping external tools in a format callable by the LLM. In this project, LangChain is used to wrap ORMCP MCP tools as \texttt{StructuredTool} objects and to enforce the \texttt{AgentResponse} Pydantic schema via \texttt{with\_structured\_output()}.
+
+LangGraph is a stateful graph-based orchestration framework built on top of LangChain \cite{langgraph}. It models an agent's decision process as a directed graph of nodes and edges. Each node represents a discrete step, and edges define transitions based on the agent's output. LangGraph manages the full message history as persistent state, enabling iterative multi-turn tool-calling loops in which the agent accumulates data across multiple database queries before formulating its final response.
+
+\section{FastAPI}
+
+FastAPI is a modern, high-performance Python web framework for building APIs, built on Starlette and Pydantic \cite{fastapi}. It supports asynchronous request handling natively and provides automatic OpenAPI documentation generation. In this project, FastAPI serves as the HTTP entry point for the agentic backend, exposing endpoints for the AI chat interface, direct tool execution, authentication verification, and a reverse proxy to the Gilhari REST service. FastAPI's native \texttt{StreamingResponse} is used to deliver intermediate agent status updates and the final structured response to the Flutter frontend as Newline-Delimited JSON (NDJSON).
+
+\section{Microsoft SQL Server and Azure SQL}
+
+Microsoft SQL Server is an enterprise-grade relational database management system (RDBMS) \cite{mssql}. This project uses the 2022 Developer edition locally via Docker and Azure SQL Database for cloud deployment. Azure SQL Database is a fully managed cloud service on Microsoft Azure providing the SQL Server engine without manual server administration. The Gilhari microservice communicates with SQL Server using the Microsoft JDBC Driver for SQL Server (\texttt{mssql-jdbc-12.4.2.jre8.jar}), which is downloaded at Docker image build time.
+
+\section{Microsoft Azure Cloud Infrastructure}
+
+Microsoft Azure is a cloud computing platform offering a broad range of services \cite{azure}. This project utilises four Azure services:
+\begin{itemize}[itemsep=0pt]
+\item \textbf{Azure SQL Database}: Managed cloud relational database hosting the six-table supply chain schema (free tier: 100,000 vCore-seconds and 32 GB/month).
+\item \textbf{Azure Container Apps}: Serverless container hosting used to run the Dockerized Gilhari microservice (free tier: 180,000 vCPU-seconds/month).
+\item \textbf{Azure App Service}: Managed platform-as-a-service environment hosting the Python FastAPI agentic backend (Free F1 tier).
+\item \textbf{Azure Static Web Apps}: Hosting service for compiled Flutter web assets, connected to the GitHub repository for automated continuous deployment (Free tier).
+\end{itemize}
+
+\section{Flutter Web and Riverpod}
+
+Flutter is a cross-platform UI framework developed by Google that compiles to native code or web JavaScript \cite{flutter}. The admin dashboard is a Flutter web application. It uses \textbf{Riverpod} for reactive state management, \textbf{fl\_chart} for bar, pie, and line chart rendering, \textbf{flutter\_markdown} for rendering LLM text responses, and \textbf{flutter\_svg} for the regional world-map visualization widget. The design uses a dark-mode-first approach with Google Fonts typography and smooth animated state transitions.
+
+\section{Generative UI}
+
+Generative UI is a paradigm in which an AI agent's response is not free-form text but a structured, typed payload that the client application renders as an appropriate interactive interface component \cite{genui}. Rather than returning a textual description of data, the agent selects the most suitable visualization for the data it retrieved (a chart, a Kanban board, a KPI summary, a data table) and populates it with the actual queried values. In this project, the agent's response conforms to a Pydantic-validated \texttt{AgentResponse} schema with eleven distinct response types, enforced using LangChain's \texttt{with\_structured\_output()} API.
+
+
+% =========================================================
+\chapter{Methodology}
+% =========================================================
+
+\section{System Architecture Design}
+
+The Agentic Supply Chain Intelligence Platform is designed as a five-layer system with a clear separation of concerns. The architecture provides two distinct interaction pathways, as illustrated in Figure~\ref{fig:architecture}.
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{System Architecture Diagram}{Five-layer architecture with Pathway A (Manual CRUD: Flutter $\to$ Gilhari REST) and Pathway B (Agentic AI: Flutter $\to$ FastAPI $\to$ LangGraph $\to$ ORMCP $\to$ Gilhari $\to$ Azure SQL).}
+\caption{Agentic Supply Chain Platform --- System Architecture}
+\label{fig:architecture}
+\end{figure}
+
+\textbf{Pathway A (Manual CRUD)} allows a supply chain administrator to directly browse, create, update, and delete records through data grid views in the Flutter dashboard. These operations issue HTTP requests to the Gilhari REST API (proxied through the FastAPI backend) without AI involvement, keeping latency minimal for routine tasks.
+
+\textbf{Pathway B (Agentic AI Query)} accepts a natural language question from the user in the AI Analytics chat panel. The query is routed to the FastAPI backend, which runs the LangGraph agentic loop. The loop dispatches typed ORMCP tool calls to query the database, aggregates the results, and uses the LLM to produce a structured \texttt{AgentResponse} JSON payload. The Flutter frontend then renders this as the appropriate Generative UI widget.
+
+The full technology stack is summarised in Table~\ref{tab:techstack}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{3cm}|p{4cm}|p{7cm}|}
+\hline
+\textbf{Layer} & \textbf{Technology} & \textbf{Role} \\
+\hline
+Frontend & Flutter Web + Riverpod & Admin dashboard: manual CRUD grids and AI Analytics chat panel with Generative UI \\
+\hline
+AI Orchestration & FastAPI + LangGraph + LangChain & Receives chat requests, runs the agentic tool-calling loop, streams structured JSON responses \\
+\hline
+Semantic Gateway & ORMCP (\texttt{ormcp-server}) & Introspects Gilhari and exposes database operations as typed MCP tools for the LLM \\
+\hline
+Data Abstraction & Gilhari (Docker) & Automatic REST API generation from JDX ORM mappings; no hand-written data access code \\
+\hline
+Database & Microsoft SQL Server / Azure SQL & Persistent relational store for the six-table supply chain schema \\
+\hline
+ORM Mapping & JDX + Java Container Classes & Declarative mapping of Java objects to SQL tables, compiled into the Gilhari container \\
+\hline
+\end{tabular}
+\caption{Technology stack summary}
+\label{tab:techstack}
+\end{table}
+
+\section{Database Schema Design}
+
+The supply chain database consists of six normalized tables representing the core entities of an inventory tracking and procurement system. The schema was designed to provide sufficient structural complexity to challenge both the manual CRUD layer and the AI agent's multi-table relational navigation. The six tables are described in Table~\ref{tab:schema}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{3.5cm}|p{4.5cm}|p{6cm}|}
+\hline
+\textbf{Table} & \textbf{Purpose} & \textbf{Key Relationships} \\
+\hline
+\texttt{Suppliers} & Vendor profiles: company name, contact email, geographic region & One-to-Many with \texttt{InventoryItems} \\
+\hline
+\texttt{ItemCategories} & Product category classifications with descriptions & One-to-Many with \texttt{InventoryItems} \\
+\hline
+\texttt{InventoryItems} & Central product catalog with stock quantities and unit prices & Many-to-One with \texttt{Suppliers} and \texttt{ItemCategories}; One-to-Many with \texttt{StockTransactions} \\
+\hline
+\texttt{PurchaseOrders} & Order headers with date, total cost, and delivery status & One-to-Many with \texttt{PurchaseOrderItems} \\
+\hline
+\texttt{PurchaseOrderItems} & Junction table mapping items and quantities to orders, recording negotiated prices & Many-to-One with \texttt{PurchaseOrders} and \texttt{InventoryItems} \\
+\hline
+\texttt{StockTransactions} & Immutable audit log of stock movements (RESTOCK, SALE, ADJUSTMENT) & Many-to-One with \texttt{InventoryItems} \\
+\hline
+\end{tabular}
+\caption{Six-table supply chain database schema}
+\label{tab:schema}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{Entity-Relationship Diagram}{Six tables, their primary/foreign keys, and the relationships between them. Highlight the one-to-many relationships and the junction table.}
+\caption{Supply Chain Database Entity-Relationship Diagram}
+\label{fig:dbschema}
+\end{figure}
+
+The schema was initialized by executing \texttt{sql/init.sql} inside the SQL Server container, which creates all six tables with appropriate data types, primary key constraints, foreign key references, and a baseline dataset. The database was seeded with randomized supply chain data using \texttt{seed.py}, which populates the tables by issuing HTTP POST requests to the Gilhari REST API.
+
+\section{JDX ORM Mapping and Java Container Classes}
+
+Six Java container classes were created under the \texttt{com.supplychain.model} package, one per database entity. Each class extends the \texttt{JDX\_JSONObject} base class provided by the JDX ORM framework. The \texttt{config/supply\_chain.jdx} file defines the complete ORM mapping, specifying the Microsoft SQL Server JDBC connection string, the object model package, and for each class: the table name, all virtual attributes with their Java types, the primary key designation, and BYVALUE relationships. A representative excerpt is shown below:
+
+\begin{verbatim}
+JDX_DATABASE JDX:jdbc:sqlserver://sqlserver:1433;
+   databaseName=supply_chain_db;encrypt=true;
+   trustServerCertificate=true;USER=sa;...
+   JDX_DBTYPE=SQLSERVER
+
+CLASS .Supplier TABLE Suppliers
+    VIRTUAL_ATTRIB supplierID ATTRIB_TYPE int
+    VIRTUAL_ATTRIB companyName ATTRIB_TYPE java.lang.String
+    VIRTUAL_ATTRIB contactEmail ATTRIB_TYPE java.lang.String
+    VIRTUAL_ATTRIB region ATTRIB_TYPE java.lang.String
+    PRIMARY_KEY supplierID
+    RELATIONSHIP inventoryItems
+        REFERENCES ArrayInventoryItem BYVALUE WITH supplierID
+;
+
+CLASS .PurchaseOrder TABLE PurchaseOrders
+    VIRTUAL_ATTRIB orderID ATTRIB_TYPE int
+    VIRTUAL_ATTRIB orderDate ATTRIB_TYPE java.lang.String
+    VIRTUAL_ATTRIB totalCost ATTRIB_TYPE double
+    VIRTUAL_ATTRIB deliveryStatus ATTRIB_TYPE java.lang.String
+    PRIMARY_KEY orderID
+    RELATIONSHIP purchaseOrderItems
+        REFERENCES ArrayPurchaseOrderItem BYVALUE WITH orderID
+;
+\end{verbatim}
+
+The Java source files were compiled using \texttt{compile.cmd} into the \texttt{bin/} directory. The \texttt{config/classnames\_map.json} file provides Gilhari with the mapping between simple class names and fully qualified Java names, which is required for correct REST endpoint resolution.
+
+\section{Docker Infrastructure}
+
+The local development infrastructure is defined in \texttt{docker-compose.yml} and consists of two services. The \texttt{sqlserver} service runs the official Microsoft SQL Server 2022 Docker image on port \texttt{1433} with data persisted to a named Docker volume (\texttt{sqlserver\_data}). The \texttt{gilhari-service} builds a custom image extending \texttt{softwaretree/gilhari}; the \texttt{Dockerfile} installs the Microsoft JDBC driver (\texttt{mssql-jdbc-12.4.2.jre8.jar}) via \texttt{wget} at build time, then packages the compiled \texttt{bin/} classes, \texttt{config/} JDX mapping, and \texttt{gilhari\_service.config}. The Gilhari REST server starts on port \texttt{8081} inside the container, exposed as port \texttt{80} on the host. The entire infrastructure is launched with a single command:
+\begin{verbatim}
+docker-compose up -d --build
+\end{verbatim}
+
+\section{ORMCP Semantic Gateway Setup}
+
+The ORMCP server is a Python process spawned as a child of the FastAPI backend on startup, managed through the FastAPI \texttt{lifespan} context manager. On initialization, ORMCP connects to the running Gilhari instance at \texttt{http://localhost:80/gilhari/v1/}, introspects the object model summary, and registers typed MCP tools for all six entities. The resulting tool catalogue includes operations for each entity (query, insert, update, delete) as well as a \texttt{execute\_raw\_sql} utility for JOINs and aggregations, and a \texttt{getObjectModelSummary} introspection tool. The \texttt{test\_mcp\_client.py} script performs a handshake with the ORMCP server, lists all tool schemas, and writes the full output to \texttt{mcp\_tools\_output.log}.
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{ORMCP Tool Discovery Output}{Screenshot showing the output of test\_mcp\_client.py or the contents of mcp\_tools\_output.log, listing the auto-generated MCP tool names and their JSON Schema definitions.}
+\caption{ORMCP Tool Discovery --- Available MCP Tools from the Supply Chain Model}
+\label{fig:ormcp_tools}
+\end{figure}
+
+\section{LangGraph Agentic Backend}
+
+The agentic logic is implemented in \texttt{backend/agent.py} as a LangGraph \texttt{StateGraph}. The graph state holds the full message history as a list of LangChain message objects (\texttt{HumanMessage}, \texttt{AIMessage}, \texttt{ToolMessage}). Two nodes implement the core loop:
+
+\textbf{Node 1: \texttt{call\_model}} invokes the configured LLM with the current message history and the complete set of ORMCP tools wrapped as LangChain \texttt{StructuredTool} objects. The LLM provider is selected via the \texttt{LLM\_PROVIDER} environment variable: \texttt{google} loads \texttt{ChatGoogleGenerativeAI} (Gemini Flash by default), and \texttt{openai} loads \texttt{ChatOpenAI} (GPT-4o-mini by default). Both providers are unified through LangChain's model interface, so the agent and tool-calling logic require no provider-specific changes. If the model returns tool calls, the state transitions to \texttt{execute\_tools}. If it returns a plain message with no tool calls, the loop terminates.
+
+\textbf{Node 2: \texttt{execute\_tools}} iterates over all tool calls in the last model message and executes each via \texttt{MCPClient.call\_tool()}. Results are appended as \texttt{ToolMessage} objects. The state transitions back to \texttt{call\_model}.
+
+\textbf{Final Step: Structured Output.} After the tool-calling loop exits, the LLM is invoked one final time using \texttt{with\_structured\_output(AgentResponse)}, forcing its output to conform to the Pydantic response schema. This produces the Generative UI payload streamed to the frontend as NDJSON.
+
+The system prompt instructs the agent to: always call \texttt{getObjectModelSummary} first on complex multi-table queries; prefer dedicated ORMCP tools for single-table reads and \texttt{execute\_raw\_sql} for JOINs; never use raw SQL for mutations; and stop calling tools once sufficient data has been gathered.
+
+\section{Generative UI Response System}
+
+The \texttt{AgentResponse} Pydantic model in \texttt{backend/models.py} is the typed contract between the AI agent and the Flutter frontend. It contains a \texttt{response\_type} discriminator field and eleven possible payload classes. Table~\ref{tab:genui} summarises the response types and their Flutter renderings.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{4.5cm}|p{9cm}|}
+\hline
+\textbf{Response Type} & \textbf{Rendered Widget in Flutter} \\
+\hline
+\texttt{text\_only} & Plain markdown text rendered via \texttt{flutter\_markdown} \\
+\hline
+\texttt{table\_view} & Static scrollable \texttt{DataTable} with alternating row colors \\
+\hline
+\texttt{direct\_fetch\_table} & Live data table fetched on demand from the Gilhari REST API \\
+\hline
+\texttt{metric\_kpi\_view} & Horizontal row of KPI summary cards with trend icons and color accents \\
+\hline
+\texttt{chart\_view} & Bar, pie, or line chart rendered via the \texttt{fl\_chart} package \\
+\hline
+\texttt{timeline\_view} & Vertical event timeline with icon, timestamp, title, and subtitle per entry \\
+\hline
+\texttt{kanban\_view} & Horizontally scrollable Kanban board with color-coded status cards \\
+\hline
+\texttt{regional\_view} & SVG world map with overlaid regional data labels \\
+\hline
+\texttt{actionable\_form\_view} & Dynamic typed form; on submit, produces a \texttt{confirmation\_view} \\
+\hline
+\texttt{alert\_anomaly\_view} & Severity-badged alert cards for detected anomalies \\
+\hline
+\texttt{confirmation\_view} & Pre-execution confirmation card that calls \texttt{POST /api/execute-tool} on confirm \\
+\hline
+\end{tabular}
+\caption{Generative UI response types and their Flutter widget renderings}
+\label{tab:genui}
+\end{table}
+
+Every agent query, its token usage across all LangGraph iterations, and the estimated USD cost are logged to a daily JSON file in \texttt{backend/logs/}, calculated from per-model pricing defined in \texttt{api\_costs.json}.
+
+\section{Flutter Admin Dashboard}
+
+The Flutter web dashboard is a single-page application with a persistent left sidebar for navigation. The application uses Riverpod for reactive state management and is organized into two functional areas:
+
+\textbf{Manual CRUD Views (Pathway A):} Six data grid views, one per entity, each implemented using a reusable \texttt{AsyncDataGrid} widget providing paginated browsing. A toolbar in each view supports add, edit, and delete actions. Record creation and editing are handled through per-entity form widgets presented in a \texttt{BaseModal} dialog. The \texttt{PurchaseOrderForm} is the most complex, managing nested \texttt{PurchaseOrderItems} in a coordinated sequence of API calls.
+
+\textbf{AI Analytics View (Pathway B):} The \texttt{agent\_chat\_view.dart} component maintains a scrollable conversation history. User messages trigger streaming NDJSON requests to \texttt{POST /api/agentic-chat}. Intermediate status lines (e.g., ``Calling tool: query\_InventoryItems...'') are rendered as progress indicators. The final NDJSON line is parsed as an \texttt{AgentResponse} and passed to \texttt{DynamicMessageWidget}, which dispatches rendering to the appropriate Generative UI sub-widget based on \texttt{response\_type}.
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{Flutter Admin Dashboard --- CRUD View}{Screenshot of the Flutter admin dashboard showing one or more of the six CRUD data grid views (e.g., Inventory Items or Purchase Orders view with the data table and toolbar visible).}
+\caption{Flutter Admin Dashboard --- Manual CRUD View}
+\label{fig:flutter_crud}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{Flutter Admin Dashboard --- AI Analytics Chat}{Screenshot of the AI Analytics tab with a sample natural language user query and a Generative UI widget rendered as the agent's response (e.g., a Kanban board or KPI card view).}
+\caption{Flutter Admin Dashboard --- AI Analytics Chat Panel with Generative UI Response}
+\label{fig:flutter_ai}
+\end{figure}
+
+\section{Cloud Deployment on Azure}
+
+The complete system was deployed to Microsoft Azure in five sequential steps following the project's \texttt{cloud\_deployment.md} guide:
+
+\begin{enumerate}[itemsep=0pt]
+\item \textbf{Azure SQL Database}: Provisioned on the free tier. The six-table schema was initialized by running \texttt{sql/init.sql} against the Azure SQL endpoint. The JDX configuration (\texttt{supply\_chain.jdx}) was updated with the Azure server hostname.
+
+\item \textbf{Gilhari on Azure Container Apps}: The Gilhari Docker image was built locally and pushed to an Azure Container Registry (ACR). A Container App was created from the ACR image with HTTP ingress on port \texttt{8081}, yielding a public HTTPS URL for the Gilhari REST API.
+
+\item \textbf{FastAPI Backend on Azure App Service}: The \texttt{backend/} directory was deployed as a Python 3.11 web application on an Azure App Service Free F1 tier via the Azure CLI (\texttt{az webapp up}). The \texttt{GILHARI\_BASE\_URL} environment variable was set to the Azure Container App URL, and the LLM API keys were configured as App Service environment variables.
+
+\item \textbf{Flutter Dashboard on Azure Static Web Apps}: The Flutter app was compiled (\texttt{flutter build web --release}) and deployed to Azure Static Web Apps (Free tier) connected to the GitHub repository for CI/CD. The frontend API base URL was updated to point to the deployed App Service.
+
+\item \textbf{End-to-End Verification}: The live Flutter dashboard was accessed, authenticated with the application password, and used to confirm that natural language queries successfully retrieved data from the Azure SQL Database via the deployed Gilhari ORMCP service.
+\end{enumerate}
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{Azure Portal Screenshot}{Screenshot of the Azure Portal showing all deployed resources: Azure SQL Database, Container App (Gilhari service), App Service (FastAPI backend), and Static Web App (Flutter dashboard).}
+\caption{Azure Portal --- Deployed Supply Chain Platform Resources}
+\label{fig:azure_portal}
+\end{figure}
+
+
+% =========================================================
+\chapter{Results and Discussions}
+% =========================================================
+
+\section{Completed Deliverables}
+
+The following deliverables were completed during the primary phase of PS-I:
+\begin{itemize}[itemsep=0pt]
+\item A six-table normalized Azure SQL Server schema with a full baseline dataset seeded via \texttt{seed.py}.
+\item Six Java container classes compiled to \texttt{.class} files in the \texttt{bin/} directory.
+\item A JDX ORM specification (\texttt{supply\_chain.jdx}) defining all object-to-table mappings and BYVALUE relationships.
+\item A \texttt{Dockerfile} and \texttt{docker-compose.yml} establishing the two-container local development infrastructure.
+\item An ORMCP server integration validated by \texttt{test\_mcp\_client.py}, exposing the full supply chain database as typed MCP tools.
+\item A LangGraph agentic backend (\texttt{backend/agent.py}) supporting both OpenAI GPT-4o and Google Gemini Flash via a single environment variable.
+\item Eleven Generative UI response types defined as Pydantic models and implemented as Flutter widgets.
+\item A complete Flutter web admin dashboard with six CRUD views and an AI Analytics chat panel.
+\item Full cloud deployment on Microsoft Azure across four services.
+\item Per-query token usage and cost logging to daily JSON files in \texttt{backend/logs/}.
+\item A GitHub repository with a comprehensive \texttt{README.md}, component-level READMEs for the backend and frontend, and full project documentation.
+\end{itemize}
+
+\section{Gilhari REST API Results}
+
+Following \texttt{docker-compose up} and schema initialization, the Gilhari REST microservice was available on port 80. A health check confirmed service readiness:
+\begin{verbatim}
+GET http://localhost/gilhari/v1/health/check
+-> {"status": "ok"}
+\end{verbatim}
+Gilhari auto-generated REST endpoints for all six entities. Querying \texttt{GET /gilhari/v1/Supplier} returned each supplier with its BYVALUE \texttt{inventoryItems} array embedded in the JSON response. Similarly, \texttt{GET /gilhari/v1/PurchaseOrder} returned each order with its nested \texttt{purchaseOrderItems} array. No hand-written endpoint code was required; the entire REST surface was derived from the JDX mapping and compiled container classes.
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{Gilhari REST API Response}{Screenshot of a curl command or browser response from the Gilhari REST endpoint (e.g., GET /gilhari/v1/Supplier), showing the nested JSON output with the BYVALUE inventoryItems array.}
+\caption{Gilhari REST API --- Sample Nested JSON Response for Supplier Endpoint}
+\label{fig:gilhari_api}
+\end{figure}
+
+\section{ORMCP Integration Results}
+
+Running \texttt{python test\_mcp\_client.py} confirmed a successful handshake with the ORMCP server. The \texttt{mcp\_tools\_output.log} file recorded the full JSON Schema for each auto-generated MCP tool, covering all six supply chain entities with query, insert, update, and delete operations, plus \texttt{execute\_raw\_sql} and \texttt{getObjectModelSummary}. The tool catalogue was also confirmed to be available within the FastAPI backend at startup, as indicated by the console log:
+\begin{verbatim}
+Connecting to ORMCP Server via stdio...
+Successfully connected to ORMCP Server.
+Loaded environment. Provider: GOOGLE, Model: gemini-flash-lite-latest
+\end{verbatim}
+
+\section{AI Agent Demonstration}
+
+The LangGraph agent successfully responded to a wide range of natural language queries, autonomously selecting appropriate ORMCP tools and Generative UI response types. A representative sample is given in Table~\ref{tab:agentdemo}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|p{7.5cm}|p{5.5cm}|}
+\hline
+\textbf{User Query} & \textbf{Response Type Rendered} \\
+\hline
+``What are our key supply chain KPIs?'' & \texttt{metric\_kpi\_view} \\
+\hline
+``Show me a Kanban board of all purchase orders grouped by delivery status.'' & \texttt{kanban\_view} \\
+\hline
+``Draw a bar chart of total stock quantity per item category.'' & \texttt{chart\_view} (bar) \\
+\hline
+``Show the 5 most recent stock transactions as a timeline.'' & \texttt{timeline\_view} \\
+\hline
+``Are there any inventory items critically low on stock?'' & \texttt{alert\_anomaly\_view} \\
+\hline
+``Give me a form to order 50 more GPUs from our best supplier.'' & \texttt{actionable\_form\_view} \\
+\hline
+``Where are our suppliers located globally?'' & \texttt{regional\_view} \\
+\hline
+``Update purchase order \#100001 to Delivered.'' & \texttt{confirmation\_view} \\
+\hline
+\end{tabular}
+\caption{Sample AI agent queries and corresponding Generative UI response types}
+\label{tab:agentdemo}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\imgplaceholder{AI Agent Generative UI Response}{Screenshot of the Flutter AI Analytics chat panel showing a completed agent response rendered as a Generative UI widget, for example a Kanban board or KPI metrics view.}
+\caption{AI Agent Generative UI Response --- Example Widget Rendered in the Chat Panel}
+\label{fig:agent_demo}
+\end{figure}
+
+\section{Cloud Deployment Results}
+
+All four Azure services were operational upon completion of the deployment:
+\begin{itemize}[itemsep=0pt]
+\item The Azure SQL Database was accessible from both the local machine (for data seeding) and from the Azure Container Apps environment running the Gilhari service.
+\item The Gilhari microservice on Azure Container Apps responded correctly to REST health checks and entity queries at its public HTTPS URL.
+\item The FastAPI backend on Azure App Service successfully spawned the ORMCP server process and routed agent queries through the Azure-hosted Gilhari service.
+\item The Flutter dashboard on Azure Static Web Apps authenticated correctly and rendered all CRUD views and Generative UI responses against the live Azure infrastructure.
+\end{itemize}
+
+\section{Discussion}
+
+A key technical insight gained from this project is the layered decoupling that the Gilhari-ORMCP-LangGraph stack provides. The developer writes no SQL in the AI orchestration layer; the LLM interacts exclusively with safe, schema-validated MCP tool functions. This eliminates a significant class of potential security and correctness issues (such as SQL injection through LLM-generated queries) and makes the system highly maintainable as the database schema evolves.
+
+The dual-provider LLM architecture, unified through LangChain's model abstraction, proved highly practical. Switching between OpenAI GPT-4o and Google Gemini Flash required only changing the \texttt{LLM\_PROVIDER} environment variable, with zero changes to the agent graph or tool-calling logic. This makes the system resilient to API rate limits and pricing changes.
+
+The Generative UI paradigm proved significantly more valuable than a plain text-based chatbot interface. When the agent returned a Kanban board or a KPI card, the data was immediately comprehensible and actionable in a way that a text paragraph could not match. This highlighted the importance of structured output enforcement via Pydantic and \texttt{with\_structured\_output()} for LLM applications in operational environments.
+
+One area requiring careful attention was the strict alignment required between JDX class names, the \texttt{classnames\_map.json} file, the compiled \texttt{.class} files, and the ORMCP tool names. A naming inconsistency in any of these layers causes silent failures that are difficult to diagnose. Systematic naming conventions and the \texttt{test\_mcp\_client.py} validation script are essential mitigations.
+
+
+% =========================================================
+\chapter{Conclusions and Future Work}
+% =========================================================
+
+\section{Conclusion}
+
+This project successfully delivered a production-grade, five-layer Agentic Supply Chain Intelligence Platform. Starting from the foundational Gilhari ORM skills acquired through the initial Library Management practice project, the work advanced to address enterprise-scale challenges: a normalized six-table Azure SQL Server schema, cloud deployment across four Microsoft Azure services, an ORMCP semantic gateway, a LangGraph agentic tool-calling loop supporting both OpenAI and Google Gemini models, and a Flutter web dashboard with eleven distinct Generative UI response types.
+
+The Gilhari-ORMCP-LangGraph architecture demonstrated viability as a pattern for building AI-native data applications. By combining Gilhari's zero-boilerplate REST generation with ORMCP's MCP tool auto-discovery, the integration code required to connect an LLM to a relational database was reduced dramatically. LangGraph provided the necessary structure for reliable, multi-turn, multi-tool agentic reasoning, and the Generative UI system transformed the agent's output from plain text into actionable, rendered interfaces that are immediately useful to a supply chain administrator.
+
+\section{Future Work}
+
+Several directions exist for extending and improving this system:
+\begin{itemize}[itemsep=0pt]
+\item \textbf{Real-time Streaming}: Integrating WebSocket-based streaming between the FastAPI backend and the Flutter frontend would reduce perceived latency for complex, multi-tool agent queries.
+\item \textbf{Multi-Agent Orchestration}: Introducing specialized sub-agents (e.g., a dedicated procurement agent and an inventory analyst agent) coordinated by a supervisor would improve performance on complex, multi-domain queries.
+\item \textbf{Expanded Database Support}: Testing the ORMCP-Gilhari stack against additional relational databases (PostgreSQL, MySQL) would validate the portability of the architecture.
+\item \textbf{Enterprise Authentication}: Replacing the simple shared application password with OAuth 2.0 and role-based access control would make the platform suitable for real enterprise deployments.
+\item \textbf{Agent Memory}: Adding a persistent vector-based conversation memory store would allow the agent to maintain context across user sessions and provide more relevant responses over time.
+\end{itemize}
+
+
+% =========================================================
+\chapter{Recommendations}
+% =========================================================
+
+Based on the completed work and the challenges encountered, the following recommendations are offered for developers working with the Gilhari-ORMCP-LangGraph stack:
+
+\begin{itemize}
+\item \textbf{Start with the JDX Mapping}: The JDX file is the single source of truth for the entire system. Invest time upfront in getting the naming conventions consistent --- between the JDX class names, the \texttt{classnames\_map.json}, and the Java source files --- before writing any other layer. Naming errors propagate silently through every layer above.
+
+\item \textbf{Validate ORMCP Early}: Run the MCP handshake test (\texttt{test\_mcp\_client.py}) as the very first integration test after starting the Gilhari container. Confirming that the full tool catalogue is exposed before writing the agent loop saves significant debugging time.
+
+\item \textbf{Use Structured Outputs for Generative UI}: Define Pydantic schemas for all response types from the beginning, rather than attempting to parse free-form LLM text. LangChain's \texttt{with\_structured\_output()} API enforces these schemas reliably and is essential for a robust Generative UI system.
+
+\item \textbf{Design for LLM Provider Flexibility}: Use LangChain's model abstractions from the start and avoid any provider-specific API calls in the core agent logic. This allows switching between OpenAI and Gemini via a single environment variable change, which is invaluable for cost management and rate limit mitigation during development.
+
+\item \textbf{Document the Object Model Thoroughly}: The accuracy of the ORMCP system prompt depends on the LLM correctly understanding the object model to select the right tools and field names. A well-structured \texttt{getObjectModelSummary} response is critical for agent accuracy on complex multi-table queries.
+\end{itemize}
+
+% Removed nocite
+\bibliography{ref}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\begin{appendices}
+\chapter{Project Repository Checklist}
+The GitHub repository prepared for this project contains:
+\begin{itemize}
+\item \texttt{src/} directory with Java container class source files (\texttt{Supplier.java}, \texttt{InventoryItem.java}, \texttt{ItemCategory.java}, \texttt{PurchaseOrder.java}, \texttt{PurchaseOrderItem.java}, \texttt{StockTransaction.java}).
+\item \texttt{bin/} directory with pre-compiled Java \texttt{.class} files for the Gilhari ORM.
+\item \texttt{config/} directory containing \texttt{supply\_chain.jdx} (JDX ORM mapping) and \texttt{classnames\_map.json}.
+\item \texttt{sql/} directory with \texttt{init.sql} (schema creation and baseline data insertion).
+\item \texttt{Dockerfile} and \texttt{docker-compose.yml} for the local development infrastructure.
+\item \texttt{gilhari\_service.config} configuring the Gilhari REST server.
+\item \texttt{backend/} directory with the complete FastAPI agentic backend (\texttt{main.py}, \texttt{agent.py}, \texttt{mcp\_client.py}, \texttt{models.py}, \texttt{requirements.txt}, \texttt{.env.example}).
+\item \texttt{admin\_dashboard/} directory with the complete Flutter web application.
+\item \texttt{seed.py} and \texttt{seed\_lite.py} for database population via Gilhari REST API.
+\item \texttt{start\_ormcp.bat} for standalone ORMCP server launch (e.g., for Claude Desktop integration).
+\item \texttt{test\_mcp\_client.py} for ORMCP connectivity and tool schema validation.
+\item \texttt{compile.cmd} and \texttt{build.cmd} build automation scripts.
+\item \texttt{OVERVIEW.md}, \texttt{README.md}, \texttt{cloud\_deployment.md}, and \texttt{PROMPTS.md} for comprehensive documentation.
+\end{itemize}
+
+\chapter{Main Tools and Technologies Used}
+The primary tools and technologies used in this project were:
+\begin{itemize}
+\item Gilhari SDK and JDX ORM Framework (Software Tree)
+\item ORMCP Server Python Package (\texttt{ormcp-server}, Software Tree)
+\item Model Context Protocol (MCP) Specification
+\item LangChain and LangGraph (Python)
+\item OpenAI API (GPT-4o, GPT-4o-mini)
+\item Google Gemini API (Gemini Flash, Gemini Pro)
+\item FastAPI and Uvicorn (Python)
+\item Pydantic (data validation and structured output enforcement)
+\item Java (JDK 8+) for container class compilation
+\item Microsoft SQL Server 2022 (Docker) and Azure SQL Database
+\item Microsoft JDBC Driver for SQL Server
+\item Docker and Docker Compose
+\item Microsoft Azure (Container Apps, App Service, Static Web Apps, Container Registry, SQL Database)
+\item Flutter SDK 3.x and Dart
+\item Riverpod (Flutter state management)
+\item \texttt{fl\_chart}, \texttt{flutter\_markdown}, \texttt{flutter\_svg} (Flutter packages)
+\item Python 3.11+ (seeding scripts, backend, ORMCP)
+\item Git and GitHub
+\item Visual Studio Code
+\end{itemize}
+
+\end{appendices}
+
+\end{document}

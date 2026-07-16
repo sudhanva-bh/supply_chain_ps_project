@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class GilhariApiService {
   // Now points to the FastAPI backend proxy
-  static const String baseUrl = 'http://localhost:8001/api/gilhari';
+  static const String baseUrl = 'https://supply-chain-agentic-1234.azurewebsites.net/api/gilhari';
 
   Future<String?> _getPassword() async {
     final prefs = await SharedPreferences.getInstance();

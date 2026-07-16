@@ -1,4 +1,4 @@
-JDX_DATABASE JDX:jdbc:sqlserver://supply-chain-server-asia.database.windows.net:1433;databaseName=SupplyChainDBAsia;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;USER=sqladmin;PASSWORD=WcLIfLNpwSydx3Dg1jYZAGbWTw9rrRfcC1V2qNwkkkkb0i1lbo;JDX_DBTYPE=SQLSERVER;DEBUG_LEVEL=5
+JDX_DATABASE JDX:jdbc:sqlserver://supply-chain-server-asia.database.windows.net:1433;databaseName=<YOUR_DATABASE_NAME>;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;USER=<YOUR_USERNAME>;PASSWORD=<YOUR_PASSWORD>;JDX_DBTYPE=SQLSERVER;DEBUG_LEVEL=5
 JDBC_DRIVER com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 OBJECT_MODEL_OVERVIEW Supply Chain Object Model

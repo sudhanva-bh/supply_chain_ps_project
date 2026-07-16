@@ -1,0 +1,231 @@
+\documentclass{book}
+
+\usepackage{graphicx,epsfig}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage[toc,page]{appendix}
+
+
+\renewcommand{\baselinestretch}{1}
+
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{6.5in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\topmargin}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\parindent}{.3in}
+\pagestyle{plain}
+
+\begin{document}
+\bibliographystyle{plain}
+
+\large
+
+\thispagestyle{empty}
+\centerline{\bf A REPORT}
+\vspace*{0.3cm}
+\centerline{\bf ON}
+\vspace*{0.3cm}
+\centerline{\bf SUPPORT VECTOR MACHINES} % enter here
+\vspace*{2cm}
+
+\centerline{BY}
+\vspace*{1cm}
+
+\begin{center}
+	\begin{tabular}{lll} % enter here
+		Name(s) of the students & \hspace*{2cm} ID No(s). & \hspace*{2cm} Discipline(s) \\ 
+		Amardeep Singh Grewal &\hspace*{2cm} 2022A2PS0851P &\hspace*{2cm} B. E in Civil Engineering \\
+		Harish Kumar &\hspace*{2cm} 2021B4PS0642H &\hspace*{2cm} M. Sc. in Mathematics \\
+		Akhsay Agrawal & \hspace*{2cm} 2022A2PS1030P & \hspace*{2cm} B. E. in Civil Engineering\\
+	\end{tabular}
+\end{center}
+
+\vspace*{2cm}
+\begin{center}
+	{\bf Prepared in partial fulfillment of the \\
+	Practice School - II} \\ % enter here
+\end{center}
+
+\vspace*{0.5cm}
+
+\centerline{AT}
+
+\vspace*{1cm}
+        \centerline{\bf Universal Software, Ahmedabad} % enter here
+	\vspace{0.2cm}
+	\centerline{\bf A Practice School - II}
+	\vspace{0.2cm}
+	\centerline{\bf Station of}
+	\vspace{0.5cm}
+\begin{figure}[ht]
+\epsfxsize=1.0in
+\centerline{\epsffile{logo.eps}}
+\end{figure}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.5cm}
+	\centerline{\bf December, 2025} % enter here
+	\newpage
+
+\thispagestyle{empty}
+
+	\centerline{\bf BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI}
+	\vspace*{0.2cm}
+	\centerline{\bf Practice School Division}
+	\vspace*{0.3cm}
+	{\bf 
+	%\begin{center}
+		\begin{tabular}{p{6cm}l}
+			& \\
+			& \\
+			& \\
+			Station & \hspace*{3cm} Centre \\ % enter here
+			& \\
+			Duration &\hspace*{3cm} Date of start \\ % enter here
+			& \\
+			Date of submission & {} \\ % enter here
+			& \\
+			Title of the project: & \\ % enter here
+			& \\
+			ID No.(s), Name(s) and Disciplines of the student(s): & \\
+			& \\ % enter here
+			& \\ % enter here
+			& \\ % enter here
+			Name(s) and Designation(s) of the expert(s): & \\
+			& \\ % enter here
+			& \\ % enter here
+			Name(s) of the PS faculty member(s): & \\
+			& \\ % enter here
+			Key words: & \\ % enter here
+			& \\
+			Project area(s):  & \\ % enter here
+			& \\
+			Abstract: & \\ % enter here
+			& \\
+			& \\
+			& \\
+			& \\
+			& \\
+			Signature of the student(s) & \hspace*{1cm}Signature of the PS faculty member(s) \\
+			& \\
+			Date & \hspace*{1cm}Date \\ % enter here
+		\end{tabular}}
+
+	\newpage
+	\centerline{\bf \Large Acknowledgements}
+	\vspace*{0.5cm}
+		\par\noindent Ensure that you start each paragraph with \begin{verbatim} \par\noindent \end{verbatim} so that the initial spacing is not there in the text.  % enter here
+		
+		\href{https://www.example.com}{Visit our website} 
+		\vfill
+
+		\par\noindent {\bf Signature of the student(s)}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter{Introduction}
+Please note the position and font size for the chapters. You can divide the chapter into sections and subsections (and in fact subsubsections). These can be referenced if required. Please refer to \cite{lamport86latex} for details. 
+
+\section{Usage of \LaTeX}
+
+A chapter can be divided into several sections. 
+
+
+\subsection{Figures in the document}
+You can go one level below section for the purpose of clarity. 
+All figures and tables are to be referenced in the text. For eg. Fig. \ref{sample} depicts two non-intersecting circles. 
+
+
+\begin{figure}[ht]
+\epsfxsize=2.5in
+\centerline{\epsffile{circle.eps}}
+\caption{A sample figure}
+\label{sample}
+\end{figure}
+
+
+
+\subsection{Tables in the document}
+A table has also got to be referenced in the text. 
+Table \ref{grades} gives the grades of student Venki in the first semester. 
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{|c|l|c|}
+			\hline
+			S. No. & Course & Grade \\
+			\hline
+			1 & MFDS & B- \\
+			\hline
+			2 & ISM & A- \\
+			\hline
+			3 & COSS & A \\
+			\hline
+			4 & DSAD & C \\
+			\hline
+		\end{tabular}
+		\caption{Grades in the first semester}
+		\label{grades}
+	\end{center}
+\end{table}
+
+\subsection{Equations in the document}
+
+An equation is typeset using the equantion / eqnarray environment. A sample is given below for your reference. 
+
+\begin{equation}
+	\displaystyle \lim_{x \rightarrow 0} \frac{\sin{x}}{x} = 1
+	\label{limsin}
+\end{equation}
+Equation \eqref{limsin} is a standard limit and is proven using geometric principles. 
+The equations are autonumbered and you can reference using \begin{verbatim} \eqref{limsin} \end{verbatim} in the text. 
+You may refer Appendix \ref{appB} for a detailed note on the above. 
+\subsection{Bulleted items}
+
+Bulleted items are created using the itemize construct and numbered ones using the enumerate construct. Every bulleted item / enumerated item should be at least a sentence. An example of minimum system requirements would be 
+
+\begin{itemize}
+\item i3 processor as Monte Carlo computations are required to be done several times and averaged.  
+\item 8 GB of RAM for storage of several matrices during the execution of the code. 
+\item 32 inch monitor for better visibility and seeing multiple graphs that are the output of the code.
+\end{itemize}
+
+
+\begin{enumerate}
+\item i3 processor as Monte Carlo computations are required to be done several times and averaged.  
+\item 8 GB of RAM for storage of several matrices during the execution of the code. 
+\item 32 inch monitor for better visibility and seeing multiple graphs that are the output of the code.
+\end{enumerate}
+
+
+
+
+
+\chapter{Literature review}
+You may put in all the relevant papers and books that you have referred and also give references to them by citing them appropriately. Ensure that the bibtex entries are updated to reflect them correctly. 
+\chapter{Methodology}
+Specify the requirements in the project and the methods you wish to use. A brief justification on the method would be useful. 
+\chapter{Results and discussions}
+Collate all the results in this chapter and discuss why they are so. Ensure that the plots are visible to reader. Yuu may use pstricks package to enhance some aspects in a figure. 
+\chapter{Conclusions and future work}
+Interpret the results and draw conclusions based on the work done. You should also include a paragraph or two on what could be done to improve the results. 
+
+\chapter{Recommendations}
+Use this chapter to include all recommendations.
+\bibliography{ref}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\begin{appendices}
+\chapter{The proof of Central Limit Theorem}
+Show the proof here
+\chapter{Riemann Lebesgue Lemma}
+	\label{appB}
+Prove the lemma here
+\end{appendices}
+
+
+\end{document}
