@@ -36,166 +36,192 @@ class _PieChartWidgetState extends State<_PieChartWidget> {
   Widget build(BuildContext context) {
     final chart = widget.chart;
     final total = chart.values.fold(0.0, (a, b) => a + b);
+    final hasSelection = _touchedIndex >= 0 && _touchedIndex < chart.labels.length;
 
     return GlassContainer(
       borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Pie Chart
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, PieTouchResponse? response) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            response == null ||
-                            response.touchedSection == null) {
-                          _touchedIndex = -1;
-                          return;
-                        }
-                        _touchedIndex =
-                            response.touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  sectionsSpace: 3,
-                  centerSpaceRadius: 48,
-                  sections: List.generate(chart.values.length, (i) {
-                    final isTouched = i == _touchedIndex;
-                    final color = _pieColors[i % _pieColors.length];
-                    return PieChartSectionData(
-                      value: chart.values[i],
-                      title: isTouched
-                          ? '${((chart.values[i] / total) * 100).toStringAsFixed(1)}%'
-                          : '',
-                      color: isTouched
-                          ? color
-                          : color.withValues(alpha: 0.75),
-                      radius: isTouched ? 72 : 58,
-                      titleStyle: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      borderSide: isTouched
-                          ? BorderSide(color: color, width: 2)
-                          : BorderSide.none,
-                    );
-                  }),
-                ),
-              ),
-            ),
-            const SizedBox(width: 28),
-            // Legend + hover info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // ── Top row: pie (centred) + info panel (fixed-size, no layout shift) ──
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (_touchedIndex >= 0 &&
-                      _touchedIndex < chart.labels.length)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _pieColors[_touchedIndex % _pieColors.length]
-                            .withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _pieColors[
-                                  _touchedIndex % _pieColors.length]
-                              .withValues(alpha: 0.5),
+                  // Pie – always centred in the available space
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: PieChart(
+                          PieChartData(
+                            pieTouchData: PieTouchData(
+                              touchCallback: (FlTouchEvent event,
+                                  PieTouchResponse? response) {
+                                setState(() {
+                                  if (!event.isInterestedForInteractions ||
+                                      response == null ||
+                                      response.touchedSection == null) {
+                                    _touchedIndex = -1;
+                                    return;
+                                  }
+                                  _touchedIndex = response
+                                      .touchedSection!.touchedSectionIndex;
+                                });
+                              },
+                            ),
+                            sectionsSpace: 3,
+                            centerSpaceRadius: 48,
+                            sections: List.generate(chart.values.length, (i) {
+                              final isTouched = i == _touchedIndex;
+                              final color = _pieColors[i % _pieColors.length];
+                              return PieChartSectionData(
+                                value: chart.values[i],
+                                title: isTouched
+                                    ? '${((chart.values[i] / total) * 100).toStringAsFixed(1)}%'
+                                    : '',
+                                color: isTouched
+                                    ? color
+                                    : color.withValues(alpha: 0.75),
+                                radius: isTouched ? 72 : 58,
+                                titleStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.5),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
+                                ),
+                                borderSide: isTouched
+                                    ? BorderSide(color: color, width: 2)
+                                    : BorderSide.none,
+                              );
+                            }),
+                          ),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            chart.labels[_touchedIndex],
-                            style: TextStyle(
-                              color: _pieColors[
-                                  _touchedIndex % _pieColors.length],
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Value: ${chart.values[_touchedIndex].toStringAsFixed(1)}',
-                            style: const TextStyle(
-                              color: AppTheme.primaryText,
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            'Share: ${((chart.values[_touchedIndex] / total) * 100).toStringAsFixed(1)}%',
-                            style: const TextStyle(
-                              color: AppTheme.secondaryText,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: List.generate(chart.labels.length, (i) {
-                      final color = _pieColors[i % _pieColors.length];
-                      final isActive = i == _touchedIndex;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              width: isActive ? 13 : 10,
-                              height: isActive ? 13 : 10,
-                              decoration: BoxDecoration(
-                                color: color,
-                                shape: BoxShape.circle,
-                                boxShadow: isActive
-                                    ? [
-                                        BoxShadow(
-                                          color: color.withValues(alpha: 0.6),
-                                          blurRadius: 8,
-                                        )
-                                      ]
-                                    : null,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              chart.labels[i],
-                              style: TextStyle(
-                                color: isActive
-                                    ? AppTheme.primaryText
-                                    : AppTheme.secondaryText,
-                                fontSize: 12,
-                                fontWeight: isActive
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                          ],
+                  ),
+                  // Info panel – always occupies the same space (no layout shift)
+                  SizedBox(
+                    width: 170,
+                    child: AnimatedOpacity(
+                      opacity: hasSelection ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 180),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: hasSelection
+                              ? _pieColors[_touchedIndex % _pieColors.length]
+                                  .withValues(alpha: 0.12)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                          border: hasSelection
+                              ? Border.all(
+                                  color: _pieColors[
+                                          _touchedIndex % _pieColors.length]
+                                      .withValues(alpha: 0.45),
+                                )
+                              : Border.all(color: Colors.transparent),
                         ),
-                      );
-                    }),
+                        child: hasSelection
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    chart.labels[_touchedIndex],
+                                    style: TextStyle(
+                                      color: _pieColors[
+                                          _touchedIndex % _pieColors.length],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Value: ${chart.values[_touchedIndex].toStringAsFixed(1)}',
+                                    style: const TextStyle(
+                                      color: AppTheme.primaryText,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Share: ${((chart.values[_touchedIndex] / total) * 100).toStringAsFixed(1)}%',
+                                    style: const TextStyle(
+                                      color: AppTheme.secondaryText,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
                   ),
                 ],
               ),
+            ),
+
+            const SizedBox(height: 20),
+            // ── Legend – 2-column Wrap ──
+            Wrap(
+              spacing: 20,
+              runSpacing: 10,
+              children: List.generate(chart.labels.length, (i) {
+                final color = _pieColors[i % _pieColors.length];
+                final isActive = i == _touchedIndex;
+                return SizedBox(
+                  width: 160,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        width: isActive ? 13 : 10,
+                        height: isActive ? 13 : 10,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          boxShadow: isActive
+                              ? [
+                                  BoxShadow(
+                                    color: color.withValues(alpha: 0.6),
+                                    blurRadius: 8,
+                                  )
+                                ]
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          chart.labels[i],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isActive
+                                ? AppTheme.primaryText
+                                : AppTheme.secondaryText,
+                            fontSize: 12,
+                            fontWeight: isActive
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ),
           ],
         ),
