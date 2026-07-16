@@ -30,7 +30,17 @@ async def lifespan(app: FastAPI):
     print("Disconnecting from ORMCP Server...")
     await mcp_client.disconnect()
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="Supply Chain AI Backend", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 async def verify_password(x_app_password: str = Header(None, alias="X-App-Password")):
     app_password = os.environ.get("APP_PASSWORD")
