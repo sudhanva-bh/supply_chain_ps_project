@@ -1235,15 +1235,18 @@ class RegionalMapWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                height: 220,
+                constraints: const BoxConstraints(maxHeight: 450),
                 width: double.infinity,
                 color: const Color(0xFF0A0E1A),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Opacity(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 950 / 620,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Opacity(
                             opacity: 0.6,
                             child: SvgPicture.asset(
                               'assets/world_map.svg',
@@ -1324,14 +1327,16 @@ class RegionalMapWidget extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        }),
-                      ],
-                    );
-                  },
+                              ),
+                            );
+                          }),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
+            ),
             ),
             const SizedBox(height: 16),
             // Stats grid
