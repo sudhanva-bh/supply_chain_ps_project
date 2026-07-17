@@ -128,3 +128,48 @@ We injected a Flutter installation step, manually ran `flutter build web`, and i
 
 ### Continuous Integration
 Every subsequent push to the `main` branch automatically triggers this GitHub action, rebuilding the Flutter app and deploying it seamlessly.
+
+---
+
+## 5. Operations & Maintenance Sheet
+
+Here are the most common commands you'll need to maintain and update the deployed platform.
+
+### Frontend (Admin Dashboard)
+The frontend is configured with GitHub Actions. To redeploy, simply push your changes to the `main` branch.
+```bash
+git add admin_dashboard/
+git commit -m "Update frontend"
+git push origin main
+```
+To monitor the deployment, check the Actions tab in your GitHub repository.
+
+### Backend (Python AI Agent)
+To deploy changes made in the `backend/` directory to Azure App Service:
+```powershell
+# 1. Package the code (excluding virtual environments)
+if (Test-Path backend.zip) { Remove-Item backend.zip }
+Get-ChildItem -Path backend -Exclude ".venv", "__pycache__", ".git", "*.log" | Compress-Archive -DestinationPath backend.zip -Force
+
+# 2. Deploy the zip to Azure
+az webapp deploy --resource-group SupplyChainBackend --name supply-chain-agentic-1234 --src-path backend.zip --type zip
+```
+
+**Helpful Backend Commands:**
+- **Update Env Var:** `az webapp config appsettings set --resource-group SupplyChainBackend --name supply-chain-agentic-1234 --settings "KEY=VALUE"`
+- **Restart App:** `az webapp restart --resource-group SupplyChainBackend --name supply-chain-agentic-1234`
+- **Tail Logs:** `az webapp log tail --resource-group SupplyChainBackend --name supply-chain-agentic-1234`
+
+### Gilhari Microservice
+To update the underlying Gilhari container (for example, if the JDX schema changes):
+```powershell
+# 1. Build and push the new image
+docker build -t bhsudhanva/supply-chain-gilhari:latest -f Dockerfile .
+docker push bhsudhanva/supply-chain-gilhari:latest
+
+# 2. Instruct Azure Container Apps to pull and redeploy the new image
+az containerapp update --name gilhari-service-app --resource-group SupplyChainBackend --image bhsudhanva/supply-chain-gilhari:latest
+```
+
+**Helpful Gilhari Commands:**
+- **View Logs:** `az containerapp logs show -n gilhari-service-app -g SupplyChainBackend`
