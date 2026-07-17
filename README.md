@@ -11,9 +11,6 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
 ![MicrosoftSQLServer](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white)
 
-> **Topics:** `ORMCP` `MCP` `Gilhari` `object-relational-mapping` `ORM` `mcp-server` `rdbms` `supply-chain` `ai-agents` `langchain` `langgraph` `gemini` `generative-ui` `flutter` `fastapi` `docker` `mssql` `agentic-ai` `structured-outputs` `e-commerce`
-
----
 
 ## What This Project Does
 
@@ -311,10 +308,3 @@ The AI agent returns a structured `AgentResponse` JSON payload. The Flutter fron
 - [Gilhari Product Page](https://www.softwaretree.com/v1/products/gilhari/gilhari.php) — Official documentation for the Gilhari ORM microservice
 - [ORMCP on PyPI](https://pypi.org/project/ormcp-server/) — The Python package powering the MCP semantic gateway
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/) — The open protocol standard for connecting LLMs to external tools
-
----
-
-## License
-
-This project is provided as a demonstration and example application under the Gilhari SDK. Please refer to the Gilhari SDK license terms for conditions of use.
-

@@ -5,12 +5,38 @@ import subprocess
 import concurrent.futures
 from datetime import datetime, timedelta
 
-BASE_URL = "http://localhost/gilhari/v1/"
+import os
+import pyodbc
+from dotenv import load_dotenv
 
+load_dotenv('.env')
+
+BASE_URL = os.getenv("GILHARI_BASE_URL", "http://localhost/gilhari/v1/")
 def truncate_tables():
     print("Truncating existing tables via SQL...")
+    server = os.getenv("AZURE_SQL_SERVER")
+    database = os.getenv("AZURE_SQL_DATABASE")
+    username = os.getenv("AZURE_SQL_USER")
+    password = os.getenv("AZURE_SQL_PASSWORD")
+
+    if not all([server, database, username, password]):
+        print("Warning: Azure SQL credentials not found in .env. Skipping truncation.")
+        return
+
+    try:
+        drivers = [d for d in pyodbc.drivers() if 'SQL Server' in d]
+        driver = '{ODBC Driver 18 for SQL Server}' if 'ODBC Driver 18 for SQL Server' in drivers else (
+            '{ODBC Driver 17 for SQL Server}' if 'ODBC Driver 17 for SQL Server' in drivers else '{' + drivers[-1] + '}'
+        )
+    except IndexError:
+        print("Error: No ODBC Driver for SQL Server found on your system. Skipping truncation.")
+        return
+
+    conn_str = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};"
+    if driver != "{SQL Server}":
+        conn_str += "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+    
     sql_command = """
-    USE supply_chain_db;
     DELETE FROM StockTransactions;
     DELETE FROM PurchaseOrderItems;
     DELETE FROM PurchaseOrders;
@@ -18,15 +44,15 @@ def truncate_tables():
     DELETE FROM ItemCategories;
     DELETE FROM Suppliers;
     """
+    
     try:
-        subprocess.run([
-            "docker", "exec", "-i", "sqlserver", 
-            "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-C", "-Q", sql_command
-        ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print("Tables truncated successfully.\n")
-    except subprocess.CalledProcessError as e:
-        print("Failed to truncate tables. Is the 'sqlserver' container running?")
-        print(e.stderr.decode())
+        with pyodbc.connect(conn_str) as conn:
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute(sql_command)
+            print("Tables truncated successfully.\n")
+    except Exception as e:
+        print(f"Failed to truncate tables: {e}")
 
 # Realistic Data Pools
 SUPPLIER_NAMES = [
@@ -183,7 +209,7 @@ def post_data(endpoint, data):
 
 if __name__ == "__main__":
     print("Starting Seeding Process via Gilhari REST API...\n")
-    # truncate_tables()
+    truncate_tables()
     
     post_data("Supplier", suppliers)
     post_data("ItemCategory", categories)
