@@ -1,6 +1,0 @@
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\InventoryItem.java
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\ItemCategory.java
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\PurchaseOrder.java
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\PurchaseOrderItem.java
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\StockTransaction.java
-C:\SoftwareTree\Gilhari-0.8.0b-SDK\examples\supply_chain_ps_project\src\com\supplychain\model\Supplier.java

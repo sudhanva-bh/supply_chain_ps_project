@@ -548,6 +548,15 @@ All four Azure services were operational upon completion of the deployment:
 \item The Flutter dashboard on Azure Static Web Apps authenticated correctly and rendered all CRUD views and Generative UI responses against the live Azure infrastructure.
 \end{itemize}
 
+\section{Cloud Deployment Challenges and Resolutions}
+
+During the deployment of the FastAPI backend to Azure App Service, a critical challenge emerged with the AI Agent's connectivity to the Gilhari microservice. The agent initially returned a \texttt{Fatal Error} upon initialization. Debugging this issue via Azure log tailing (\texttt{mcp\_stderr.log}) revealed the following root cause and resolution:
+
+\begin{itemize}[itemsep=0pt]
+\item \textbf{Root Cause}: The \texttt{ormcp-server} package includes a \texttt{microservice\_ensure.py} utility that runs on startup. It attempts to ping the Gilhari Microservice REST API (using a hardcoded \texttt{http://} prefix) to verify its availability. Because the Azure Container App exposes the service over HTTPS on port 443, the HTTP ping failed due to an SSL protocol mismatch. Upon failure, the utility incorrectly assumed the service was offline and attempted to spawn a local Docker container as a fallback. This Docker command inevitably failed inside the serverless Azure Web App environment, causing the entire ORMCP server to crash.
+\item \textbf{Resolution}: Analysis of the ORMCP source code indicated that alongside the HTTP REST ping, the utility also performs a raw TCP socket connection check. By explicitly defining the \texttt{GILHARI\_HOST} and \texttt{GILHARI\_PORT} (set to \texttt{443}) environment variables in the Azure App Service configuration, the raw TCP socket ping successfully established a connection over port 443. This allowed the startup script to bypass the faulty Docker fallback mechanism entirely, enabling the ORMCP server to start successfully and communicate with the Azure-hosted Gilhari microservice.
+\end{itemize}
+
 \section{Discussion}
 
 A key technical insight gained from this project is the layered decoupling that the Gilhari-ORMCP-LangGraph stack provides. The developer writes no SQL in the AI orchestration layer; the LLM interacts exclusively with safe, schema-validated MCP tool functions. This eliminates a significant class of potential security and correctness issues (such as SQL injection through LLM-generated queries) and makes the system highly maintainable as the database schema evolves.

@@ -1,6 +1,6 @@
 # Stockx Complete Azure Deployment Guide
 
-This document records the exact steps taken to deploy the Stockx Agentic Supply Chain platform from a local Docker setup to a full serverless **Azure Cloud** infrastructure.
+This document provides a step-by-step guide on how to deploy the Stockx Agentic Supply Chain platform from a local Docker setup to a full serverless **Azure Cloud** infrastructure.
 
 ---
 
@@ -25,12 +25,12 @@ The production deployment utilizes four primary Microsoft Azure PaaS components:
 ## 1. Database: Azure SQL Database
 
 ### Creation
-- Created an **Azure SQL Database** (Basic Tier) via the Azure Portal.
-- Configured the SQL server firewall to allow "Azure Services and resources to access this server" and explicitly allowed public IP access for the initial seed.
+- Create an **Azure SQL Database** (Basic Tier) via the Azure Portal.
+- Configure the SQL server firewall to allow "Azure Services and resources to access this server" and explicitly allow public IP access for the initial seed.
 - **Connection String Format:** `Driver={ODBC Driver 18 for SQL Server};Server=tcp:<SERVER>.database.windows.net,1433;Database=<DB>;Uid=<USER>;Pwd=<PASS>;Encrypt=yes;`
 
 ### Initialization
-Instead of running SQL scripts locally via `sqlcmd`, the database was initialized remotely using a Python script:
+Instead of running SQL scripts locally via `sqlcmd`, initialize the database remotely using a Python script:
 ```powershell
 python init_azure_db.py
 ```
@@ -41,7 +41,7 @@ This script reads the `.env` credentials, connects via `pyodbc`, and executes `s
 ## 2. Microservice: Azure Container Apps (Gilhari)
 
 ### Container Registry
-We pushed the compiled Gilhari container to an Azure Container Registry (ACR) to securely host the image:
+Push the compiled Gilhari container to an Azure Container Registry (ACR) to securely host the image:
 ```powershell
 az acr login --name StockxRegistry
 docker tag supply_chain_service_cloud stockxregistry.azurecr.io/gilhari-service:latest
@@ -49,8 +49,8 @@ docker push stockxregistry.azurecr.io/gilhari-service:latest
 ```
 
 ### Container App Creation
-- Created an **Azure Container App** (Consumption plan, 0.5 CPU cores, 1 Gi Memory).
-- Configured the image source to point to our private `StockxRegistry`.
+- Create an **Azure Container App** (Consumption plan, 0.5 CPU cores, 1 Gi Memory).
+- Configure the image source to point to your private `StockxRegistry`.
 - Set Ingress settings to accept traffic from anywhere on **Port 80**.
 - **Crucial Note:** Ensure the container has the `config/supply_chain.jdx` properly injected via Dockerfile or volume mounts, pointing directly to the Azure SQL Server hostname.
 
@@ -59,23 +59,23 @@ docker push stockxregistry.azurecr.io/gilhari-service:latest
 ## 3. AI Agent: Azure App Service (Python Backend)
 
 ### Infrastructure Setup
-Created a Free Tier (F1) App Service Plan for Linux:
+Create a Free Tier (F1) App Service Plan for Linux:
 ```powershell
 az appservice plan create --name SupplyChainPlan --resource-group SupplyChainBackend --sku F1 --is-linux
 az webapp create --resource-group SupplyChainBackend --plan SupplyChainPlan --name <YourAppName> --runtime "PYTHON:3.11"
 ```
 
 ### Startup Configuration
-Because Azure looks for `app.py` by default, we explicitly configured the startup command for our `main.py` FastAPI app:
+Because Azure looks for `app.py` by default, explicitly configure the startup command for the `main.py` FastAPI app:
 ```powershell
 az webapp config set --resource-group SupplyChainBackend --name <YourAppName> --startup-file "python -m uvicorn main:app --host 0.0.0.0"
 ```
 
 ### CORS & Security
-To allow the Flutter frontend (hosted on a different domain) to communicate with the API, `CORSMiddleware` was added to `backend/main.py`.
+To allow the Flutter frontend (hosted on a different domain) to communicate with the API, add `CORSMiddleware` to `backend/main.py`.
 
 ### Zip Deployment
-We compressed the backend directory (excluding `.venv` to save space) and deployed it directly:
+Compress the backend directory (excluding `.venv` to save space) and deploy it directly:
 ```powershell
 az webapp deployment source config-zip --resource-group SupplyChainBackend --name <YourAppName> --src backend.zip
 ```
@@ -86,16 +86,16 @@ az webapp deployment source config-zip --resource-group SupplyChainBackend --nam
 ## 4. Frontend: Azure Static Web Apps (Flutter)
 
 ### Initial Creation
-- In the Azure Portal, created an **Azure Static Web App**.
-- Selected the **GitHub** deployment source and connected the `main` branch.
-- Selected the **Custom** Build Preset with:
+- In the Azure Portal, create an **Azure Static Web App**.
+- Select the **GitHub** deployment source and connect the `main` branch.
+- Select the **Custom** Build Preset with:
   - App location: `/admin_dashboard`
   - Output location: `build/web`
 
 ### GitHub Action Configuration
-Azure's default Oryx builder does not support Flutter natively. We resolved this by modifying the auto-generated `.github/workflows/azure-static-web-apps-*.yml` file.
+Azure's default Oryx builder does not support Flutter natively. Resolve this by modifying the auto-generated `.github/workflows/azure-static-web-apps-*.yml` file.
 
-We injected a Flutter installation step, manually ran `flutter build web`, and instructed Azure to skip its own internal build phase:
+Inject a Flutter installation step, manually run `flutter build web`, and instruct Azure to skip its own internal build phase:
 ```yaml
     steps:
       - uses: actions/checkout@v3

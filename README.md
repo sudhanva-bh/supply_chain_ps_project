@@ -126,7 +126,21 @@ Choose the guide that matches your situation:
 
 ### Brand New Setup
 
-#### Step 1 — Start the Docker Infrastructure
+#### Step 1 — Configure the Environment
+
+Create a `.env` file from the example and configure your API keys and database credentials:
+```cmd
+copy .env.example .env
+```
+Open `.env` and fill in your values (e.g., `GEMINI_API_KEY` or `OPENAI_API_KEY`).
+
+Then, run the setup script to generate the secure database configuration (`config/supply_chain.jdx`) and the backend configuration:
+```cmd
+python setup_env.py
+```
+*(Note: You must do this before starting Docker, as the Gilhari container requires the generated `.jdx` file!)*
+
+#### Step 2 — Start the Docker Infrastructure
 
 If you modified any `.java` files in `src/`, recompile them first:
 ```cmd
@@ -140,7 +154,7 @@ docker-compose up -d --build
 
 Wait approximately 15-20 seconds for SQL Server to finish initializing on port `1433`.
 
-#### Step 2 — Initialize the Database Schema
+#### Step 3 — Initialize the Database Schema
 
 Copy and execute the schema initialization script inside the SQL Server container:
 ```cmd
@@ -148,33 +162,27 @@ docker cp sql\init.sql sqlserver:/init.sql
 docker exec -it sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -i /init.sql
 ```
 
-#### Step 3 — Seed the Database
+#### Step 4 — Seed the Database
 
 Install dependencies and run the seeding script:
 ```cmd
-pip install requests
+pip install requests python-dotenv
 python seed.py
 ```
 
 For a smaller, faster dataset, use `python seed_lite.py` instead.
 
-#### Step 4 — Configure and Start the Agentic Backend
+#### Step 5 — Start the Agentic Backend
 
 ```cmd
 cd backend
 python -m venv .venv --system-site-packages
 .\.venv\Scripts\activate
 pip install -r requirements.txt
-copy .env.example .env
-```
-
-Open `backend/.env` and set either `GEMINI_API_KEY` (default provider) or `OPENAI_API_KEY`, then start the server:
-
-```cmd
 uvicorn main:app --port 8001 --reload
 ```
 
-#### Step 5 — Start the Frontend Dashboard
+#### Step 6 — Start the Frontend Dashboard
 
 Open a new terminal:
 ```cmd
@@ -214,6 +222,14 @@ flutter run -d chrome --web-browser-flag "--disable-web-security"
 # Docker infrastructure
 docker-compose down
 ```
+
+---
+
+## Cloud Deployment
+
+This project is fully ready for deployment on Microsoft Azure (Azure SQL, Azure Container Apps, Azure App Service, and Azure Static Web Apps). 
+
+For a comprehensive, step-by-step guide on how to host this platform in the cloud, refer to the [Azure Deployment Guide](./DEPLOYMENT.md).
 
 ---
 
